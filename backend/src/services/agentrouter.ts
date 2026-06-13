@@ -75,6 +75,7 @@ export async function safeJSON(raw: string): Promise<any> {
 // We do NOT pass response_format — not all AgentRouter models support it.
 // The system prompt already mandates JSON-only output.
 export async function chatJSON(system: string, user: any): Promise<any> {
+  console.log("[agentrouter] chatJSON called");
   const res = await client.chat.completions.create({
     model: MODEL,
     messages: [
@@ -85,8 +86,8 @@ export async function chatJSON(system: string, user: any): Promise<any> {
       },
     ],
     temperature: 0.2,
-    // response_format intentionally omitted — incompatible with some models
   });
+  console.log("[agentrouter] chatJSON received response");
 
   const content = res.choices?.[0]?.message?.content;
   if (!content) {

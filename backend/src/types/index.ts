@@ -57,10 +57,10 @@ export const CartItemSchema = z.object({
   price: z.number().positive(),
   reason: z.string(),           // why it's here (trust / explainability layer)
   confidence: z.number().min(0).max(1),
-  substituteFor: z.string().optional(),   // F7: out-of-stock original name
-  nudge: z.string().optional(),           // F11: unit-economics tip
-  dietaryFlag: z.string().optional(),     // F10: e.g. "high sugar"
-  imageUrl: z.string().optional(),
+  substituteFor: z.string().nullable().optional(),   // F7: out-of-stock original name
+  nudge: z.string().nullable().optional(),           // F11: unit-economics tip
+  dietaryFlag: z.string().nullable().optional(),     // F10: e.g. "high sugar"
+  imageUrl: z.string().nullable().optional(),
 });
 export type CartItem = z.infer<typeof CartItemSchema>;
 
@@ -73,7 +73,7 @@ export const SwapSchema = z.object({
 });
 export type Swap = z.infer<typeof SwapSchema>;
 
-// ── CartProposal ──────────────────────────────────────────────────────────────
+// ── Cart Proposal (Output of Agent) ───────────────────────────────────────────
 export const CartProposalSchema = z.object({
   intentSummary: z.string(),
   assumptions: z.array(z.string()),
@@ -81,7 +81,7 @@ export const CartProposalSchema = z.object({
   total: z.number(),
   budget: z.number().nullable(),
   withinBudget: z.boolean(),
-  rebalance: z.array(SwapSchema).optional(),
+  rebalance: z.array(SwapSchema).nullable().optional(),
   clarifyingQuestion: z.string().nullable(),
 });
 export type CartProposal = z.infer<typeof CartProposalSchema>;

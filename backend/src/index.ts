@@ -15,6 +15,8 @@ import reorderRouter from "./routes/reorder.js";
 import proactiveRouter from "./routes/proactive.js";
 import checkoutRouter from "./routes/checkout.js";
 
+import { startAgentRouterProxy } from "./proxy.js";
+
 const app = express();
 const PORT = process.env.PORT ?? 4000;
 
@@ -68,6 +70,9 @@ app.use("/api/proactive", proactiveRouter);
 app.use("/api/checkout", checkoutRouter);
 
 // ── Start ─────────────────────────────────────────────────────────────────────
+// Start the built-in proxy server first
+startAgentRouterProxy();
+
 app.listen(PORT, () => {
   console.log(`\n🚀 Amazon Now backend running at http://localhost:${PORT}`);
   console.log(`   Health: http://localhost:${PORT}/health`);

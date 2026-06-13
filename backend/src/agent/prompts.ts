@@ -5,16 +5,16 @@
 
 // ── PARSE INTENT PROMPT ───────────────────────────────────────────────────────
 // Used in the first LLM call: converts raw user input → structured ParsedIntent.
-export const PARSE_INTENT_SYSTEM = `You are the intent parser for Amazon Now, an Indian quick-commerce AI assistant.
+export const PARSE_INTENT_SYSTEM = `You are the intent parser for Amazon Now, an quick-commerce AI assistant.
 
 Your job: Convert a customer's raw need (text, Hinglish, recipe, occasion) into a structured JSON object.
 
 Rules:
-- Understand English, Hindi, and Hinglish (mixed). Handle informal phrasing.
+- Understand English, informal text. Handle informal phrasing.
 - Decompose the need into concrete sub-needs (individual items to search for).
 - For recipes/occasions: list the key ingredient/product sub-needs (not staples like salt/water unless explicitly asked).
 - Scale quantities to the requested servings.
-- Extract budget (look for "₹", "rs", "rupees", "under", "within", "budget").
+- Extract budget (look for "Rs", "rs", "bucks", "under", "within", "budget").
 - Extract dietary constraints from the profile or explicit mentions.
 - Make AT MOST ONE clarifying question — only if it would fundamentally change the cart. Otherwise, state your assumption.
 - For image inputs: the image description will be prepended to the user text.
@@ -47,7 +47,7 @@ export function buildParseIntentUser(
   return `User profile:
 - Household size: ${userProfile.household}
 - Dietary: ${userProfile.dietary.length > 0 ? userProfile.dietary.join(", ") : "no restrictions"}
-- Default budget: ${userProfile.budget ? `₹${userProfile.budget}` : "not set"}
+- Default budget: ${userProfile.budget ? `Rs${userProfile.budget}` : "not set"}
 - Recent items (for context): ${userProfile.recentProductNames.slice(0, 5).join(", ") || "none"}
 
 User's request:
@@ -58,7 +58,7 @@ Parse this into the required JSON.`;
 
 // ── ASSEMBLE CART PROMPT ──────────────────────────────────────────────────────
 // Used in the second LLM call: candidates → CartProposal JSON.
-export const ASSEMBLE_CART_SYSTEM = `You are the Now Agent for Amazon Now, an Indian quick-commerce AI assistant.
+export const ASSEMBLE_CART_SYSTEM = `You are the Now Agent for Amazon Now, an quick-commerce AI assistant.
 
 You receive:
 1. The customer's parsed intent (summary, sub-needs, constraints)
@@ -127,7 +127,7 @@ export function buildAssembleCartUser(
   }
 ): string {
   return `Intent: ${intent.summary}
-Budget: ${intent.constraints.budget ? `₹${intent.constraints.budget}` : userProfile.budget ? `₹${userProfile.budget} (default)` : "none"}
+Budget: ${intent.constraints.budget ? `Rs${intent.constraints.budget}` : userProfile.budget ? `Rs${userProfile.budget} (default)` : "none"}
 Servings: ${intent.constraints.servings ?? userProfile.household}
 Dietary: ${[...(intent.constraints.dietary ?? []), ...userProfile.dietary].filter(Boolean).join(", ") || "none"}
 Past items (prefer if suitable): ${userProfile.recentProductNames.slice(0, 5).join(", ") || "none"}
@@ -139,7 +139,7 @@ ${candidatesBySubNeed
 ${c.products
   .map(
     (p, i) =>
-      `${i + 1}. [${p.id}] ${p.name} — ₹${p.price} / ${p.unit}${p.packSize ? ` (${p.packSize})` : ""} | ${p.inStock ? "✅ In stock" : "❌ Out of stock"} | dietary: [${p.dietary.join(",")}] | tags: ${p.tags.slice(0, 4).join(",")} | popularity: ${p.popularity}`
+      `${i + 1}. [${p.id}] ${p.name} — Rs${p.price} / ${p.unit}${p.packSize ? ` (${p.packSize})` : ""} | ${p.inStock ? "✅ In stock" : "❌ Out of stock"} | dietary: [${p.dietary.join(",")}] | tags: ${p.tags.slice(0, 4).join(",")} | popularity: ${p.popularity}`
   )
   .join("\n")}`
   )
@@ -149,7 +149,7 @@ Build the CartProposal JSON now.`;
 }
 
 // ── IMAGE PARSE PROMPT ────────────────────────────────────────────────────────
-export const IMAGE_PARSE_SYSTEM = `You are analysing an image for Amazon Now, an Indian quick-commerce AI assistant.
+export const IMAGE_PARSE_SYSTEM = `You are analysing an image for Amazon Now, an quick-commerce AI assistant.
 
 The image may be:
 - An empty or near-empty fridge / pantry

@@ -34,11 +34,18 @@ export default function Home() {
   // ── Submit intent ──────────────────────────────────────────────────────────
   const handleIntentSubmit = async (text: string, imageBase64?: string) => {
     setError(null);
+
+    // If we have an existing proposal with a clarifying question, append the context so the AI remembers it!
+    let contextualText = text;
+    if (proposal && proposal.clarifyingQuestion) {
+      contextualText = `Context from previous search: "${proposal.intentSummary}". You asked: "${proposal.clarifyingQuestion}". User answers: "${text}"`;
+    }
+
     setProposal(null);
     setAppState('loading');
 
     try {
-      const result = await postIntent({ userId: DEMO_USER_ID, text, imageBase64 });
+      const result = await postIntent({ userId: DEMO_USER_ID, text: contextualText, imageBase64 });
       setProposal(result);
       setAppState('result');
     } catch (err: any) {

@@ -71,7 +71,8 @@ async function searchCandidates(
       const products = await search(
         sn.query,
         {
-          category: sn.category,
+          // We intentionally do not filter by sn.category because the LLM might guess "Bakery" 
+          // while the catalog uses "Grocery & Staples". Semantic search handles relevance.
           maxPrice: intent.constraints.budget
             ? intent.constraints.budget * 0.7 // individual item cap
             : userProfile.budget,
@@ -282,6 +283,8 @@ export async function buildCart(input: BuildCartInput): Promise<CartProposal> {
 
   // 4. Search candidates per sub-need
   const candidatesBySubNeed = await searchCandidates(intent, userProfile);
+  console.log("[nowAgent] Parsed Intent:", JSON.stringify(intent, null, 2));
+  console.log("[nowAgent] Candidates counts:", candidatesBySubNeed.map(c => `${c.subNeed}: ${c.products.length}`));
 
   // 5. Assemble cart via LLM (with one retry on Zod parse failure)
   let proposal: CartProposal;
@@ -304,6 +307,9 @@ export async function buildCart(input: BuildCartInput): Promise<CartProposal> {
   const effectiveBudget = intent.constraints.budget ?? userProfile.budget ?? null;
   proposal = { ...proposal, budget: effectiveBudget };
   proposal = await enforceBudget(proposal, candidatesBySubNeed);
+
+  // 8. Preserve clarifying question from the intent parser if it exists
+  proposal.clarifyingQuestion = proposal.clarifyingQuestion || intent.clarifyingQuestion;
 
   return proposal;
 }

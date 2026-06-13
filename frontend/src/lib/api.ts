@@ -1,10 +1,11 @@
 // frontend/src/lib/api.ts
 // Typed API client for the Amazon Now backend.
-// All calls are relative to VITE_API_BASE_URL (default: http://localhost:4000).
+// All calls are relative to VITE_API_BASE_URL (default: http://localhost:4001).
+// For the Phase 5 acceptance demo, this matches the local backend port.
 // ─────────────────────────────────────────────────────────────────────────────
 import type { CartProposal, CartItem } from './types';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:4000';
+const API_BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:4001';
 
 // ── Generic fetch helper ─────────────────────────────────────────────────────
 async function apiPost<T>(path: string, body: unknown): Promise<T> {
