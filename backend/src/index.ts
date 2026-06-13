@@ -16,8 +16,7 @@ import proactiveRouter from "./routes/proactive.js";
 import checkoutRouter from "./routes/checkout.js";
 import historyRouter from "./routes/history.js";
 
-import { startAgentRouterProxy } from "./proxy.js";
-
+// Proxy removed
 const app = express();
 const PORT = process.env.PORT ?? 4000;
 
@@ -35,33 +34,7 @@ app.get("/health", (_req, res) => {
   });
 });
 
-// ── Debug: raw LLM probe (dev only) ──────────────────────────────────────────
-app.post("/api/debug-llm", async (_req, res) => {
-  try {
-    const OpenAI = (await import("openai")).default;
-    const client = new OpenAI({
-      apiKey: process.env.AGENTROUTER_API_KEY!,
-      baseURL: process.env.AGENTROUTER_BASE_URL!,
-    });
-    const raw = await client.chat.completions.create({
-      model: process.env.AGENTROUTER_MODEL!,
-      messages: [
-        { role: "system", content: "Reply with exactly this JSON: {\"ok\":true}" },
-        { role: "user", content: "ping" },
-      ],
-      temperature: 0,
-    });
-    return res.json({
-      fullResponse: raw,
-      choices: raw.choices,
-      firstChoice: raw.choices?.[0],
-      content: raw.choices?.[0]?.message?.content,
-    });
-  } catch (err: any) {
-    return res.status(500).json({ error: err.message, stack: err.stack });
-  }
-});
-
+// Debug route removed
 // ── Routes ────────────────────────────────────────────────────────────────────
 app.use("/api/intent", intentRouter);
 app.use("/api/emergency", emergencyRouter);
@@ -71,16 +44,13 @@ app.use("/api/proactive", proactiveRouter);
 app.use("/api/checkout", checkoutRouter);
 app.use("/api/history", historyRouter);
 
-// ── Start ─────────────────────────────────────────────────────────────────────
-// Start the built-in proxy server first
-startAgentRouterProxy();
-
+// Proxy startup removed
 app.listen(PORT, () => {
   console.log(`\n🚀 Amazon Now backend running at http://localhost:${PORT}`);
   console.log(`   Health: http://localhost:${PORT}/health`);
   console.log(`   Catalog: ${count()} products loaded`);
-  console.log(`   Model: ${process.env.AGENTROUTER_MODEL}`);
-  console.log(`   Embed: ${process.env.AGENTROUTER_EMBED_MODEL}\n`);
+  console.log(`   Model: amazon.nova-lite-v1:0`);
+  console.log(`   Embed: amazon.titan-embed-text-v2:0\n`);
 });
 
 export default app;

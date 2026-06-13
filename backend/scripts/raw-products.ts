@@ -1,21 +1,4 @@
-// scripts/generate-catalog-local.ts
-// Phase 1 (fallback): Generates seed data WITHOUT AgentRouter API calls.
-// Uses a deterministic local embedding (vocabulary-based) so the vector search
-// pipeline can still be tested end-to-end.
-// Run with:  npm run seed:local  (from the backend/ directory)
-// ─────────────────────────────────────────────────────────────────────────────
-// ⚠️  STUB: embeddings are deterministic local vectors, not real model outputs.
-//     Replace by running `npm run seed` once AgentRouter access is confirmed.
-
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// ── Types ────────────────────────────────────────────────────────────────────
-interface Product {
+export interface Product {
   id: string;
   name: string;
   category: string;
@@ -33,57 +16,12 @@ interface Product {
   _stub?: boolean;
 }
 
-// ── Deterministic embedding ──────────────────────────────────────────────────
-// Vocabulary of food/grocery terms used to build a sparse 128-dim vector.
-const VOCAB = [
-  "milk","curd","paneer","cheese","butter","ghee","cream","egg","bread","flour",
-  "rice","dal","pulses","oil","spice","masala","salt","sugar","tea","coffee",
-  "juice","water","drink","snack","biscuit","chip","noodle","pasta","soup","sauce",
-  "shampoo","soap","detergent","cleaner","dishwash","toothpaste","toothbrush",
-  "baby","diaper","wipe","food","cereal","ors","vitamin","supplement","painkiller",
-  "fruit","vegetable","tomato","potato","onion","garlic","ginger","lemon","banana",
-  "apple","mango","wheat","oats","cornflakes","muesli","jam","ketchup","pickle",
-  "yogurt","lassi","buttermilk","protein","fiber","vegan","organic","gluten",
-  "amul","tata","nestle","itc","hul","dettol","surf","dove","colgate","maggi",
-  "britannia","parle","haldiram","patanjali","dabur","himalaya","johnson","pepsico",
-  "fresh","instant","ready","healthy","natural","cold","hot","sweet","salty","spicy",
-  "breakfast","lunch","dinner","snacking","cooking","baking","cleaning","hygiene",
-  "pack","bottle","bag","box","can","sachet","kg","gram","liter","ml","piece",
-  "daily","weekly","essential","staple","premium","economy","value","family","size",
-  "indian","regional","national","brand","generic","local","imported","certified",
-  "grocery","dairy","beverage","personal","care","home","baby","health","otc",
-  "vegetarian","jain","diabetic","allergen","low","high","calorie","sodium","fat",
-];
-
-function deterministicEmbed(text: string): number[] {
-  const lower = text.toLowerCase();
-  const vec = new Array(128).fill(0);
-  // Fill first 112 dims from vocab matches
-  VOCAB.forEach((word, i) => {
-    if (i < 112 && lower.includes(word)) {
-      vec[i] = 1;
-      // Also activate neighbours to add variance
-      if (i + 1 < 112) vec[i + 1] += 0.3;
-      if (i - 1 >= 0) vec[i - 1] += 0.3;
-    }
-  });
-  // Fill remaining 16 dims with hash of text chars to prevent zero-vectors
-  for (let i = 0; i < text.length && i < 32; i++) {
-    vec[112 + (i % 16)] += text.charCodeAt(i) / 1000;
-  }
-  // Normalise
-  const norm = Math.sqrt(vec.reduce((s, v) => s + v * v, 0)) || 1;
-  return vec.map((v) => Math.round((v / norm) * 10000) / 10000);
-}
-
-// ── Placeholder image ────────────────────────────────────────────────────────
 function imgUrl(brand: string) {
   const label = encodeURIComponent(brand.split(" ")[0].substring(0, 6));
   return `https://placehold.co/200x200/FF9900/131A22?text=${label}`;
 }
 
-// ── Product definitions ──────────────────────────────────────────────────────
-const RAW_PRODUCTS: Omit<Product, "id" | "embedding">[] = [
+export const RAW_PRODUCTS: Omit<Product, "id" | "embedding">[] = [
   // ── Grocery & Staples ─────────────────────────────────────────────────────
   // Rice & Grains
   { name:"India Gate Basmati Rice 1kg", category:"Grocery & Staples", subcategory:"Rice & Grains", brand:"India Gate", price:149, unit:"1kg", packSize:"1kg bag", tags:["basmati","rice","long grain","aromatic","cooking"], dietary:["vegan","vegetarian","gluten-free","jain"], inStock:true, popularity:0.95, imageUrl:imgUrl("IndiaGate") },
@@ -323,100 +261,3 @@ const RAW_PRODUCTS: Omit<Product, "id" | "embedding">[] = [
 
 
 // ── Main ─────────────────────────────────────────────────────────────────────
-async function main() {
-  console.log("╔══════════════════════════════════════════════════╗");
-  console.log("║  Amazon Now — Phase 1: Local Catalog (STUB)      ║");
-  console.log("╚══════════════════════════════════════════════════╝");
-  console.log("⚠️  Using deterministic local embeddings (not AgentRouter).");
-  console.log("   Run `npm run seed` once API access is confirmed.\n");
-
-  const dataDir = path.join(__dirname, "..", "src", "data");
-  fs.mkdirSync(dataDir, { recursive: true });
-  console.log(`📁 Data directory: ${dataDir}\n`);
-
-  // 1. Assign IDs + embeddings
-  console.log(`🔢 Embedding ${RAW_PRODUCTS.length} products (deterministic local)...`);
-  const products: Product[] = RAW_PRODUCTS.map((p, i) => {
-    const embText = [p.name, p.subcategory, p.category, ...p.tags].join(" ");
-    return {
-      ...p,
-      id: `prod-${String(i + 1).padStart(4, "0")}`,
-      embedding: deterministicEmbed(embText),
-      _stub: true,
-    };
-  });
-  console.log(`✅ ${products.length} products embedded\n`);
-
-  // 2. Write catalog
-  const catalogPath = path.join(dataDir, "seed-catalog.json");
-  fs.writeFileSync(catalogPath, JSON.stringify(products, null, 2));
-  console.log(`💾 Catalog written to ${catalogPath}`);
-  console.log(`   Size: ${(fs.statSync(catalogPath).size / 1024).toFixed(1)} KB\n`);
-
-  // 3. Write seed user
-  const user = {
-    id: "user-demo-01",
-    name: "Priya Sharma",
-    email: "priya.sharma@example.com",
-    city: "Bengaluru",
-    household: { size: 4, dietary: ["vegetarian"], budgetSensitivity: "med" },
-    defaultBudget: 800,
-    learnedPrefs: { avoid: [], prefer: [] },
-  };
-  const userPath = path.join(dataDir, "seed-user.json");
-  fs.writeFileSync(userPath, JSON.stringify(user, null, 2));
-  console.log(`👤 Seed user written to ${userPath}`);
-
-  // 4. Write seed orders (pick high-popularity, in-stock products)
-  const orderable = products.filter((p) => p.inStock && p.popularity > 0.5);
-  const pick = (n: number) =>
-    Array.from({ length: n }, () => ({
-      productId: orderable[Math.floor(Math.random() * orderable.length)].id,
-      qty: Math.random() > 0.7 ? 2 : 1,
-    }));
-
-  const now = Date.now();
-  const DAY = 86400000;
-  const orders = [
-    { id: "ord-001", userId: "user-demo-01", items: pick(6), createdAt: new Date(now - 2 * DAY).toISOString() },
-    { id: "ord-002", userId: "user-demo-01", items: pick(4), createdAt: new Date(now - 4 * DAY).toISOString() },
-    { id: "ord-003", userId: "user-demo-01", items: pick(8), createdAt: new Date(now - 7 * DAY).toISOString() },
-    { id: "ord-004", userId: "user-demo-01", items: pick(5), createdAt: new Date(now - 9 * DAY).toISOString() },
-    { id: "ord-005", userId: "user-demo-01", items: pick(7), createdAt: new Date(now - 14 * DAY).toISOString() },
-    { id: "ord-006", userId: "user-demo-01", items: pick(3), createdAt: new Date(now - 16 * DAY).toISOString() },
-    { id: "ord-007", userId: "user-demo-01", items: pick(6), createdAt: new Date(now - 21 * DAY).toISOString() },
-    { id: "ord-008", userId: "user-demo-01", items: pick(9), createdAt: new Date(now - 24 * DAY).toISOString() },
-    { id: "ord-009", userId: "user-demo-01", items: pick(4), createdAt: new Date(now - 28 * DAY).toISOString() },
-    { id: "ord-010", userId: "user-demo-01", items: pick(5), createdAt: new Date(now - 30 * DAY).toISOString() },
-    { id: "ord-011", userId: "user-demo-01", items: pick(6), createdAt: new Date(now - 35 * DAY).toISOString() },
-    { id: "ord-012", userId: "user-demo-01", items: pick(3), createdAt: new Date(now - 38 * DAY).toISOString() },
-    { id: "ord-013", userId: "user-demo-01", items: pick(7), createdAt: new Date(now - 42 * DAY).toISOString() },
-    { id: "ord-014", userId: "user-demo-01", items: pick(5), createdAt: new Date(now - 45 * DAY).toISOString() },
-    { id: "ord-015", userId: "user-demo-01", items: pick(8), createdAt: new Date(now - 50 * DAY).toISOString() },
-  ];
-  const ordersPath = path.join(dataDir, "seed-orders.json");
-  fs.writeFileSync(ordersPath, JSON.stringify(orders, null, 2));
-  console.log(`📦 Seed orders (${orders.length}) written to ${ordersPath}\n`);
-
-  // 5. Report
-  const inStockCount = products.filter((p) => p.inStock).length;
-  const outOfStockCount = products.length - inStockCount;
-  const embDim = products[0]?.embedding?.length ?? 0;
-
-  console.log("╔══════════════════════════════════════════════════╗");
-  console.log("║  Phase 1 Complete! ✅                            ║");
-  console.log("╚══════════════════════════════════════════════════╝");
-  console.log(`  Products:       ${products.length}`);
-  console.log(`  Embedding dim:  ${embDim} (local STUB)`);
-  console.log(`  In stock:       ${inStockCount} (${((inStockCount / products.length) * 100).toFixed(0)}%)`);
-  console.log(`  Out of stock:   ${outOfStockCount} (~${((outOfStockCount / products.length) * 100).toFixed(0)}%)`);
-  console.log(`  Files:`);
-  console.log(`    ${catalogPath}`);
-  console.log(`    ${userPath}`);
-  console.log(`    ${ordersPath}`);
-}
-
-main().catch((err) => {
-  console.error("Fatal error:", err);
-  process.exit(1);
-});

@@ -8,9 +8,11 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "seed": "tsx scripts/generate-catalog.ts",
-    "seed:local": "tsx scripts/generate-catalog-local.ts"
+    "seed:local": "tsx scripts/generate-catalog-local.ts",
+    "seed:bedrock": "tsx scripts/generate-catalog-bedrock.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.1068.0",
     "@aws-sdk/client-dynamodb": "^3.600.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
