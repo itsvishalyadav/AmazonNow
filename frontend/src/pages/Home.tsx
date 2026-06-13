@@ -2,18 +2,21 @@
 // The main demo screen — IntentBar at top, CartProposalCard below.
 // Handles the full intent → cart → checkout flow.
 // ─────────────────────────────────────────────────────────────────────────────
-import { useState } from 'react';
-import { Sparkles, RefreshCw } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Sparkles, RefreshCw, MessageSquare, Bot, CheckCircle2 } from 'lucide-react';
 import IntentBar from '../components/IntentBar';
 import CartProposalCard from '../components/CartProposalCard';
 import LoadingState from '../components/LoadingState';
 import OrderConfirm from '../components/OrderConfirm';
 import EmergencyChips from '../components/EmergencyChips';
 import FeedbackToast from '../components/FeedbackToast';
-import { postIntent, postCheckout, postFeedback, postEmergency } from '../lib/api';
+import ProactiveBanner from '../components/ProactiveBanner';
+import ReorderStrip from '../components/ReorderStrip';
+import { postIntent, postCheckout, postFeedback, postEmergency, getProactive, getReorder } from '../lib/api';
+import type { ProactiveSuggestion } from '../lib/api';
 import type { CartProposal, CartItem } from '../lib/types';
 
-const DEMO_USER_ID = 'user-demo-01';
+const DEMO_USER_ID = 'user-demo-001';
 
 const EXAMPLE_PROMPTS = [
   'kal subah breakfast for 2, under ₹300',
@@ -35,6 +38,33 @@ export default function Home() {
   const [hasImage, setHasImage] = useState(false);
   const [activeEmergency, setActiveEmergency] = useState<string | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'avoid' | 'prefer' } | null>(null);
+
+  // Phase 11 state
+  const [proactiveSuggestion, setProactiveSuggestion] = useState<ProactiveSuggestion | null>(null);
+  const [reorderCandidates, setReorderCandidates] = useState<CartItem[]>([]);
+
+  // ── Fetch Signals on Mount (Phase 11) ──────────────────────────────────────
+  useEffect(() => {
+    getProactive(DEMO_USER_ID)
+      .then(res => {
+        if (res.suggestions && res.suggestions.length > 0) {
+          setProactiveSuggestion(res.suggestions[0]);
+        }
+      })
+      .catch((err) => {
+        console.error('Proactive signal fetch failed:', err);
+      });
+
+    getReorder(DEMO_USER_ID)
+      .then(res => {
+        if (res.candidates && res.candidates.length > 0) {
+          setReorderCandidates(res.candidates);
+        }
+      })
+      .catch((err) => {
+        console.error('Reorder fetch failed:', err);
+      });
+  }, []);
 
   // ── Submit intent ──────────────────────────────────────────────────────────
   const handleIntentSubmit = async (text: string, imageBase64?: string) => {
@@ -147,10 +177,43 @@ export default function Home() {
       <main className="home-main">
         {/* ── Intent bar ─────────────────────────────────────────── */}
         <section className="intent-section">
+          {/* Phase 11: Proactive Banner (Anywhere above intent bar) */}
+          {appState === 'idle' && proactiveSuggestion && (
+            <div className="mb-4">
+              <ProactiveBanner 
+                suggestion={proactiveSuggestion} 
+                onReview={() => {
+                  setProposal(proactiveSuggestion.proposal);
+                  setAppState('result');
+                }}
+                onDismiss={() => setProactiveSuggestion(null)}
+              />
+            </div>
+          )}
+
           <IntentBar
             onSubmit={handleIntentSubmit}
             isLoading={appState === 'loading'}
           />
+
+          {/* Phase 11: Reorder Strip */}
+          {appState === 'idle' && reorderCandidates.length > 0 && (
+            <div className="mt-2 mb-4">
+              <ReorderStrip 
+                candidates={reorderCandidates}
+                onAppendToSearch={(productName) => {
+                  const input = document.getElementById('intent-input') as HTMLTextAreaElement;
+                  if (input) {
+                    const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set;
+                    const newValue = input.value ? `${input.value}, ${productName}` : productName;
+                    nativeInputValueSetter?.call(input, newValue);
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                    input.focus();
+                  }
+                }}
+              />
+            </div>
+          )}
 
           {/* Example prompts (idle) */}
           {appState === 'idle' && (
@@ -215,9 +278,9 @@ export default function Home() {
           <section className="idle-hero">
             <div className="idle-hero-steps">
               {[
-                { n: '1', icon: '💬', label: 'Tell us your need' },
-                { n: '2', icon: '🤖', label: 'Agent builds the cart' },
-                { n: '3', icon: '✅', label: 'One tap to buy' },
+                { n: '1', icon: <MessageSquare size={24} className="text-amazon-orange" />, label: 'Tell us your need' },
+                { n: '2', icon: <Bot size={24} className="text-amazon-orange" />, label: 'Agent builds the cart' },
+                { n: '3', icon: <CheckCircle2 size={24} className="text-amazon-orange" />, label: 'One tap to buy' },
               ].map((s) => (
                 <div key={s.n} className="idle-step">
                   <div className="idle-step-icon">{s.icon}</div>

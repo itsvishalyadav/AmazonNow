@@ -40,6 +40,11 @@ function orders(): Order[] {
   return loadOrders();
 }
 
+export function addOrderToContext(order: Order): void {
+  if (!_orders) _orders = loadOrders();
+  _orders.push(order);
+}
+
 // ── Public: getUserContext ────────────────────────────────────────────────────
 export interface UserContext {
   user: User;

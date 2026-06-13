@@ -3,18 +3,19 @@
 // Shows a multi-step progress animation with Amazon branding.
 // ─────────────────────────────────────────────────────────────────────────────
 import { useEffect, useState } from 'react';
+import { BrainCircuit, Search, Layers, Calculator, Sparkles, Image as ImageIcon } from 'lucide-react';
 
 export default function LoadingState({ hasImage }: { hasImage?: boolean }) {
   const baseSteps = [
-    { icon: '🧠', text: 'Parsing your need…' },
-    { icon: '🔍', text: 'Searching catalog…' },
-    { icon: '⚖️',  text: 'Selecting best picks…' },
-    { icon: '💰', text: 'Checking your budget…' },
-    { icon: '✨', text: 'Finalising your cart…' },
+    { icon: <BrainCircuit size={28} className="text-amazon-orange" />, text: 'Parsing your need…' },
+    { icon: <Search size={28} className="text-amazon-orange" />, text: 'Searching catalog…' },
+    { icon: <Layers size={28} className="text-amazon-orange" />,  text: 'Selecting best picks…' },
+    { icon: <Calculator size={28} className="text-amazon-orange" />, text: 'Checking your budget…' },
+    { icon: <Sparkles size={28} className="text-amazon-orange" />, text: 'Finalising your cart…' },
   ];
   
   const STEPS = hasImage 
-    ? [{ icon: '🖼️', text: 'Analyzing your photo…' }, ...baseSteps] 
+    ? [{ icon: <ImageIcon size={28} className="text-amazon-orange" />, text: 'Analyzing your photo…' }, ...baseSteps] 
     : baseSteps;
 
   const [stepIdx, setStepIdx] = useState(0);

@@ -1,9 +1,8 @@
-// frontend/src/App.tsx
 import { useState } from 'react';
 import Home from './pages/Home';
 import PurchaseHistory from './pages/PurchaseHistory';
 import Navbar from './components/Navbar';
-import { Home as HomeIcon, Clock } from 'lucide-react';
+import { Sparkles, Clock } from 'lucide-react';
 
 function App() {
   const [activeTab, setActiveTab] = useState<'home' | 'history'>('home');
@@ -12,23 +11,25 @@ function App() {
     <div className="app-layout">
       <Navbar />
       
-      {/* Top Tab Bar */}
-      <div className="tab-bar-container">
-        <div className="tab-bar">
+      {/* Premium Segmented Tab Bar */}
+      <div className="tab-container-wrapper">
+        <div className="segmented-control">
           <button 
-            className={`tab-btn ${activeTab === 'home' ? 'active' : ''}`}
+            className={`segment-btn ${activeTab === 'home' ? 'active' : ''}`}
             onClick={() => setActiveTab('home')}
           >
-            <HomeIcon size={16} />
-            <span>Agent</span>
+            <Sparkles size={16} className="segment-icon" />
+            <span>AI Agent</span>
           </button>
           <button 
-            className={`tab-btn ${activeTab === 'history' ? 'active' : ''}`}
+            className={`segment-btn ${activeTab === 'history' ? 'active' : ''}`}
             onClick={() => setActiveTab('history')}
           >
-            <Clock size={16} />
+            <Clock size={16} className="segment-icon" />
             <span>Orders</span>
           </button>
+          {/* Animated background pill */}
+          <div className="segment-indicator" style={{ transform: `translateX(${activeTab === 'home' ? '0%' : '100%'})` }} />
         </div>
       </div>
 

@@ -41,6 +41,10 @@ function getSeasonSignal(month: number): { name: string; intent: string } | null
   return null;
 }
 
+// Simple in-memory cache to prevent repetitive LLM calls on reload
+const proactiveCache = new Map<string, { timestamp: number; proposal: any }>();
+const CACHE_TTL = 1000 * 60 * 60 * 24; // 24 hours
+
 router.get("/:userId", async (req, res) => {
   const { userId } = req.params;
   const today = new Date();
@@ -56,8 +60,20 @@ router.get("/:userId", async (req, res) => {
     return res.json({ suggestions: [] });
   }
 
+  const cacheKey = `${userId}_${signal.name}`;
+  const cached = proactiveCache.get(cacheKey);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    return res.json({
+      suggestions: [{ signal: signal.name, proposal: cached.proposal }]
+    });
+  }
+
   try {
     const proposal = await buildCart({ userId, text: signal.intent });
+    
+    // Save to cache
+    proactiveCache.set(cacheKey, { timestamp: Date.now(), proposal });
+
     return res.json({
       suggestions: [
         {
