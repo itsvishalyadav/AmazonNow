@@ -61,6 +61,12 @@ export const CartItemSchema = z.object({
   nudge: z.string().nullable().optional(),           // F11: unit-economics tip
   dietaryFlag: z.string().nullable().optional(),     // F10: e.g. "high sugar"
   imageUrl: z.string().nullable().optional(),
+  alternatives: z.array(z.object({
+    id: z.string(),
+    name: z.string(),
+    price: z.number(),
+    reason: z.string()
+  })).optional(),
 });
 export type CartItem = z.infer<typeof CartItemSchema>;
 

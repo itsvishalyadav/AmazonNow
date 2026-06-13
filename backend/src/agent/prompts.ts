@@ -71,10 +71,11 @@ Rules:
 - Be decisive: pick ONE per sub-need. Do not list alternatives in the items array.
 - Respect dietary profile: never include non-vegetarian items for vegetarian users without flagging.
 - If a candidate is out of stock (inStock: false), set substituteFor to its name and pick the next best in-stock option.
-- For each item write a SHORT reason phrase (≤15 words, plain, trust-building).
+- For each item write a one-line reason (plain, helpful, trust-building).
 - Assign confidence 0.0–1.0 (use >0.85 only when it's clearly the best match).
 - If a larger pack is cheaper per unit, add a nudge (F11).
 - If an item conflicts with dietary profile, set dietaryFlag and suggest the healthier option in reason.
+- If confidence is < 0.8, populate "alternatives" with 1 or 2 other relevant in-stock products from the candidate list (include id, name, price, and why it might be better).
 - Keep total within budget if budget is set. If over, flag withinBudget: false (enforceBudget runs after you).
 - Write assumptions for any inference you made.
 - clarifyingQuestion: null unless ONE question would fundamentally change the cart.
@@ -94,7 +95,10 @@ Output ONLY this CartProposal JSON:
       "substituteFor": null_or_string,
       "nudge": null_or_string,
       "dietaryFlag": null_or_string,
-      "imageUrl": "..."
+      "imageUrl": "...",
+      "alternatives": [
+        { "id": "prod-...", "name": "...", "price": 0, "reason": "..." }
+      ]
     }
   ],
   "total": 0,
@@ -139,7 +143,7 @@ ${candidatesBySubNeed
 ${c.products
   .map(
     (p, i) =>
-      `${i + 1}. [${p.id}] ${p.name} — Rs${p.price}/${p.unit}${p.packSize ? ` (${p.packSize})` : ""} | ${p.inStock ? "✓" : "✗ OOS"} | [${p.dietary.join(",")}] | ${p.tags.slice(0, 3).join(",")}`
+      `${i + 1}. [${p.id}] ${p.name} — Rs${p.price} / ${p.unit}${p.packSize ? ` (${p.packSize})` : ""} | ${p.inStock ? "✅ In stock" : "❌ Out of stock"} | dietary: [${p.dietary.join(",")}] | tags: ${p.tags.slice(0, 4).join(",")} | popularity: ${p.popularity}`
   )
   .join("\n")}`
   )
@@ -169,66 +173,3 @@ Output ONLY this JSON:
   ],
   "assumptions": ["..."]
 }`;
-
-// ── FAST CART PROMPT (single-call mode for simple queries) ─────────────────────
-// Merges parse + assemble into one LLM call. Used when the query is straightforward.
-export const FAST_CART_SYSTEM = `You are the Now Agent for Amazon Now, a quick-commerce AI.
-
-You receive a customer request + their profile + candidate products from search.
-In ONE step: understand the need, pick the best product per sub-need, and return a CartProposal.
-
-Rules:
-- Pick ONE product per identified need from the candidates provided.
-- Write a SHORT reason per item (≤15 words).
-- Confidence 0.0–1.0. If out-of-stock, pick next best and set substituteFor.
-- Respect dietary constraints. Flag conflicts with dietaryFlag.
-- Stay within budget. If over, set withinBudget: false.
-- clarifyingQuestion: null unless critical.
-
-Output ONLY this JSON:
-{
-  "intentSummary": "short restatement",
-  "assumptions": ["..."],
-  "items": [{ "productId": "prod-XXXX", "name": "...", "qty": 1, "price": 0, "reason": "short", "confidence": 0.9, "substituteFor": null, "nudge": null, "dietaryFlag": null, "imageUrl": "..." }],
-  "total": 0,
-  "budget": null,
-  "withinBudget": true,
-  "rebalance": [],
-  "clarifyingQuestion": null
-}`;
-
-export function buildFastCartUser(
-  userInput: string,
-  candidatesBySubNeed: Array<{
-    subNeed: string;
-    products: Array<{
-      id: string; name: string; price: number; unit: string; packSize?: string;
-      dietary: string[]; inStock: boolean; imageUrl: string; tags: string[];
-    }>;
-  }>,
-  userProfile: {
-    dietary: string[];
-    household: number;
-    budget?: number;
-    recentProductNames: string[];
-  }
-): string {
-  return `Request: "${userInput}"
-Household: ${userProfile.household} | Dietary: ${userProfile.dietary.join(", ") || "none"} | Budget: ${userProfile.budget ? `Rs${userProfile.budget}` : "none"}
-
-Candidate products:
-${candidatesBySubNeed
-  .map(
-    (c) => `## "${c.subNeed}"
-${c.products
-  .map(
-    (p, i) =>
-      `${i + 1}. [${p.id}] ${p.name} — Rs${p.price}/${p.unit}${p.packSize ? ` (${p.packSize})` : ""} | ${p.inStock ? "✓" : "✗ OOS"} | [${p.dietary.join(",")}] | ${p.tags.slice(0, 3).join(",")}`
-  )
-  .join("\n")}`
-  )
-  .join("\n\n")}
-
-Build the CartProposal JSON now.`;
-}
-

@@ -14,6 +14,12 @@ export interface CartItem {
   nudge?: string;               // F11: unit-economics tip
   dietaryFlag?: string;         // F10: e.g. "high sugar"
   imageUrl?: string;
+  alternatives?: {
+    id: string;
+    name: string;
+    price: number;
+    reason: string;
+  }[];
 }
 
 export interface Swap {

@@ -2,7 +2,7 @@ import http from 'http';
 import https from 'https';
 
 export function startAgentRouterProxy() {
-  const server = http.createServer((req, res) => {
+  http.createServer((req, res) => {
     const options = {
       hostname: 'agentrouter.org',
       port: 443,
@@ -29,18 +29,7 @@ export function startAgentRouterProxy() {
       res.writeHead(500);
       res.end('Proxy Error');
     });
-  });
-
-  // Graceful error handling — don't crash if port is already in use
-  server.on('error', (err: NodeJS.ErrnoException) => {
-    if (err.code === 'EADDRINUSE') {
-      console.warn('⚠️  Proxy port 8318 already in use — skipping proxy startup (another instance may be running)');
-    } else {
-      console.error('[proxy] Server error:', err.message);
-    }
-  });
-
-  server.listen(8318, () => {
+  }).listen(8318, () => {
     console.log("✅ Built-in AgentRouter Proxy running on http://localhost:8318");
   });
 }

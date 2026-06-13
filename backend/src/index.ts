@@ -70,28 +70,15 @@ app.use("/api/proactive", proactiveRouter);
 app.use("/api/checkout", checkoutRouter);
 
 // ── Start ─────────────────────────────────────────────────────────────────────
-// Start the built-in proxy server first (non-fatal if it fails)
-try {
-  startAgentRouterProxy();
-} catch (err: any) {
-  console.warn("⚠️  Proxy startup failed:", err.message, "— backend will still run");
-}
+// Start the built-in proxy server first
+startAgentRouterProxy();
 
-const server = app.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log(`\n🚀 Amazon Now backend running at http://localhost:${PORT}`);
   console.log(`   Health: http://localhost:${PORT}/health`);
   console.log(`   Catalog: ${count()} products loaded`);
   console.log(`   Model: ${process.env.AGENTROUTER_MODEL}`);
-  console.log(`   Embed: local 128-dim (no API)\n`);
+  console.log(`   Embed: ${process.env.AGENTROUTER_EMBED_MODEL}\n`);
 });
-
-// ── Graceful shutdown ─────────────────────────────────────────────────────────
-function shutdown() {
-  console.log("\n🛑 Shutting down gracefully...");
-  server.close(() => process.exit(0));
-  setTimeout(() => process.exit(1), 3000); // Force exit after 3s
-}
-process.on("SIGTERM", shutdown);
-process.on("SIGINT", shutdown);
 
 export default app;
