@@ -85,21 +85,9 @@ export async function search(
     return [];
   }
 
-  // 1. Embed the query
-  let queryVec: number[];
-  const catalogHasStubEmbeddings = catalog[0]?._stub === true;
-
-  if (catalogHasStubEmbeddings) {
-    // Catalog uses 128-dim local vectors — match with local embedding
-    queryVec = localEmbed(query);
-  } else {
-    try {
-      queryVec = await embed(query);
-    } catch (err) {
-      console.warn("[vectorSearch] AgentRouter embed failed — falling back to local embed:", err);
-      queryVec = localEmbed(query);
-    }
-  }
+  // 1. Embed the query — always use local embeddings (instant, no network call)
+  // The proxy lacks embedding models, and local 128-dim vectors match the catalog format.
+  const queryVec = localEmbed(query);
 
   // 2. Apply filters
   const { category, subcategory, maxPrice, dietary = [], inStockOnly = true } = filters;

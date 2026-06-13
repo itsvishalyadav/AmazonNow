@@ -1,25 +1,36 @@
 // frontend/src/components/LoadingState.tsx
 // Animated loading state shown while the Now Agent assembles a cart.
-// Shows a multi-step progress animation with Amazon branding.
+// Shows a multi-step progress animation with elapsed timer.
 // ─────────────────────────────────────────────────────────────────────────────
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 const STEPS = [
-  { icon: '🧠', text: 'Parsing your need…' },
-  { icon: '🔍', text: 'Searching catalog…' },
+  { icon: '🧠', text: 'Understanding your need…' },
+  { icon: '🔍', text: 'Finding products…' },
   { icon: '⚖️',  text: 'Selecting best picks…' },
-  { icon: '💰', text: 'Checking your budget…' },
-  { icon: '✨', text: 'Finalising your cart…' },
+  { icon: '💰', text: 'Checking budget…' },
+  { icon: '✨', text: 'Assembling cart…' },
 ];
 
 export default function LoadingState() {
   const [stepIdx, setStepIdx] = useState(0);
+  const [elapsed, setElapsed] = useState(0);
+  const startRef = useRef(Date.now());
 
+  // Step animation
   useEffect(() => {
     const interval = setInterval(() => {
       setStepIdx((i) => (i + 1) % STEPS.length);
     }, 900);
     return () => clearInterval(interval);
+  }, []);
+
+  // Elapsed timer (updates every second)
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setElapsed(Math.floor((Date.now() - startRef.current) / 1000));
+    }, 1000);
+    return () => clearInterval(timer);
   }, []);
 
   return (
@@ -44,8 +55,13 @@ export default function LoadingState() {
         ))}
       </div>
 
+      {/* Elapsed timer */}
       <p className="loading-subtitle">
-        The Now Agent is thinking… usually takes 3–8 s
+        {elapsed < 15
+          ? `Building your cart… ${elapsed}s`
+          : elapsed < 30
+            ? `Taking a bit longer… ${elapsed}s`
+            : `Almost there — hang tight! ${elapsed}s`}
       </p>
     </div>
   );
