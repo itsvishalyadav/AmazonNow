@@ -92,9 +92,13 @@ export function getReorder(userId: string): Promise<ReorderResponse> {
 }
 
 // ── GET /api/proactive/:userId ───────────────────────────────────────────────
+export interface ProactiveSuggestion {
+  signal: string;
+  proposal: CartProposal;
+}
+
 export interface ProactiveResponse {
-  suggestions: CartProposal[];
-  signal?: string;
+  suggestions: ProactiveSuggestion[];
 }
 
 export function getProactive(userId: string): Promise<ProactiveResponse> {

@@ -137,9 +137,9 @@ export function buildAssembleCartUser(
   }
 ): string {
   return `Intent: ${intent.summary}
-Budget: ${intent.constraints.budget ? `Rs${intent.constraints.budget}` : userProfile.budget ? `Rs${userProfile.budget} (default)` : "none"}
-Servings: ${intent.constraints.servings ?? userProfile.household}
-Dietary: ${[...(intent.constraints.dietary ?? []), ...userProfile.dietary].filter(Boolean).join(", ") || "none"}
+Budget: ${intent.constraints?.budget ? `Rs${intent.constraints.budget}` : userProfile.budget ? `Rs${userProfile.budget} (default)` : "none"}
+Servings: ${intent.constraints?.servings ?? userProfile.household}
+Dietary: ${[...(intent.constraints?.dietary ?? []), ...userProfile.dietary].filter(Boolean).join(", ") || "none"}
 Past items (prefer if suitable): ${userProfile.recentProductNames.slice(0, 5).join(", ") || "none"}
 Learned prefs — AVOID: ${userProfile.learnedPrefs?.avoid.join(", ") || "none"} | PREFER: ${userProfile.learnedPrefs?.prefer.join(", ") || "none"}
 

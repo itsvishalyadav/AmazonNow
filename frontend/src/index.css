@@ -375,26 +375,36 @@ html, body, #root {
 }
 
 .loading-ring {
-  width: 80px;
-  height: 80px;
+  width: 84px;
+  height: 84px;
   border-radius: 50%;
-  border: 3px solid var(--amazon-border);
-  border-top-color: var(--amazon-orange);
-  animation: spin 1.2s linear infinite;
+  background: var(--amazon-card);
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
+  box-shadow: 0 0 24px rgba(255, 153, 0, 0.1);
+}
+
+.loading-ring::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0%, transparent 60%, var(--amazon-orange) 100%);
+  animation: spin 1.2s linear infinite;
 }
 
 .loading-ring-inner {
   position: absolute;
-  inset: 8px;
-  background: var(--amazon-card);
+  inset: 3px;
+  background: var(--amazon-navy);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: inset 0 0 12px rgba(0,0,0,0.5);
+  z-index: 1;
 }
 
 .loading-step-icon {

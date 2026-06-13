@@ -64,7 +64,7 @@ async function searchCandidates(
   userProfile: { dietary: string[]; budget?: number }
 ): Promise<Array<{ subNeed: string; products: Product[] }>> {
   const combinedDietary = [
-    ...(intent.constraints.dietary ?? []),
+    ...(intent.constraints?.dietary ?? []),
     ...userProfile.dietary,
   ].filter(Boolean);
 
@@ -75,7 +75,7 @@ async function searchCandidates(
         {
           // We intentionally do not filter by sn.category because the LLM might guess "Bakery" 
           // while the catalog uses "Grocery & Staples". Semantic search handles relevance.
-          maxPrice: intent.constraints.budget
+          maxPrice: intent.constraints?.budget
             ? intent.constraints.budget * 0.7 // individual item cap
             : userProfile.budget,
           dietary: combinedDietary,
@@ -279,7 +279,7 @@ export async function buildCart(input: BuildCartInput): Promise<CartProposal> {
 
   // 2.5 Decompose Recipe if necessary (Phase 8)
   const isRecipeOrOccasion = intent.isRecipeOrOccasion || 
-    intent.constraints.occasion || 
+    intent.constraints?.occasion || 
     input.text?.toLowerCase().includes("recipe") || 
     input.text?.toLowerCase().includes("for ") || 
     input.text?.toLowerCase().includes("party");
@@ -298,6 +298,7 @@ export async function buildCart(input: BuildCartInput): Promise<CartProposal> {
       if (decompResult && decompResult.subNeeds) {
         intent.subNeeds = decompResult.subNeeds.filter((sn: any) => !sn.isStaple);
         if (decompResult.excludedStaples && decompResult.excludedStaples.length > 0) {
+          intent.assumptions = intent.assumptions || [];
           intent.assumptions.push(`Excluded staples from cart: ${decompResult.excludedStaples.join(", ")}`);
         }
       }
@@ -313,13 +314,14 @@ export async function buildCart(input: BuildCartInput): Promise<CartProposal> {
       assumptions: intent.assumptions,
       items: [],
       total: 0,
-      budget: intent.constraints.budget ?? userProfile.budget ?? null,
+      budget: intent.constraints?.budget ?? userProfile.budget ?? null,
       withinBudget: true,
       clarifyingQuestion: intent.clarifyingQuestion,
     };
   }
 
   // 4. Search candidates per sub-need
+  intent.subNeeds = intent.subNeeds || [];
   const candidatesBySubNeed = await searchCandidates(intent, userProfile);
   console.log("[nowAgent] Parsed Intent:", JSON.stringify(intent, null, 2));
   console.log("[nowAgent] Candidates counts:", candidatesBySubNeed.map(c => `${c.subNeed}: ${c.products.length}`));
@@ -342,7 +344,7 @@ export async function buildCart(input: BuildCartInput): Promise<CartProposal> {
   proposal = await enforceAvailability(proposal);
 
   // 7. Enforce budget (F3) — deterministic swaps
-  const effectiveBudget = intent.constraints.budget ?? userProfile.budget ?? null;
+  const effectiveBudget = intent.constraints?.budget ?? userProfile.budget ?? null;
   proposal = { ...proposal, budget: effectiveBudget };
   proposal = await enforceBudget(proposal, candidatesBySubNeed);
 
