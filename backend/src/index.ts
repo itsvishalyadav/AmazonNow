@@ -14,6 +14,7 @@ import feedbackRouter from "./routes/feedback.js";
 import reorderRouter from "./routes/reorder.js";
 import proactiveRouter from "./routes/proactive.js";
 import checkoutRouter from "./routes/checkout.js";
+import historyRouter from "./routes/history.js";
 
 import { startAgentRouterProxy } from "./proxy.js";
 
@@ -68,6 +69,7 @@ app.use("/api/feedback", feedbackRouter);
 app.use("/api/reorder", reorderRouter);
 app.use("/api/proactive", proactiveRouter);
 app.use("/api/checkout", checkoutRouter);
+app.use("/api/history", historyRouter);
 
 // ── Start ─────────────────────────────────────────────────────────────────────
 // Start the built-in proxy server first

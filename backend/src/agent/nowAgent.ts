@@ -124,12 +124,18 @@ async function assembleCart(
   return CartProposalSchema.parse(raw);
 }
 
-// ── Step 4: Enforce substitutions (F7) ────────────────────────────────────────
+// ── Step 4: Enforce substitutions (F7) and Confidence filtering ────────────────────────────────────────
 // If LLM picked an out-of-stock item, swap it to the nearest in-stock match.
+// Also filter out low-confidence halllucinations/placeholders.
 async function enforceAvailability(proposal: CartProposal): Promise<CartProposal> {
   const updatedItems: CartItem[] = [];
 
   for (const item of proposal.items) {
+    // Filter out very low confidence items (e.g., less than 30%)
+    if (item.confidence < 0.3) {
+      continue;
+    }
+
     const product = getById(item.productId);
 
     if (!product || !product.inStock) {
@@ -340,7 +346,7 @@ export async function buildCart(input: BuildCartInput): Promise<CartProposal> {
   proposal = await enforceBudget(proposal, candidatesBySubNeed);
 
   // 8. Preserve clarifying question from the intent parser if it exists
-  proposal.clarifyingQuestion = proposal.clarifyingQuestion || intent.clarifyingQuestion;
+  proposal.clarifyingQuestion = proposal.clarifyingQuestion || intent.clarifyingQuestion || null;
 
   return proposal;
 }

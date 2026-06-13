@@ -36,6 +36,7 @@ function ConfidencePip({ value }: { value: number }) {
 
 export default function ItemRow({ item, onRemove }: ItemRowProps) {
   const [reasonExpanded, setReasonExpanded] = useState(false);
+  const [altExpanded, setAltExpanded] = useState(false);
 
   const total = (item.price * item.qty).toFixed(0);
 
@@ -107,6 +108,32 @@ export default function ItemRow({ item, onRemove }: ItemRowProps) {
               <span className="chip chip--sub">
                 Was: {item.substituteFor}
               </span>
+            )}
+          </div>
+        )}
+
+        {/* Alternatives row */}
+        {item.alternatives && item.alternatives.length > 0 && (
+          <div className="item-alternatives">
+            <button
+              className="item-alt-toggle"
+              onClick={() => setAltExpanded((v) => !v)}
+              aria-expanded={altExpanded}
+            >
+              <ArrowLeftRight size={12} /> {altExpanded ? 'Hide alternatives' : `Show ${item.alternatives.length} alternative${item.alternatives.length > 1 ? 's' : ''}`}
+            </button>
+            {altExpanded && (
+              <ul className="item-alt-list">
+                {item.alternatives.map(alt => (
+                  <li key={alt.id} className="item-alt-row">
+                    <div className="item-alt-top">
+                      <span className="item-alt-name">{alt.name}</span>
+                      <span className="item-alt-price">₹{alt.price}</span>
+                    </div>
+                    <p className="item-alt-reason">{alt.reason}</p>
+                  </li>
+                ))}
+              </ul>
             )}
           </div>
         )}

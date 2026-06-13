@@ -75,6 +75,7 @@ Rules:
 - Assign confidence 0.0–1.0 (use >0.85 only when it's clearly the best match).
 - If a larger pack is cheaper per unit, add a nudge (F11).
 - If an item conflicts with dietary profile, set dietaryFlag and suggest the healthier option in reason.
+- If confidence is < 0.8, populate "alternatives" with 1 or 2 other relevant in-stock products from the candidate list (include id, name, price, and why it might be better).
 - Keep total within budget if budget is set. If over, flag withinBudget: false (enforceBudget runs after you).
 - Write assumptions for any inference you made.
 - clarifyingQuestion: null unless ONE question would fundamentally change the cart.
@@ -94,7 +95,10 @@ Output ONLY this CartProposal JSON:
       "substituteFor": null_or_string,
       "nudge": null_or_string,
       "dietaryFlag": null_or_string,
-      "imageUrl": "..."
+      "imageUrl": "...",
+      "alternatives": [
+        { "id": "prod-...", "name": "...", "price": 0, "reason": "..." }
+      ]
     }
   ],
   "total": 0,
