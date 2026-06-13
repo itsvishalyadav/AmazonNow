@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+/* ── Amazon Now — Global Design System ────────────────────────────────────── */
+:root {
+  --amazon-navy:  #131A22;
+  --amazon-dark:  #1C2733;
+  --amazon-card:  #232F3E;
+  --amazon-border: #37475A;
+  --amazon-orange: #FF9900;
+  --amazon-orange-hover: #E68900;
+  --amazon-text:  #EAECEE;
+  --amazon-muted: #8D9EB5;
+  --amazon-success: #3DDC84;
+  --amazon-danger:  #FF4C4C;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  background-color: var(--amazon-navy);
+  color: var(--amazon-text);
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--amazon-navy); }
+::-webkit-scrollbar-thumb { background: var(--amazon-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--amazon-muted); }
