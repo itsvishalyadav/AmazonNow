@@ -155,6 +155,7 @@ export default function Home() {
               onCheckout={handleCheckout}
               isCheckingOut={appState === 'confirming'}
               onFeedbackRemove={handleFeedbackRemove}
+              onReply={(text) => handleIntentSubmit(text)}
             />
           </section>
         )}

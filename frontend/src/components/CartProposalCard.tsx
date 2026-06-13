@@ -13,6 +13,7 @@ interface CartProposalCardProps {
   onCheckout: (items: CartItem[]) => void;
   isCheckingOut: boolean;
   onFeedbackRemove?: (productId: string) => void;
+  onReply?: (text: string) => void;
 }
 
 export default function CartProposalCard({
@@ -20,6 +21,7 @@ export default function CartProposalCard({
   onCheckout,
   isCheckingOut,
   onFeedbackRemove,
+  onReply,
 }: CartProposalCardProps) {
   const [items, setItems] = useState<CartItem[]>(proposal.items);
   const [swapsReverted, setSwapsReverted] = useState<Set<string>>(new Set());
@@ -48,13 +50,39 @@ export default function CartProposalCard({
     );
   };
 
+  const handleReplySubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      const val = e.currentTarget.value.trim();
+      if (val && onReply) {
+        onReply(val);
+      }
+    }
+  };
+
   if (proposal.clarifyingQuestion && items.length === 0) {
     return (
       <div className="cart-card">
         <div className="cart-clarify">
           <Info size={22} className="clarify-icon" />
           <p className="clarify-text">{proposal.clarifyingQuestion}</p>
-          <p className="clarify-hint">Type your answer above to build the cart.</p>
+          <div style={{ marginTop: '16px', width: '100%', maxWidth: '400px' }}>
+            <input 
+              type="text" 
+              placeholder="Type your answer and press Enter..." 
+              onKeyDown={handleReplySubmit}
+              autoFocus
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                borderRadius: 'var(--radius-md)',
+                border: '1px solid var(--amazon-border)',
+                background: 'var(--amazon-dark)',
+                color: 'var(--amazon-text)',
+                outline: 'none',
+                fontSize: '15px'
+              }}
+            />
+          </div>
         </div>
       </div>
     );
@@ -136,9 +164,28 @@ export default function CartProposalCard({
 
       {/* ── Clarifying question (with items) ────────────────────── */}
       {proposal.clarifyingQuestion && items.length > 0 && (
-        <div className="cart-clarify-inline">
-          <Info size={14} />
-          <span>{proposal.clarifyingQuestion}</span>
+        <div className="cart-clarify-inline" style={{ flexDirection: 'column', alignItems: 'flex-start', padding: '12px 16px', gap: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+            <Info size={16} style={{ marginTop: '2px', flexShrink: 0 }} />
+            <span style={{ lineHeight: '1.4' }}>{proposal.clarifyingQuestion}</span>
+          </div>
+          <div style={{ width: '100%', marginTop: '4px' }}>
+            <input 
+              type="text" 
+              placeholder="Type your answer and press Enter..." 
+              onKeyDown={handleReplySubmit}
+              style={{
+                width: '100%',
+                padding: '8px 12px',
+                borderRadius: 'var(--radius-sm)',
+                border: '1px solid rgba(255, 184, 0, 0.4)',
+                background: 'rgba(0,0,0,0.15)',
+                color: 'var(--amazon-text)',
+                outline: 'none',
+                fontSize: '14px'
+              }}
+            />
+          </div>
         </div>
       )}
 
