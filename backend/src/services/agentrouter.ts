@@ -89,9 +89,10 @@ export async function chatJSON(system: string, user: any): Promise<any> {
   });
   console.log("[agentrouter] chatJSON received response");
 
-  const content = res.choices?.[0]?.message?.content;
+  const parsedRes = typeof res === "string" ? JSON.parse(res) : res;
+  const content = parsedRes.choices?.[0]?.message?.content;
   if (!content) {
-    console.error("[agentrouter] chatJSON: empty response. choices:", JSON.stringify(res.choices));
+    console.error("[agentrouter] chatJSON: empty response. choices:", JSON.stringify(parsedRes.choices));
     throw new Error("LLM returned an empty response");
   }
   return safeJSON(content);
