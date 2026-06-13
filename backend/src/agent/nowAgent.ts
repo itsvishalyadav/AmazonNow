@@ -259,7 +259,7 @@ export async function buildCart(input: BuildCartInput): Promise<CartProposal> {
   const { userId } = input;
 
   // 1. Load user context
-  const ctx = getUserContext(userId);
+  const ctx = await getUserContext(userId);
   const userProfile = {
     dietary: ctx.user.household.dietary ?? [],
     household: ctx.user.household.size ?? 2,

@@ -16,7 +16,7 @@ import { postIntent, postCheckout, postFeedback, postEmergency, getProactive, ge
 import type { ProactiveSuggestion } from '../lib/api';
 import type { CartProposal, CartItem } from '../lib/types';
 
-const DEMO_USER_ID = 'user-demo-001';
+const DEMO_USER_ID = 'user-demo-01';
 
 const EXAMPLE_PROMPTS = [
   'kal subah breakfast for 2, under ₹300',

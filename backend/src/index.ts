@@ -5,7 +5,7 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import { count } from "./services/catalog.js";
+import { count, initCatalog } from "./services/catalog.js";
 
 // ── Routes ────────────────────────────────────────────────────────────────────
 import intentRouter from "./routes/intent.js";
@@ -45,12 +45,17 @@ app.use("/api/checkout", checkoutRouter);
 app.use("/api/history", historyRouter);
 
 // Proxy startup removed
-app.listen(PORT, () => {
-  console.log(`\n🚀 Amazon Now backend running at http://localhost:${PORT}`);
-  console.log(`   Health: http://localhost:${PORT}/health`);
-  console.log(`   Catalog: ${count()} products loaded`);
-  console.log(`   Model: amazon.nova-lite-v1:0`);
-  console.log(`   Embed: amazon.titan-embed-text-v2:0\n`);
+initCatalog().then(() => {
+  app.listen(PORT, () => {
+    console.log(`\n🚀 Amazon Now backend running at http://localhost:${PORT}`);
+    console.log(`   Health: http://localhost:${PORT}/health`);
+    console.log(`   Catalog: ${count()} products loaded from DynamoDB`);
+    console.log(`   Model: amazon.nova-lite-v1:0`);
+    console.log(`   Embed: amazon.titan-embed-text-v2:0\n`);
+  });
+}).catch(err => {
+  console.error("Failed to initialize catalog:", err);
+  process.exit(1);
 });
 
 export default app;

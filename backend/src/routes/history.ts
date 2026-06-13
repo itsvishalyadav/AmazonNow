@@ -2,22 +2,22 @@
 // GET /api/history/:userId — Returns enriched order history for the frontend
 // ─────────────────────────────────────────────────────────────────────────────
 import { Router } from "express";
-import { getUserContext } from "../services/userContext.js";
+import { getUserContextAllOrders } from "../services/userContext.js";
 import { getById } from "../services/catalog.js";
 
 const router = Router();
 
-router.get("/:userId", (req, res) => {
+router.get("/:userId", async (req, res) => {
   const { userId } = req.params;
 
   if (!userId) {
     return res.status(400).json({ error: "userId is required" });
   }
 
-  const context = getUserContext(userId);
+  const context = await getUserContextAllOrders(userId);
   
   // Enrich orders with product details (name, image, price)
-  const enrichedOrders = context.recentOrders.map(order => {
+  const enrichedOrders = context.allOrders.map(order => {
     let total = 0;
     const enrichedItems = order.items.map(item => {
       const product = getById(item.productId);

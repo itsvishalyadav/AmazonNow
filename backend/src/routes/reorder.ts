@@ -3,18 +3,18 @@
 // Returns products likely running low based on order history.
 // ─────────────────────────────────────────────────────────────────────────────
 import { Router } from "express";
-import { getUserContext } from "../services/userContext.js";
+import { getUserContextAllOrders } from "../services/userContext.js";
 import { getById } from "../services/catalog.js";
 import type { CartItem, Product } from "../types/index.js";
 
 const router = Router();
 
-router.get("/:userId", (req, res) => {
+router.get("/:userId", async (req, res) => {
   const { userId } = req.params;
-  const ctx = getUserContext(userId);
+  const ctx = await getUserContextAllOrders(userId);
 
   // Build consumption frequency map across all orders
-  const allOrders = ctx.recentOrders; // extend to all orders if needed
+  const allOrders = ctx.allOrders;
   const freqMap = new Map<string, { count: number; lastSeen: number; avgInterval: number }>();
 
   // Load all orders (not just recent 5)
@@ -36,16 +36,21 @@ router.get("/:userId", (req, res) => {
   orderDates.forEach((dates, productId) => {
     if (dates.length < 2) return; // need at least 2 orders to estimate interval
 
-    dates.sort((a, b) => a - b);
+    // Remove duplicate days to prevent avgInterval from becoming 0 if user checked out multiple times today
+    const uniqueDays = [...new Set(dates.map(d => Math.floor(d / DAY_MS)))].sort((a, b) => a - b);
+    
+    if (uniqueDays.length < 2) return; // need at least 2 distinct days
+
     const intervals: number[] = [];
-    for (let i = 1; i < dates.length; i++) {
-      intervals.push((dates[i] - dates[i - 1]) / DAY_MS);
+    for (let i = 1; i < uniqueDays.length; i++) {
+      intervals.push(uniqueDays[i] - uniqueDays[i - 1]);
     }
     const avgInterval = intervals.reduce((s, v) => s + v, 0) / intervals.length;
-    const daysSinceLast = (nowMs - dates[dates.length - 1]) / DAY_MS;
+    const daysSinceLast = Math.floor(nowMs / DAY_MS) - uniqueDays[uniqueDays.length - 1];
 
     // If it's been as long as the average interval, it's likely running low
-    if (daysSinceLast >= avgInterval * 0.8) {
+    // Require at least a 2-day average interval to prevent spamming
+    if (avgInterval >= 2 && daysSinceLast >= avgInterval * 0.8) {
       const product = getById(productId);
       if (product && product.inStock) {
         const confidence = Math.min(0.95, daysSinceLast / avgInterval);

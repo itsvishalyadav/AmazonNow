@@ -1,17 +1,9 @@
-// backend/src/routes/checkout.ts
-// Phase 5: POST /api/checkout — mock order confirmation.
-// Body: { userId: string, items: CartItem[] }
-// ─────────────────────────────────────────────────────────────────────────────
 import { Router } from "express";
-import fs from "fs";
-import path from "path";
-import { addOrderToContext } from "../services/userContext.js";
-
-const ordersPath = path.join(__dirname, "..", "data", "seed-orders.json");
+import { putOrder } from "../services/dynamodb.js";
 
 const router = Router();
 
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   const { userId, items } = req.body;
 
   if (!userId || !items) {
@@ -20,7 +12,7 @@ router.post("/", (req, res) => {
 
   const orderId = `ord-${Date.now()}`;
 
-  // Persist to seed-orders.json (in-memory prototype)
+  // Persist to DynamoDB
   try {
     const newOrder = {
       id: orderId,
@@ -29,14 +21,9 @@ router.post("/", (req, res) => {
       createdAt: new Date().toISOString(),
     };
     
-    const existing = JSON.parse(fs.readFileSync(ordersPath, "utf-8"));
-    existing.push(newOrder);
-    fs.writeFileSync(ordersPath, JSON.stringify(existing, null, 2));
-
-    // Update in-memory cache so history tab sees it immediately
-    addOrderToContext(newOrder);
-  } catch {
-    // Non-fatal — prototype doesn't need perfect persistence
+    await putOrder(newOrder);
+  } catch (err) {
+    console.error("[checkout] Failed to persist order:", err);
   }
 
   const total = items.reduce((s: number, i: any) => s + (i.price ?? 0) * (i.qty ?? 1), 0);

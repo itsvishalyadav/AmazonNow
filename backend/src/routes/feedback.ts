@@ -7,14 +7,14 @@ import { updateLearnedPrefs } from "../services/userContext.js";
 
 const router = Router();
 
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   const { userId, removed, added } = req.body;
 
   if (!userId) {
     return res.status(400).json({ error: "userId is required" });
   }
 
-  updateLearnedPrefs(userId, {
+  await updateLearnedPrefs(userId, {
     avoided: removed,
     preferred: added,
   });
