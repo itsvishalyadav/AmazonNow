@@ -42,6 +42,7 @@ export function buildParseIntentUser(
     household: number;
     budget?: number;
     recentProductNames: string[];
+    learnedPrefs?: { avoid: string[]; prefer: string[] };
   }
 ): string {
   return `User profile:
@@ -49,6 +50,9 @@ export function buildParseIntentUser(
 - Dietary: ${userProfile.dietary.length > 0 ? userProfile.dietary.join(", ") : "no restrictions"}
 - Default budget: ${userProfile.budget ? `Rs${userProfile.budget}` : "not set"}
 - Recent items (for context): ${userProfile.recentProductNames.slice(0, 5).join(", ") || "none"}
+- Learned preferences (from past edits):
+  - AVOID: ${userProfile.learnedPrefs?.avoid.join(", ") || "none"}
+  - PREFER: ${userProfile.learnedPrefs?.prefer.join(", ") || "none"}
 
 User's request:
 "${userInput}"
@@ -71,6 +75,8 @@ Rules:
 - Be decisive: pick ONE per sub-need. Do not list alternatives in the items array.
 - Respect dietary profile: never include non-vegetarian items for vegetarian users without flagging.
 - If a candidate is out of stock (inStock: false), set substituteFor to its name and pick the next best in-stock option.
+- If the user has AVOID preferences, DO NOT include those products. If you must, set a low confidence and explain why.
+- If the user has PREFER preferences, prioritise those products when they fit the sub-need.
 - For each item write a one-line reason (plain, helpful, trust-building).
 - Assign confidence 0.0–1.0 (use >0.85 only when it's clearly the best match).
 - If a larger pack is cheaper per unit, add a nudge (F11).
@@ -127,6 +133,7 @@ export function buildAssembleCartUser(
     household: number;
     budget?: number;
     recentProductNames: string[];
+    learnedPrefs?: { avoid: string[]; prefer: string[] };
   }
 ): string {
   return `Intent: ${intent.summary}
@@ -134,6 +141,7 @@ Budget: ${intent.constraints.budget ? `Rs${intent.constraints.budget}` : userPro
 Servings: ${intent.constraints.servings ?? userProfile.household}
 Dietary: ${[...(intent.constraints.dietary ?? []), ...userProfile.dietary].filter(Boolean).join(", ") || "none"}
 Past items (prefer if suitable): ${userProfile.recentProductNames.slice(0, 5).join(", ") || "none"}
+Learned prefs — AVOID: ${userProfile.learnedPrefs?.avoid.join(", ") || "none"} | PREFER: ${userProfile.learnedPrefs?.prefer.join(", ") || "none"}
 
 Candidate products per sub-need:
 ${candidatesBySubNeed

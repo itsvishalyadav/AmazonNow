@@ -51,6 +51,10 @@ export function postEmergency(req: EmergencyRequest): Promise<CartProposal> {
   return apiPost<CartProposal>('/api/emergency', req);
 }
 
+export function getEmergencyScenarios(): Promise<{ scenarios: import('./types').EmergencyScenario[] }> {
+  return apiGet<{ scenarios: import('./types').EmergencyScenario[] }>('/api/emergency/scenarios');
+}
+
 // ── POST /api/checkout ───────────────────────────────────────────────────────
 export interface CheckoutRequest {
   userId: string;

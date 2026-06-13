@@ -8,10 +8,12 @@ import IntentBar from '../components/IntentBar';
 import CartProposalCard from '../components/CartProposalCard';
 import LoadingState from '../components/LoadingState';
 import OrderConfirm from '../components/OrderConfirm';
-import { postIntent, postCheckout, postFeedback } from '../lib/api';
+import EmergencyChips from '../components/EmergencyChips';
+import FeedbackToast from '../components/FeedbackToast';
+import { postIntent, postCheckout, postFeedback, postEmergency } from '../lib/api';
 import type { CartProposal, CartItem } from '../lib/types';
 
-const DEMO_USER_ID = 'user-demo-001';
+const DEMO_USER_ID = 'user-demo-01';
 
 const EXAMPLE_PROMPTS = [
   'kal subah breakfast for 2, under ₹300',
@@ -31,6 +33,8 @@ export default function Home() {
   const [orderTotal, setOrderTotal] = useState(0);
   const [orderItemCount, setOrderItemCount] = useState(0);
   const [hasImage, setHasImage] = useState(false);
+  const [activeEmergency, setActiveEmergency] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'avoid' | 'prefer' } | null>(null);
 
   // ── Submit intent ──────────────────────────────────────────────────────────
   const handleIntentSubmit = async (text: string, imageBase64?: string) => {
@@ -76,12 +80,41 @@ export default function Home() {
     }
   };
 
-  // ── Remove feedback ────────────────────────────────────────────────────────
-  const handleFeedbackRemove = async (productId: string) => {
+  // ── Remove/Add feedback ────────────────────────────────────────────────────
+  const handleFeedbackRemove = async (productId: string, productName: string) => {
     try {
       await postFeedback({ userId: DEMO_USER_ID, removed: [productId] });
+      setToast({ message: `✓ Got it — we'll avoid ${productName} in future carts`, type: 'avoid' });
     } catch {
       // Non-critical — best-effort
+    }
+  };
+
+  const handleFeedbackAdd = async (productName: string) => {
+    try {
+      await postFeedback({ userId: DEMO_USER_ID, added: [productName] });
+      setToast({ message: `✓ Noted — we'll prioritise ${productName} next time`, type: 'prefer' });
+    } catch {
+      // Non-critical
+    }
+  };
+
+  // ── Emergency ─────────────────────────────────────────────────────────────
+  const handleEmergency = async (scenario: string) => {
+    setError(null);
+    setProposal(null);
+    setActiveEmergency(scenario);
+    setAppState('loading');
+
+    try {
+      const result = await postEmergency({ userId: DEMO_USER_ID, scenario });
+      setProposal(result);
+      setAppState('result');
+      setActiveEmergency(null);
+    } catch (err: any) {
+      setError(err.message ?? 'Emergency request failed.');
+      setAppState('idle');
+      setActiveEmergency(null);
     }
   };
 
@@ -136,6 +169,15 @@ export default function Home() {
           )}
         </section>
 
+        {/* ── Emergency Chips ────────────────────────────────────── */}
+        {appState === 'idle' && (
+          <EmergencyChips
+            onSelect={handleEmergency}
+            isLoading={activeEmergency !== null}
+            activeScenario={activeEmergency}
+          />
+        )}
+
         {/* ── Error ──────────────────────────────────────────────── */}
         {error && (
           <div className="error-banner" role="alert">
@@ -162,6 +204,7 @@ export default function Home() {
               onCheckout={handleCheckout}
               isCheckingOut={appState === 'confirming'}
               onFeedbackRemove={handleFeedbackRemove}
+              onFeedbackAdd={handleFeedbackAdd}
               onReply={(text) => handleIntentSubmit(text)}
             />
           </section>
@@ -187,6 +230,15 @@ export default function Home() {
               Every item comes with a reason — no blind picks
             </div>
           </section>
+        )}
+
+        {/* ── Toast ──────────────────────────────────────────────── */}
+        {toast && (
+          <FeedbackToast
+            message={toast.message}
+            type={toast.type}
+            onDismiss={() => setToast(null)}
+          />
         )}
       </main>
     </div>

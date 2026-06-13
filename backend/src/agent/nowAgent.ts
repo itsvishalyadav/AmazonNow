@@ -265,6 +265,7 @@ export async function buildCart(input: BuildCartInput): Promise<CartProposal> {
     household: ctx.user.household.size ?? 2,
     budget: ctx.user.defaultBudget,
     recentProductNames: ctx.recentProducts.map((p) => p.name),
+    learnedPrefs: ctx.learnedPrefs,
   };
 
   // 2. Parse intent (text or image)

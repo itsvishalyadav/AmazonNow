@@ -12,7 +12,8 @@ interface CartProposalCardProps {
   proposal: CartProposal;
   onCheckout: (items: CartItem[]) => void;
   isCheckingOut: boolean;
-  onFeedbackRemove?: (productId: string) => void;
+  onFeedbackRemove?: (productId: string, productName: string) => void;
+  onFeedbackAdd?: (productName: string) => void;
   onReply?: (text: string) => void;
 }
 
@@ -21,10 +22,13 @@ export default function CartProposalCard({
   onCheckout,
   isCheckingOut,
   onFeedbackRemove,
+  onFeedbackAdd,
   onReply,
 }: CartProposalCardProps) {
   const [items, setItems] = useState<CartItem[]>(proposal.items);
   const [swapsReverted, setSwapsReverted] = useState<Set<string>>(new Set());
+  const [isAddingItem, setIsAddingItem] = useState(false);
+  const [addItemText, setAddItemText] = useState('');
 
   const total = items.reduce((s, i) => s + i.price * i.qty, 0);
   const budget = proposal.budget;
@@ -32,9 +36,23 @@ export default function CartProposalCard({
   const budgetPct = budget ? Math.min((total / budget) * 100, 100) : null;
 
   // Remove an item (fire feedback + remove locally)
-  const handleRemove = (productId: string) => {
+  const handleRemove = (productId: string, productName: string) => {
     setItems((prev) => prev.filter((i) => i.productId !== productId));
-    onFeedbackRemove?.(productId);
+    onFeedbackRemove?.(productId, productName);
+  };
+
+  const handleAddItemSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      const val = e.currentTarget.value.trim();
+      if (val && onFeedbackAdd) {
+        onFeedbackAdd(val);
+        setAddItemText('');
+        setIsAddingItem(false);
+      }
+    } else if (e.key === 'Escape') {
+      setIsAddingItem(false);
+      setAddItemText('');
+    }
   };
 
   // Revert a swap — put the original item back
@@ -158,8 +176,28 @@ export default function CartProposalCard({
       {/* ── Item list ───────────────────────────────────────────── */}
       <div className="cart-items">
         {items.map((item) => (
-          <ItemRow key={item.productId} item={item} onRemove={handleRemove} />
+          <ItemRow key={item.productId} item={item} onRemove={(id) => handleRemove(id, item.name)} />
         ))}
+      </div>
+
+      {/* ── Add Item (F9) ────────────────────────────────────────── */}
+      <div className="cart-add-item-row">
+        {isAddingItem ? (
+          <input
+            type="text"
+            className="add-item-input"
+            autoFocus
+            placeholder="What should we prioritise next time? (Enter to save)"
+            value={addItemText}
+            onChange={(e) => setAddItemText(e.target.value)}
+            onKeyDown={handleAddItemSubmit}
+            onBlur={() => { setIsAddingItem(false); setAddItemText(''); }}
+          />
+        ) : (
+          <button className="add-item-btn" onClick={() => setIsAddingItem(true)}>
+            + Add a missing item
+          </button>
+        )}
       </div>
 
       {/* ── Clarifying question (with items) ────────────────────── */}

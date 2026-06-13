@@ -37,8 +37,7 @@ function users(): User[] {
 }
 
 function orders(): Order[] {
-  if (!_orders) _orders = loadOrders();
-  return _orders;
+  return loadOrders();
 }
 
 // ── Public: getUserContext ────────────────────────────────────────────────────
@@ -94,21 +93,43 @@ export function updateLearnedPrefs(
   if (!user) return;
 
   if (!user.learnedPrefs) user.learnedPrefs = { avoid: [], prefer: [] };
+  const { avoid, prefer } = user.learnedPrefs;
+
+  const getLabel = (idOrName: string) => {
+    const product = getProduct(idOrName);
+    return product ? product.name : idOrName;
+  };
 
   if (update.avoided) {
     update.avoided.forEach((id) => {
-      if (!user.learnedPrefs!.avoid.includes(id)) user.learnedPrefs!.avoid.push(id);
+      const label = getLabel(id);
+      // Remove from prefer if it's there
+      const prefIdx = prefer.indexOf(label);
+      if (prefIdx > -1) prefer.splice(prefIdx, 1);
+      
+      // Add to avoid
+      if (!avoid.includes(label)) avoid.push(label);
     });
   }
   if (update.preferred) {
     update.preferred.forEach((id) => {
-      if (!user.learnedPrefs!.prefer.includes(id)) user.learnedPrefs!.prefer.push(id);
+      const label = getLabel(id);
+      // Remove from avoid if it's there
+      const avoidIdx = avoid.indexOf(label);
+      if (avoidIdx > -1) avoid.splice(avoidIdx, 1);
+      
+      // Add to prefer
+      if (!prefer.includes(label)) prefer.push(label);
     });
   }
 
+  // Cap at 20 items each (keep most recent)
+  if (avoid.length > 20) user.learnedPrefs.avoid = avoid.slice(-20);
+  if (prefer.length > 20) user.learnedPrefs.prefer = prefer.slice(-20);
+
   // Persist back to seed-user.json (single-user prototype)
   try {
-    fs.writeFileSync(path.join(dataDir, "seed-user.json"), JSON.stringify(user, null, 2));
+    fs.writeFileSync(path.join(dataDir, "seed-user.json"), JSON.stringify(userList.length === 1 ? userList[0] : userList, null, 2));
   } catch (err) {
     console.error("[userContext] Failed to persist learnedPrefs:", err);
   }

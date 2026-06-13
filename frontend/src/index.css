@@ -1487,3 +1487,168 @@ html, body, #root {
   color: var(--amazon-navy);
 }
 .primary-btn:hover { background: var(--amazon-orange-hover); }
+
+/* ── Phase 10: Emergency Chips ───────────────────────────────────────────────── */
+.emergency-section {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto 24px;
+  animation: fadeUp 0.3s ease;
+}
+
+.emergency-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 16px;
+  margin-bottom: 12px;
+  color: var(--amazon-orange);
+}
+
+.emergency-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.emergency-chips-scroll {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-bottom: 8px; /* For scrollbar space */
+}
+.emergency-chips-scroll::-webkit-scrollbar { display: none; }
+
+.emergency-chips {
+  display: flex;
+  gap: 12px;
+  padding: 0 16px;
+  width: max-content;
+}
+
+.emergency-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--amazon-card);
+  border: 1px solid var(--amazon-border);
+  padding: 10px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all var(--transition);
+  color: var(--amazon-text);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.emergency-chip:hover:not(:disabled) {
+  border-color: var(--amazon-orange);
+  background: var(--amazon-orange-dim);
+}
+
+.emergency-chip.active {
+  background: var(--amazon-orange);
+  border-color: var(--amazon-orange);
+  color: var(--amazon-navy);
+}
+
+.emergency-chip.loading {
+  opacity: 0.8;
+  cursor: wait;
+}
+
+.emergency-chip-emoji {
+  font-size: 16px;
+}
+
+.emergency-spinner {
+  margin-left: 4px;
+  color: var(--amazon-navy);
+}
+
+/* ── Phase 10: Feedback Toast ────────────────────────────────────────────────── */
+.feedback-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(19, 26, 34, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--amazon-border-light);
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  z-index: 100;
+  animation: slideUpToast 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  min-width: 280px;
+}
+
+.feedback-toast--avoid {
+  border-left: 3px solid var(--amazon-warn);
+}
+
+.feedback-toast--prefer {
+  border-left: 3px solid var(--amazon-success);
+}
+
+.feedback-icon--avoid { color: var(--amazon-warn); }
+.feedback-icon--prefer { color: var(--amazon-success); }
+
+.feedback-message {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--amazon-text);
+}
+
+@keyframes slideUpToast {
+  0% { transform: translate(-50%, 20px); opacity: 0; }
+  100% { transform: translate(-50%, 0); opacity: 1; }
+}
+
+/* ── Phase 10: Add Item ──────────────────────────────────────────────────────── */
+.cart-add-item-row {
+  padding: 12px 16px;
+  border-top: 1px solid var(--amazon-border-light);
+  display: flex;
+  justify-content: center;
+}
+
+.add-item-btn {
+  background: transparent;
+  border: 1px dashed var(--amazon-border);
+  color: var(--amazon-muted);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition);
+  width: 100%;
+}
+
+.add-item-btn:hover {
+  border-color: var(--amazon-orange);
+  color: var(--amazon-orange);
+  background: var(--amazon-orange-dim);
+}
+
+.add-item-input {
+  width: 100%;
+  background: var(--amazon-dark);
+  border: 1px solid var(--amazon-border-light);
+  color: var(--amazon-text);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.add-item-input:focus {
+  border-color: var(--amazon-orange);
+}

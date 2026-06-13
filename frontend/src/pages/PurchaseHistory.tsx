@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Package, ChevronRight, Clock, Repeat, ChevronDown, ChevronUp } from 'lucide-react';
 import { getHistory, postCheckout, type HistoryResponse } from '../lib/api';
 
-const DEMO_USER_ID = 'user-demo-001';
+const DEMO_USER_ID = 'user-demo-01';
 
 export default function PurchaseHistory() {
   const [orders, setOrders] = useState<HistoryResponse['orders']>([]);

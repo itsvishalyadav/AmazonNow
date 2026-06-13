@@ -16,6 +16,24 @@ const SCENARIOS: Record<string, string> = {
   power_cut: "Power cut expected — need candles or torches, water bottles, ready-to-eat food that doesn't need cooking, and cold drinks",
 };
 
+const SCENARIO_META: Record<string, { label: string; emoji: string; description: string }> = {
+  sick:           { label: "I'm Sick",       emoji: "🤒", description: "ORS, medicines, light food" },
+  guests:         { label: "Guests Coming",  emoji: "🎉", description: "Snacks, drinks, namkeen" },
+  out_of_staples: { label: "Out of Staples", emoji: "🏠", description: "Milk, bread, eggs, dal" },
+  baby_emergency: { label: "Baby Emergency", emoji: "👶", description: "Diapers, wipes, formula" },
+  power_cut:      { label: "Power Cut",      emoji: "🔦", description: "Candles, water, ready-to-eat" },
+};
+
+router.get("/scenarios", (_req, res) => {
+  const scenarios = Object.entries(SCENARIOS).map(([id]) => ({
+    id,
+    label: SCENARIO_META[id].label,
+    emoji: SCENARIO_META[id].emoji,
+    description: SCENARIO_META[id].description,
+  }));
+  return res.json({ scenarios });
+});
+
 router.post("/", async (req, res) => {
   const { userId, scenario } = req.body;
 
