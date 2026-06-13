@@ -7,7 +7,8 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "seed": "tsx scripts/generate-catalog.ts"
+    "seed": "tsx scripts/generate-catalog.ts",
+    "seed:local": "tsx scripts/generate-catalog-local.ts"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.600.0",
