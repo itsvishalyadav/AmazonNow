@@ -55,6 +55,7 @@ export const CartItemSchema = z.object({
   name: z.string(),
   qty: z.number().int().positive(),
   price: z.number().positive(),
+  category: z.string().optional(),
   reason: z.string(),           // why it's here (trust / explainability layer)
   confidence: z.number().min(0).max(1),
   substituteFor: z.string().nullable().optional(),   // F7: out-of-stock original name
@@ -79,6 +80,14 @@ export const SwapSchema = z.object({
 });
 export type Swap = z.infer<typeof SwapSchema>;
 
+// ── Occasion Theme ────────────────────────────────────────────────────────────
+export const OccasionThemeSchema = z.object({
+  name: z.string(),              // e.g. "Diwali Party" or "Birthday Bash"
+  emoji: z.string(),             // e.g. "🎉"
+  colorGradient: z.string(),     // Tailwind gradient e.g. "from-orange-500 to-red-500"
+});
+export type OccasionTheme = z.infer<typeof OccasionThemeSchema>;
+
 // ── Cart Proposal (Output of Agent) ───────────────────────────────────────────
 export const CartProposalSchema = z.object({
   intentSummary: z.string(),
@@ -88,6 +97,7 @@ export const CartProposalSchema = z.object({
   budget: z.number().nullable(),
   withinBudget: z.boolean(),
   rebalance: z.array(SwapSchema).nullable().optional(),
+  occasion: OccasionThemeSchema.optional(),
   clarifyingQuestion: z.string().nullable(),
 });
 export type CartProposal = z.infer<typeof CartProposalSchema>;

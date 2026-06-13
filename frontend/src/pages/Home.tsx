@@ -177,9 +177,30 @@ export default function Home() {
       <main className="home-main">
         {/* ── Intent bar ─────────────────────────────────────────── */}
         <section className="intent-section">
-          {/* Phase 11: Proactive Banner (Anywhere above intent bar) */}
+          <IntentBar
+            onSubmit={handleIntentSubmit}
+            isLoading={appState === 'loading'}
+          />
+
+          {/* Example prompts (idle) */}
+          {appState === 'idle' && (
+            <div className="example-prompts mt-2">
+              <span className="example-prompts-label">Try:</span>
+              {EXAMPLE_PROMPTS.map((p) => (
+                <button
+                  key={p}
+                  className="example-chip"
+                  onClick={() => handleIntentSubmit(p)}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Phase 11: Proactive Banner (Suggested Box) */}
           {appState === 'idle' && proactiveSuggestion && (
-            <div className="mb-4">
+            <div className="mt-6 mb-2">
               <ProactiveBanner 
                 suggestion={proactiveSuggestion} 
                 onReview={() => {
@@ -191,14 +212,9 @@ export default function Home() {
             </div>
           )}
 
-          <IntentBar
-            onSubmit={handleIntentSubmit}
-            isLoading={appState === 'loading'}
-          />
-
-          {/* Phase 11: Reorder Strip */}
+          {/* Phase 11: Reorder Strip (Running Low) */}
           {appState === 'idle' && reorderCandidates.length > 0 && (
-            <div className="mt-2 mb-4">
+            <div className="mt-4 mb-2">
               <ReorderStrip 
                 candidates={reorderCandidates}
                 onAppendToSearch={(productName) => {
@@ -212,22 +228,6 @@ export default function Home() {
                   }
                 }}
               />
-            </div>
-          )}
-
-          {/* Example prompts (idle) */}
-          {appState === 'idle' && (
-            <div className="example-prompts">
-              <span className="example-prompts-label">Try:</span>
-              {EXAMPLE_PROMPTS.map((p) => (
-                <button
-                  key={p}
-                  className="example-chip"
-                  onClick={() => handleIntentSubmit(p)}
-                >
-                  {p}
-                </button>
-              ))}
             </div>
           )}
         </section>

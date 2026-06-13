@@ -18,11 +18,13 @@ export default function Navbar() {
     <header className="navbar-container">
       <div className="navbar-inner relative">
         {/* Left: Brand */}
-        <div className="navbar-brand">
-          <div className="app-logo-mark">a</div>
-          <div className="app-logo-text">
-            <span className="logo-amazon">amazon</span>
-            <span className="logo-now"> now</span>
+        <div className="flex items-center gap-1.5 cursor-pointer transition-opacity hover:opacity-80">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF9900" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="mb-0.5">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="#FF9900" fillOpacity="0.2" />
+          </svg>
+          <div className="flex items-baseline tracking-tight leading-none">
+            <span className="text-[22px] font-extrabold text-white">amazon</span>
+            <span className="text-[22px] font-medium text-[#FF9900] ml-1">now</span>
           </div>
         </div>
 
@@ -92,7 +94,7 @@ export default function Navbar() {
                     V
                   </div>
                   <div>
-                    <p className="text-[15px] font-bold text-white tracking-wide">Vishal Kumar</p>
+                    <p className="text-[15px] font-bold text-white tracking-wide">Vishal Yadav</p>
                     <p className="text-[12px] text-gray-400 mt-0.5">vishal@example.com</p>
                   </div>
                 </div>

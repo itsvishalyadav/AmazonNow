@@ -29,11 +29,26 @@ export default function CartProposalCard({
   const [swapsReverted, setSwapsReverted] = useState<Set<string>>(new Set());
   const [isAddingItem, setIsAddingItem] = useState(false);
   const [addItemText, setAddItemText] = useState('');
+  const [deliveryMode, setDeliveryMode] = useState<'flash'|'saver'>('flash');
 
-  const total = items.reduce((s, i) => s + i.price * i.qty, 0);
+  const displayedItems = deliveryMode === 'flash' ? items : items.map(i => ({
+    ...i,
+    name: i.name.toLowerCase().includes('amazon basics') ? i.name : `Amazon Basics ${i.name.replace(/^(Premium|Fresh|Organic|Amul|Britannia|Dolo)\s+/i, '')}`,
+    price: Math.max(1, Math.floor(i.price * 0.7)), // 30% discount
+    reason: 'Cheaper Amazon Basics alternative'
+  }));
+
+  const total = displayedItems.reduce((s, i) => s + i.price * i.qty, 0);
   const budget = proposal.budget;
   const withinBudget = budget === null || total <= budget;
   const budgetPct = budget ? Math.min((total / budget) * 100, 100) : null;
+
+  const groupedItems = displayedItems.reduce((acc, item) => {
+    const cat = item.category || 'Essentials';
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(item);
+    return acc;
+  }, {} as Record<string, CartItem[]>);
 
   // Remove an item (fire feedback + remove locally)
   const handleRemove = (productId: string, productName: string) => {
@@ -111,17 +126,54 @@ export default function CartProposalCard({
   return (
     <div className="cart-card">
       {/* ── Header ─────────────────────────────────────────────── */}
-      <div className="cart-header">
-        <div className="cart-header-left">
-          <ShoppingCart size={20} className="cart-icon" />
-          <div>
-            <h2 className="cart-title">Your Cart</h2>
-            <p className="cart-intent">{proposal.intentSummary}</p>
+      {proposal.occasion ? (
+        <div className={`w-full p-6 text-white rounded-t-[14px] bg-gradient-to-r ${proposal.occasion.colorGradient} shadow-inner`}>
+          <div className="flex justify-between items-start">
+            <div>
+              <span className="text-4xl block mb-2 drop-shadow-md">{proposal.occasion.emoji}</span>
+              <h2 className="text-[26px] font-black tracking-tight drop-shadow-md mb-1">{proposal.occasion.name}</h2>
+              <p className="text-[14px] font-semibold opacity-90 drop-shadow-sm max-w-[80%]">{proposal.intentSummary}</p>
+            </div>
+            <div className="bg-black/20 backdrop-blur-md px-3 py-1.5 rounded-lg text-sm font-bold shadow-sm">
+              {displayedItems.length} item{displayedItems.length !== 1 ? 's' : ''}
+            </div>
           </div>
         </div>
-        <div className="cart-item-count">
-          {items.length} item{items.length !== 1 ? 's' : ''}
+      ) : (
+        <div className="cart-header">
+          <div className="cart-header-left">
+            <ShoppingCart size={20} className="cart-icon" />
+            <div>
+              <h2 className="cart-title">Your Cart</h2>
+              <p className="cart-intent">{proposal.intentSummary}</p>
+            </div>
+          </div>
+          <div className="cart-item-count">
+            {displayedItems.length} item{displayedItems.length !== 1 ? 's' : ''}
+          </div>
         </div>
+      )}
+
+      {/* ── Smart Slider (Speed vs Price) ───────────────────────── */}
+      <div className="mx-5 mb-4 mt-2 p-1 bg-black/40 backdrop-blur-md rounded-xl border border-white/10 flex relative overflow-hidden shrink-0">
+        <div 
+          className="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-gradient-to-r from-amazon-orange to-yellow-500 rounded-lg transition-transform duration-300 shadow-lg"
+          style={{ transform: deliveryMode === 'flash' ? 'translateX(4px)' : 'translateX(calc(100% + 4px))' }}
+        />
+        <button 
+          className={`flex-1 flex flex-col items-center justify-center py-2.5 z-10 transition-colors ${deliveryMode === 'flash' ? 'text-black' : 'text-gray-400 hover:text-white'}`}
+          onClick={() => setDeliveryMode('flash')}
+        >
+          <span className="font-extrabold text-[14px]">⚡ Flash (10 mins)</span>
+          <span className="text-[11px] font-bold opacity-80">Standard Price</span>
+        </button>
+        <button 
+          className={`flex-1 flex flex-col items-center justify-center py-2.5 z-10 transition-colors ${deliveryMode === 'saver' ? 'text-black' : 'text-gray-400 hover:text-white'}`}
+          onClick={() => setDeliveryMode('saver')}
+        >
+          <span className="font-extrabold text-[14px]">📦 Saver (45 mins)</span>
+          <span className="text-[11px] font-bold opacity-80">Amazon Basics (-30%)</span>
+        </button>
       </div>
 
       {/* ── Budget bar ──────────────────────────────────────────── */}
@@ -175,9 +227,24 @@ export default function CartProposalCard({
 
       {/* ── Item list ───────────────────────────────────────────── */}
       <div className="cart-items">
-        {items.map((item) => (
-          <ItemRow key={item.productId} item={item} onRemove={(id) => handleRemove(id, item.name)} />
-        ))}
+        {proposal.occasion ? (
+          Object.entries(groupedItems).map(([category, catItems]) => (
+            <div key={category} className="mb-4 bg-white/5 border border-white/5 rounded-xl overflow-hidden shadow-sm">
+              <h3 className="text-[13px] font-black text-white/70 uppercase tracking-[0.1em] px-4 py-3 bg-black/20 border-b border-white/5">
+                {category}
+              </h3>
+              <div className="p-2">
+                {catItems.map((item) => (
+                  <ItemRow key={item.productId} item={item} onRemove={(id) => handleRemove(id, item.name)} />
+                ))}
+              </div>
+            </div>
+          ))
+        ) : (
+          displayedItems.map((item) => (
+            <ItemRow key={item.productId} item={item} onRemove={(id) => handleRemove(id, item.name)} />
+          ))
+        )}
       </div>
 
       {/* ── Add Item (F9) ────────────────────────────────────────── */}
@@ -236,11 +303,11 @@ export default function CartProposalCard({
         <button
           id="buy-now-btn"
           className="buy-now-btn"
-          onClick={() => onCheckout(items)}
-          disabled={isCheckingOut || items.length === 0}
+          onClick={() => onCheckout(displayedItems)}
+          disabled={isCheckingOut || displayedItems.length === 0}
           aria-label="Place order"
         >
-          {isCheckingOut ? 'Placing order…' : '⚡ Buy now'}
+          {isCheckingOut ? 'Placing order…' : `⚡ Buy now (${deliveryMode === 'flash' ? '10 mins' : '45 mins'})`}
         </button>
       </div>
     </div>

@@ -33,7 +33,7 @@ export default function ReorderStrip({ candidates, onAppendToSearch }: ReorderSt
           return (
             <div 
               key={`${item.productId}-${idx}`}
-              className="flex-shrink-0 w-64 bg-gradient-to-b from-[#1C2733] to-[#121A22] border border-white/10 rounded-[20px] overflow-hidden shadow-xl snap-start flex flex-col group transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:border-white/20 relative isolate"
+              className="flex-shrink-0 w-64 bg-slate-900/40 backdrop-blur-2xl border border-white/5 rounded-[20px] overflow-hidden shadow-2xl snap-start flex flex-col group transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_rgba(0,0,0,0.6)] hover:border-white/10 relative isolate"
             >
               {/* Subtle hover glow */}
               <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none -z-10" />
@@ -51,7 +51,7 @@ export default function ReorderStrip({ candidates, onAppendToSearch }: ReorderSt
                 
                 {/* Premium Confidence badge */}
                 {item.confidence && (
-                  <div className="absolute top-3 left-3 bg-gradient-to-r from-emerald-500 to-emerald-400 text-black text-[10px] font-extrabold px-2.5 py-1 rounded-full shadow-[0_2px_8px_rgba(16,185,129,0.4)] backdrop-blur-md flex items-center gap-1">
+                  <div className="absolute top-3 left-3 bg-gradient-to-r from-emerald-500/90 to-emerald-400/90 text-black text-[10px] font-extrabold px-2.5 py-1 rounded-full shadow-[0_2px_10px_rgba(16,185,129,0.3)] backdrop-blur-md flex items-center gap-1 border border-emerald-300/30">
                     <span className="w-1.5 h-1.5 bg-black rounded-full animate-pulse" />
                     {Math.round(item.confidence * 100)}% Match
                   </div>

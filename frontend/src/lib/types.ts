@@ -8,6 +8,7 @@ export interface CartItem {
   name: string;
   qty: number;
   price: number;
+  category?: string;
   reason: string;               // trust layer — why this item
   confidence: number;           // 0–1
   substituteFor?: string;       // F7: original name if swapped
@@ -29,6 +30,12 @@ export interface Swap {
   reason: string;
 }
 
+export interface OccasionTheme {
+  name: string;
+  emoji: string;
+  colorGradient: string;
+}
+
 export interface CartProposal {
   intentSummary: string;
   assumptions: string[];
@@ -37,6 +44,7 @@ export interface CartProposal {
   budget: number | null;
   withinBudget: boolean;
   rebalance?: Swap[];           // F3: shown when budget exceeded then fixed
+  occasion?: OccasionTheme;
   clarifyingQuestion: string | null;
 }
 

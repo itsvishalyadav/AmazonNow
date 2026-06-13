@@ -41,7 +41,7 @@ export default function ProactiveBanner({ suggestion, onReview, onDismiss }: Pro
           </button>
           <button 
             onClick={onReview}
-            className="flex-1 sm:flex-none relative overflow-hidden flex items-center justify-center gap-2 bg-white text-black hover:bg-gray-100 px-6 py-3 rounded-xl font-bold text-[14px] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-[0_4px_20px_rgba(255,255,255,0.15)] group/btn"
+            className="flex-1 sm:flex-none flex-shrink-0 whitespace-nowrap relative overflow-hidden flex items-center justify-center gap-2 bg-white text-black hover:bg-gray-100 px-6 py-3 rounded-xl font-bold text-[14px] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-[0_4px_20px_rgba(255,255,255,0.15)] group/btn"
           >
             <span className="relative z-10 flex items-center gap-1">
               Review Cart <ChevronRight size={18} className="transition-transform group-hover/btn:translate-x-1" />
