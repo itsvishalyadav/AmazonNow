@@ -164,7 +164,7 @@ Steps:
 
 ---
 
-## Phase 8 — Recipe / occasion-to-cart (F4)
+## Phase 8 — Recipe / occasion-to-cart (F4) - [x] DONE
 **Goal:** one need → many sub-needs, scaled to servings.
 
 Steps:
