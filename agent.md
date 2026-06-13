@@ -1,328 +1,244 @@
 # agent.md — Amazon Now
 
-> Context file for AI coding agents (Kiro / Claude). Read this fully before generating code, specs, or tasks. This is the single source of truth for what we are building, why, and how. Keep it updated as the project evolves.
+> Context file for the AI coding agent (Kiro / Claude). Read fully before generating code, specs, or tasks. Single source of truth. Keep it concise and current.
 
 ---
 
-## 1. Project Identity
-
-- **Project name:** Amazon Now
-- **Tagline:** *Delivery is fast. Now shopping is too.*
-- **Hackathon:** HackOn with Amazon — Season 6.0, 48hr Hackathon Challenge
-- **Theme:** Amazon Now — Reimagining Urgent Shopping (Problem Statement 2)
-- **Internal codename / repo:** `amazon-now`
-- **Region:** `ap-south-1` (Mumbai) — Indian quick-commerce context
-- **Deliverables expected by the hackathon:** PRD + demo video. A working prototype (any fidelity) that proves the idea.
+## 1. Identity
+- **Project:** Amazon Now — *Delivery is fast. Now shopping is too.*
+- **Hackathon:** HackOn with Amazon, Season 6.0 — 48hr. Theme: **Amazon Now (PS2, Reimagining Urgent Shopping)**.
+- **Repo:** `amazon-now` · **Region:** `ap-south-1` · **Deliverables:** PRD + demo video + working prototype.
+- **LLM:** **AgentRouter API** (OpenAI-compatible gateway, `https://agentrouter.org/v1`). **Deployed on AWS.**
 
 ---
 
-## 2. Problem Statement (analysed)
+## 2. Problem (condensed)
+Quick-commerce customers arrive with an **immediate need** and want to finish in **seconds**, but today's apps still force *search → compare → build cart → decide*. The friction lives between **need** and **done**. Delivery is solved; shopping is not.
 
-### 2.1 The raw problem
-Quick-commerce customers are fundamentally different from traditional e-commerce customers. They arrive with an **immediate need** and expect to finish their purchase in **seconds**. But today's shopping still relies on **search, browse, compare, and manual decision-making**.
-
-> Core challenge: *How might we help customers discover, decide, and purchase what they need in the fastest and most effortless way possible?*
-
-### 2.2 Customer reality (the gap)
-| Customer does today | Customer actually wants |
-|---|---|
-| Searches | Solve the need |
-| Compares options | Minimal effort |
-| Builds a cart manually | Done in seconds |
-| Spends minutes deciding | — |
-
-The friction is **between the need and the done**. Delivery (logistics) is already solved. The unsolved part is the *cognitive load of shopping*: turning a vague human need into the right set of products and a completed order.
-
-### 2.3 The three opportunity areas (from the brief)
-We design directly against these. Every feature must map to at least one.
-
-1. **Frictionless Shopping** — *"I know what I want — reduce my effort."* → smart cart building, instant re-orders, simplified purchase journeys.
-2. **Shopping by Intent** — *"I know my outcome — not the products."* → conversational shopping, goal-based shopping.
-3. **Predictive & Confident** — *"I don't know it's time yet — or I'm unsure which."* → AI-powered need prediction, emergency mode, guided decision support.
-
-### 2.4 What a great submission shows (judge lens)
-- **Customer obsession** — a real pain, deeply understood.
-- **Innovative thinking** — a fresh take, not the obvious.
-- **Technical feasibility** — a realistic path from prototype to production.
-- **Vision to scale** — how it evolves for millions.
-- Mantra: *Start with the customer. Work backwards. From need to done.*
-
-### 2.5 Scoring criteria (build to win these)
-1. Quality of Presentation — clarity, storytelling, communicating complex ideas simply.
-2. Quality of Implementation — working prototype, code quality, UX polish.
-3. Technical Architecture — scalability, design decisions, system thinking.
-4. Futuristic Vision — roadmap beyond hackathon, Think Big.
-
----
-
-## 3. Our Solution
-
-**Amazon Now is an AI shopping agent that converts a human *need*, stated in plain language, into a ready-to-buy cart in seconds — and explains why.**
-
-We do NOT rebuild Amazon's storefront, payments, inventory, or logistics. We build the **intelligence layer that sits on top** and removes the search → compare → build → decide loop. The commerce shell is mocked just enough to make the experience believable; all real engineering goes into the agent.
-
-### 3.1 Positioning for the pitch
-Present it as *"how Amazon Now should feel"* — a feature inside the Amazon app, styled natively (Amazon dark + orange). Not a competing storefront. This gives native credibility without touching Amazon's live APIs (which we cannot legitimately use in 48h).
-
-### 3.2 Feature set (in priority order)
-
-#### F1 — Intent-to-Cart (HERO, must work end-to-end)
-The user states a *need*, not a product. The agent interprets it, pulls personal context, searches the catalog semantically, assembles a ready-to-buy cart, validates it against budget/dietary constraints, and **explains each choice**. One tap to buy.
-- Maps to: Shopping by Intent + Frictionless + (explainability →) Confident.
-- Example inputs (support English + Hinglish — this is authentic to Indian quick-commerce):
-  - "kal subah breakfast, 2 log, under ₹300"
-  - "headache hai, medicine + kuch light khane ko"
-  - "weekend party for 6 people, snacks and cold drinks"
-  - "monthly grocery essentials, family of 4, budget ₹2000"
-
-#### F2 — Emergency Mode (supporting, build fully if time allows)
-One tap surfaces a pre-decided essentials bundle for an urgent context (sick, guests arriving, ran out of staples). Optimised for absolute minimum taps. Demonstrates "done in seconds."
-- Maps to: Predictive & Confident + Frictionless.
-
-#### F3 — Smart Reorder / Need Prediction (supporting; mock if time-constrained)
-From purchase history, the agent predicts what the user is about to run out of and proposes a one-tap reorder before the user searches.
-- Maps to: Predictive & Confident + Frictionless (instant re-orders).
-
-> Build rule: **F1 fully, then F2 fully, then F3.** Never sacrifice F1 polish for F3 breadth.
-
-### 3.3 The trust / explainability layer (cross-cutting)
-Every agent-built cart shows a short rationale per item ("under budget", "you reordered this twice", "lighter on the stomach for a headache"). This directly answers the *"I'm unsure which"* anxiety and is a key differentiator for the *Confident* opportunity area. Never ship a cart the user can't understand.
-
----
-
-## 4. The Now Agent (core intelligence)
-
-This is the heart of the project. Treat it as a tool-using reasoning agent, not a single prompt.
-
-### 4.1 Reasoning loop
-```
-user need (text/voice)
-   │
-   ▼
-1. parse_intent        → structured intent {goal, constraints, context_hints}
-2. get_user_context    → household profile, budget sensitivity, recent purchases
-3. search_catalog      → semantic + filtered candidate products (per sub-need)
-4. select & assemble   → choose items, quantities; respect dietary + budget
-5. validate (budget, availability)
-6. produce CartProposal + per-item rationale
-   │
-   ▼
-one-tap checkout (mock)
-```
-
-### 4.2 Agent tools (functions exposed to the LLM)
-| Tool | Purpose | Input | Output |
-|---|---|---|---|
-| `search_catalog` | semantic + filter search over products | `query`, `filters{category, maxPrice, dietary}`, `topK` | ranked products |
-| `get_user_context` | household + budget + history | `userId` | user profile + recent orders |
-| `get_reorder_candidates` | predict run-outs | `userId` | likely-needed items + confidence |
-| `check_budget` | validate cart total vs limit | `cart`, `limit` | pass/fail + delta |
-| `build_cart` | finalise proposal | `items[]` | `CartProposal` with totals |
-
-### 4.3 System prompt (starting point — iterate during the hackathon)
-```
-You are the Now Agent, the AI shopping assistant for Amazon Now, an Indian
-quick-commerce experience. Your job: turn a customer's stated NEED into a
-ready-to-buy cart in seconds, with the fewest decisions for the user.
-
-Rules:
-- Start from the need, not the product. Infer the products yourself.
-- Always respect the user's budget, dietary preferences, and household size
-  from get_user_context. If a budget is implied or stated, never exceed it.
-- Prefer items the user has reordered before when they fit the need.
-- Be decisive. Propose ONE good cart, not a list of options to compare.
-- For every item, give a one-line plain-language reason it is in the cart.
-- Understand mixed English/Hinglish input naturally.
-- If the need is ambiguous in a way that materially changes the cart, ask AT
-  MOST one short clarifying question; otherwise proceed with a sensible default
-  and note the assumption.
-- Output strictly in the CartProposal JSON schema. No prose outside it.
-```
-
-### 4.4 Output contract — `CartProposal`
-```json
-{
-  "intentSummary": "Breakfast for 2, under ₹300",
-  "assumptions": ["No dietary restrictions on file; chose vegetarian by default"],
-  "items": [
-    {
-      "productId": "p_103",
-      "name": "Brown Bread 400g",
-      "qty": 1,
-      "price": 45,
-      "reason": "Staple for breakfast; you reordered this last week"
-    }
-  ],
-  "total": 278,
-  "budget": 300,
-  "withinBudget": true,
-  "clarifyingQuestion": null
-}
-```
-
----
-
-## 5. Architecture
-
-### 5.1 Principle
-Build the **production-grade architecture on paper (diagram + PRD)**, run a **slim version live**. The deliberate gap between the two is itself a strong "system thinking" signal for judges. State it explicitly in the pitch.
-
-### 5.2 AWS services (production design)
-| Layer | Service | Role |
+Three opportunity areas — every feature must map to at least one:
+| Area | Customer voice | Levers |
 |---|---|---|
-| Reasoning | **Amazon Bedrock** (Claude model) | intent parsing, cart assembly, rationale |
-| Embeddings | **Bedrock Titan Embeddings** | product + query vectors |
-| Vector search | **OpenSearch Serverless** (vector) | semantic catalog retrieval at scale |
-| Catalog / orders / users | **DynamoDB** | core data |
-| Compute | **Lambda + API Gateway** | stateless backend / agent orchestration |
-| Recommendations | **Amazon Personalize** (optional) | reorder & need-prediction signal |
-| Auth | **Amazon Cognito** | user identity |
-| Frontend hosting | **S3 + CloudFront** | static SPA |
+| **Frictionless** | "I know what I want — reduce effort" | smart cart, instant reorder, simple journeys |
+| **Shopping by Intent** | "I know my outcome — not the products" | conversational + goal-based shopping |
+| **Predictive & Confident** | "I don't know it's time yet / unsure which" | need prediction, emergency mode, guided decisions |
 
-### 5.3 Prototype simplifications (run live in 48h)
-- Vector search: in-memory cosine similarity over precomputed embeddings (or a small local vector index) instead of OpenSearch Serverless. **Note this as a deliberate prototype choice.**
-- Auth: single seeded demo user; Cognito only in the diagram.
-- Personalize: replace with a simple heuristic over `orders` (frequency + recency) for the demo.
-- Backend can run as a single Node/TypeScript service locally, structured so each route maps cleanly to a Lambda later.
-
-### 5.4 Data flow (live prototype)
-```
-React SPA  ──HTTP──▶  Backend (Node/TS)
-                          │
-                          ├─ Bedrock (Claude)  → agent reasoning
-                          ├─ Bedrock (Titan)   → query embedding
-                          ├─ Vector index      → candidate products
-                          └─ DynamoDB / seed    → catalog, user, orders
-```
+Scoring: **Presentation · Implementation · Technical Architecture · Futuristic Vision.** Mantra: *start with the customer, work backwards, from need to done.*
 
 ---
 
-## 6. Tech Stack
-
-- **Frontend:** React + TypeScript + Vite, Tailwind CSS. **Mobile-first** (quick commerce is a phone experience). Amazon visual language (dark navy `#131A22`, Amazon orange `#FF9900`).
-- **Backend:** Node.js + TypeScript (Express for prototype, Lambda-ready structure).
-- **AI:** AWS Bedrock (Claude for reasoning, Titan for embeddings). Tool/function calling via the Bedrock Converse API.
-- **Data:** DynamoDB (or local JSON seed for prototype); vector index for semantic search.
-- **Infra:** AWS (ap-south-1). Built with **Kiro** (use spec mode to generate the PRD + task breakdown).
-
-> Verify the exact Claude and Titan model IDs available in your Bedrock console for ap-south-1 at build time — model IDs change. Use the latest available Claude model.
+## 3. Solution
+Amazon Now is an **AI shopping agent** that converts a stated need — typed, spoken, or **photographed** — into a **ready-to-buy, budget-checked cart in seconds**, and explains every choice. We build the **intelligence layer only**; storefront, payments, and logistics are mocked. Pitch it as a feature *inside* the Amazon app (native dark + orange styling), not a competing store.
 
 ---
 
-## 7. Repository Structure
-```
-amazon-now/
-├── agent.md                 # this file
-├── README.md
-├── PRD.md                   # product requirements (hackathon deliverable)
-├── frontend/
-│   ├── src/
-│   │   ├── components/       # ChatComposer, CartProposalCard, ItemRow, EmergencyMode, ...
-│   │   ├── pages/            # Home (intent bar), CartReview, OrderConfirm
-│   │   ├── lib/              # api client, types
-│   │   └── styles/
-│   └── package.json
-├── backend/
-│   ├── src/
-│   │   ├── agent/            # nowAgent.ts (loop), prompts.ts, tools/
-│   │   ├── services/         # bedrock.ts, embeddings.ts, vectorSearch.ts, catalog.ts
-│   │   ├── routes/           # /intent, /reorder, /emergency, /checkout
-│   │   ├── data/             # seed-catalog.json, seed-user.json, seed-orders.json
-│   │   └── types/            # shared schemas (CartProposal, Product, User)
-│   └── package.json
-├── scripts/
-│   └── generate-catalog.ts   # LLM-generate + embed the seed catalog
-└── docs/
-    └── architecture.md / diagram
-```
+## 4. Features
+| # | Feature | What it does | Opp. area | Tier |
+|---|---|---|---|---|
+| F1 | **Intent-to-Cart** (hero) | Stated need → one ready cart with a reason per item, one tap to buy | Intent · Frictionless | 1 |
+| F2 | **Multimodal intent** | Photo of empty fridge / handwritten list / product box / recipe → cart | Intent · Innovation | 1 |
+| F3 | **Budget rebalancing** | If cart exceeds budget, agent auto-swaps to cheaper equivalents, shows "saved ₹X", user can revert | Frictionless · Impl. | 1 |
+| F4 | **Recipe / occasion-to-cart** | "Paneer butter masala for 4" / "Diwali for 10" → ingredients scaled to servings, minus likely-owned staples | Intent · Customer obsession | 1 |
+| F5 | **Context-aware proactivity** | Pre-builds carts from weather (heatwave→cold drinks/ORS; rain→khichdi), festival calendar (Holi, Navratri vrat, Jain), and calendar events | Predictive · Vision | 2 |
+| F6 | **Consumption-rate prediction** | Models usage rate ("2-day milk cycle → out Thursday"), not just past purchases | Predictive | 2 |
+| F7 | **Substitution resilience** | Out-of-stock item auto-swapped to closest match with a note; cart never breaks | Technical feasibility | 3 |
+| F8 | **One-pick decision** | Picks THE single best item with a confidence score + "why this", with a "show alternatives" escape hatch | Confident · Guided | 3 |
+| F9 | **Learns from edits** | When user removes/swaps an item, records the preference for next time; agent visibly improves | Innovation | 3 |
+| F10 | **Health/diet-aware swaps** | Respects diabetic/vegan/allergy/Jain profile, flags items, suggests healthier swaps (OTC only + "see a doctor"; never diagnoses) | Customer obsession | 3 |
+| F11 | **Unit-economics nudges** | "Buy the 1kg, cheaper per gram, you'll finish it" / "you waste half the coriander — smaller pack" | Customer obsession | 3 |
+| F12 | **Emergency mode** | One tap → pre-decided essentials bundle for an urgent moment, minimum taps | Predictive · Frictionless | 2 |
+
+**Build priority:** Tier 1 (F1–F4) must demo flawlessly. Tier 2 (F5 one signal live, F6, F12) next. Tier 3 (F7–F11) are enhancers woven *into* F1's cart output, not separate screens. **Never sacrifice Tier 1 polish for Tier 3 breadth.**
 
 ---
 
-## 8. Data Models
+## 5. The Now Agent (core)
+Tool-using reasoning agent, not a single prompt.
 
+**Loop:**
+```
+need (text / image / voice)
+ → parse_intent            (image via vision model)
+ → get_user_context        (household, diet, budget, history, learned prefs)
+ → [decompose_recipe / decompose_occasion]   (sub-needs + serving scale)
+ → search_catalog          (semantic + filter, per sub-need)
+ → select & assemble       (prefer reorders, apply diet, one-pick per slot)
+ → check_availability + substitute  (resilience)
+ → check_budget + rebalance (swap cheaper if over)
+ → CartProposal            (items + reason + confidence + nudges + swaps)
+```
+
+**Tools:**
+| Tool | Purpose |
+|---|---|
+| `parse_intent` | text/image/voice → structured `{goal, constraints, contextHints}` |
+| `get_user_context` | household, diet, budget, recent orders, learned prefs |
+| `decompose_recipe` | recipe/occasion → ingredient sub-needs, scaled to servings |
+| `search_catalog` | semantic + filtered candidate products |
+| `get_reorder_candidates` | consumption-rate prediction of run-outs |
+| `get_context_signals` | weather + festival + calendar signals (F5) |
+| `check_availability` | stock check; returns substitute if out |
+| `check_budget` | validate total vs limit; returns rebalance swaps if over |
+| `record_feedback` | persist user edits as preferences (F9) |
+| `build_cart` | finalise `CartProposal` |
+
+**System prompt (starting point — iterate):**
+```
+You are the Now Agent for Amazon Now, an Indian quick-commerce assistant. Turn a
+customer's NEED (text, image, or voice) into ONE ready-to-buy cart in seconds,
+with the fewest decisions for them.
+Rules:
+- Start from the need, infer the products yourself. Be decisive: propose ONE cart.
+- Respect household size, dietary profile, and budget from get_user_context; never
+  exceed a stated/implied budget — rebalance to cheaper equivalents instead.
+- Prefer items the user reordered before when they fit.
+- For each item give: a one-line plain reason, a confidence, and any unit-economics nudge.
+- If an item is unavailable, substitute the closest match and say so.
+- Understand mixed English/Hinglish. Handle images (fridge, list, box, recipe).
+- Ask AT MOST one clarifying question only if it materially changes the cart;
+  otherwise proceed with a sensible default and note the assumption.
+- Output strictly as CartProposal JSON. No prose outside it.
+```
+
+**Output — `CartProposal`:**
 ```ts
-type Product = {
-  id: string;
-  name: string;
-  category: string;          // grocery, essentials, otc, snacks, beverages, baby, home
-  subcategory: string;
-  brand?: string;
-  price: number;             // INR
-  unit: string;              // "400g", "1L", "pack of 6"
-  tags: string[];            // "breakfast", "light", "party", ...
-  dietary: string[];         // "veg", "non-veg", "vegan", "gluten-free"
-  popularity: number;        // 0-1, for tie-breaks
-  imageUrl: string;
-  embedding?: number[];      // precomputed
+type CartItem = {
+  productId: string; name: string; qty: number; price: number;
+  reason: string;            // why it's here (trust layer)
+  confidence: number;        // 0-1 (one-pick)
+  substituteFor?: string;    // if F7 swapped an out-of-stock item
+  nudge?: string;            // F11 unit-economics tip
+  dietaryFlag?: string;      // F10 e.g. "high sugar"
 };
-
-type User = {
-  id: string;
-  name: string;
-  household: { size: number; dietary: string[]; budgetSensitivity: "low" | "med" | "high" };
-  defaultBudget?: number;
-};
-
-type Order = { id: string; userId: string; items: { productId: string; qty: number }[]; createdAt: string };
-
-type CartItem = { productId: string; name: string; qty: number; price: number; reason: string };
+type Swap = { from: string; to: string; saved: number; reason: string }; // F3
 type CartProposal = {
   intentSummary: string;
   assumptions: string[];
   items: CartItem[];
-  total: number;
-  budget: number | null;
-  withinBudget: boolean;
+  total: number; budget: number | null; withinBudget: boolean;
+  rebalance?: Swap[];        // shown when budget exceeded then fixed
   clarifyingQuestion: string | null;
 };
 ```
 
+**Multimodal note:** AgentRouter is OpenAI-compatible — send images as base64 in a `image_url` content block to a **vision-capable model**. Same client, no extra SDK.
+
 ---
 
-## 9. API Contract (prototype)
+## 6. Architecture
+**LLM:** all reasoning, vision, and embeddings via **AgentRouter** (OpenAI-compatible, `https://agentrouter.org/v1`, Bearer key). Endpoints used: `/v1/chat/completions` (reasoning + vision), `/v1/embeddings` (catalog/query vectors). **Everything else runs on AWS, and the app deploys to AWS.**
+
+| Layer | Service | Role |
+|---|---|---|
+| LLM / vision / embeddings | **AgentRouter API** | intent, image understanding, cart reasoning, embeddings |
+| Compute | **Lambda + API Gateway** | agent orchestration / backend |
+| Data | **DynamoDB** | catalog, users, orders, preferences |
+| Vector search | **OpenSearch Serverless** (vector) | semantic retrieval at scale |
+| Frontend hosting | **S3 + CloudFront** | static SPA |
+| Auth | **Cognito** | identity (production) |
+| Secrets | **Secrets Manager / SSM** | AgentRouter key in production |
+
+**Prototype simplifications (run live, state as deliberate):**
+- Vector search: in-memory cosine similarity over precomputed embeddings.
+- Auth: single seeded demo user (Cognito in diagram only).
+- F5 signals: static Indian festival calendar + a public weather API; calendar mocked.
+- Backend: single Node/TS service, structured so each route ports to a Lambda unchanged.
+
+**Data flow (prototype):**
+```
+React SPA → Backend (Node/TS, Lambda-ready)
+              ├─ AgentRouter  → reasoning / vision / embeddings
+              ├─ Vector index → candidate products
+              └─ DynamoDB/seed → catalog, user, orders, prefs
+```
+
+---
+
+## 7. Tech Stack
+- **Frontend:** React + TypeScript + Vite + Tailwind. **Mobile-first.** Amazon UI (`#131A22` navy, `#FF9900` orange).
+- **Backend:** Node.js + TypeScript (Express for prototype, Lambda-ready).
+- **AI:** AgentRouter via the OpenAI SDK with `baseURL` override. Vision-capable chat model + an embedding model — confirm exact model IDs in the AgentRouter console at build time.
+- **Data:** DynamoDB / seed JSON + vector index.
+- **Infra:** AWS `ap-south-1`. Built with Kiro (use spec mode to generate PRD + tasks).
+
+---
+
+## 8. Repository Structure
+```
+amazon-now/
+├── agent.md  README.md  PRD.md
+├── frontend/src/{components,pages,lib,styles}
+├── backend/src/
+│   ├── agent/        # nowAgent.ts (loop), prompts.ts, tools/
+│   ├── services/     # agentrouter.ts, embeddings.ts, vectorSearch.ts, catalog.ts, signals.ts
+│   ├── routes/       # intent, emergency, reorder, proactive, checkout, feedback
+│   ├── data/         # seed-catalog.json, seed-user.json, seed-orders.json
+│   └── types/        # CartProposal, Product, User, Order
+├── scripts/generate-catalog.ts   # LLM-generate + embed catalog
+└── docs/architecture
+```
+
+---
+
+## 9. Data Models
+```ts
+type Product = {
+  id: string; name: string; category: string; subcategory: string; brand?: string;
+  price: number; unit: string; packSize?: string; tags: string[]; dietary: string[];
+  inStock: boolean; popularity: number; imageUrl: string; embedding?: number[];
+};
+type User = {
+  id: string; name: string;
+  household: { size: number; dietary: string[]; budgetSensitivity: "low"|"med"|"high" };
+  defaultBudget?: number;
+  learnedPrefs?: { avoid: string[]; prefer: string[] };   // F9
+};
+type Order = { id: string; userId: string; items: {productId:string; qty:number}[]; createdAt: string };
+```
+
+---
+
+## 10. API Contract
 | Method | Route | Body | Returns |
 |---|---|---|---|
-| POST | `/api/intent` | `{ userId, text }` | `CartProposal` |
-| POST | `/api/emergency` | `{ userId, scenario }` | `CartProposal` |
-| GET | `/api/reorder/:userId` | — | `{ candidates: CartItem[] }` |
-| POST | `/api/checkout` | `{ userId, items }` | `{ orderId, status: "confirmed" }` (mock) |
+| POST | `/api/intent` | `{userId, text?, imageBase64?}` | `CartProposal` |
+| POST | `/api/emergency` | `{userId, scenario}` | `CartProposal` |
+| GET | `/api/reorder/:userId` | — | `{candidates: CartItem[]}` |
+| GET | `/api/proactive/:userId` | — | `{suggestions: CartProposal[]}` |
+| POST | `/api/feedback` | `{userId, removed?, added?}` | `{ok: true}` |
+| POST | `/api/checkout` | `{userId, items}` | `{orderId, status:"confirmed"}` (mock) |
 
 ---
 
-## 10. Conventions for the building agent (Kiro/Claude)
-- TypeScript everywhere; shared types live in `backend/src/types` and are imported by the frontend client.
-- Keep the agent's LLM output strictly schema-validated (parse + validate `CartProposal`; on failure, retry once with a repair prompt).
-- No secrets in code. AWS creds via environment / AWS profile only. `.env` is git-ignored.
-- Backend routes must be thin; logic lives in `services/` and `agent/` so they port to Lambda unchanged.
-- Mobile-first CSS; the primary surface is a single intent bar + a cart proposal card.
-- Every product card and cart item must render its `reason` — explainability is a product requirement, not optional.
-- Prefer real Bedrock calls; only fall back to a deterministic stub if Bedrock access is blocked, and clearly flag stubbed responses.
+## 11. Conventions
+- TypeScript everywhere; shared types in `backend/src/types`, imported by the frontend client.
+- Strictly validate the LLM's `CartProposal` JSON; on parse failure, retry once with a repair prompt.
+- No secrets in code. AgentRouter key via env (`.env`, git-ignored) locally; Secrets Manager in AWS.
+- Routes thin; logic in `services/` + `agent/` so they port to Lambda unchanged.
+- Mobile-first; primary surface = one intent bar (with camera/mic) + a `CartProposalCard`.
+- Every item must render its `reason` — explainability is a requirement, not optional.
+- Prefer real AgentRouter calls; only stub if access is blocked, and flag stubbed output.
+
+**Env (`backend/.env`):**
+```
+AGENTROUTER_BASE_URL=https://agentrouter.org/v1
+AGENTROUTER_API_KEY=<key>
+AGENTROUTER_MODEL=<vision-capable chat model id>
+AGENTROUTER_EMBED_MODEL=<embedding model id>
+AWS_REGION=ap-south-1
+```
 
 ---
 
-## 11. 48-Hour Build Plan (milestones)
-1. **Foundation (h0–6):** scaffold repo, seed catalog via `generate-catalog.ts`, compute embeddings, stand up backend + intent bar UI shell.
-2. **Hero loop (h6–20):** `POST /api/intent` working end-to-end — Bedrock intent parse → vector search → cart assembly → rationale → render `CartProposalCard`. Get ONE query flawless, then generalise.
-3. **Polish hero (h20–30):** Amazon-styled mobile UX, loading/streaming states, edit-cart, mock checkout confirmation.
-4. **Supporting flows (h30–38):** Emergency Mode fully; Smart Reorder (heuristic).
-5. **Deliverables (h38–46):** PRD finalised, architecture diagram, record demo video (show F1 hero first, then F2). Remember screening is AI-first on **PRD + demo video** — do not leave these to the last hour.
-6. **Buffer (h46–48):** rehearse the pitch narrative; fix only demo-path bugs.
+## 12. 48-Hour Build Plan
+1. **h0–6:** scaffold repo, generate + embed seed catalog, intent bar UI shell, AgentRouter client wired.
+2. **h6–20:** F1 end-to-end (intent → search → assemble → reasons → `CartProposalCard`). One query flawless, then generalise. Fold in F7/F8/F11 (they're cart fields).
+3. **h20–28:** F2 multimodal (photo → cart) and F3 budget rebalancing live. These are your hero video beats.
+4. **h28–34:** F4 recipe/occasion; F12 emergency; F9 learn-from-edits.
+5. **h34–40:** F5 (one signal live: weather or festival) + F6 reorder; mobile polish, streaming cart assembly.
+6. **h40–46:** PRD, architecture diagram, record demo video (F2 first beat, then F3, then F4). Screening is AI-first on PRD + video — do not leave to the last hour.
+7. **h46–48:** rehearse pitch; fix only demo-path bugs; deploy to AWS.
 
 ---
 
-## 12. Out of Scope (explicitly mocked)
-- Real payments / payment gateway (mock confirmation screen).
-- Real Amazon catalog / PA-API / scraping (seeded mini-catalog instead).
-- Real logistics / delivery.
-- Multi-user auth (single seeded demo user).
-- Real OpenSearch / Personalize provisioning (architecture only; heuristics live).
-
-State these clearly in the demo as deliberate scope decisions, paired with the production architecture.
-
----
-
-## 13. Glossary
-- **Intent-to-Cart:** turning a stated need into a finished cart, no search/browse.
-- **Now Agent:** the Bedrock-powered tool-using agent at the core.
-- **CartProposal:** the agent's structured output — items + reasons + budget check.
-- **Trust layer:** per-item rationale shown to the user for confidence.
+## 13. Out of Scope (mocked, state deliberately)
+Real payments · real Amazon catalog/PA-API/scraping · real logistics · multi-user auth · live OpenSearch/Cognito provisioning. Seeded mini-catalog + mock checkout + heuristics stand in.
