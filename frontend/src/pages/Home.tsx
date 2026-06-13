@@ -90,7 +90,6 @@ export default function Home() {
   if (appState === 'confirmed' && orderId) {
     return (
       <div className="home-wrapper">
-        <Header />
         <main className="home-main">
           <OrderConfirm
             orderId={orderId}
@@ -105,8 +104,6 @@ export default function Home() {
 
   return (
     <div className="home-wrapper">
-      <Header />
-
       <main className="home-main">
         {/* ── Intent bar ─────────────────────────────────────────── */}
         <section className="intent-section">
@@ -188,22 +185,4 @@ export default function Home() {
   );
 }
 
-// ── Header ────────────────────────────────────────────────────────────────────
-function Header() {
-  return (
-    <header className="app-header">
-      <div className="app-header-inner">
-        <div className="app-logo">
-          <div className="app-logo-mark">
-            <span>a</span>
-          </div>
-          <div className="app-logo-text">
-            <span className="logo-amazon">amazon</span>
-            <span className="logo-now"> now</span>
-          </div>
-        </div>
-        <p className="app-tagline">Delivery is fast. Now shopping is too.</p>
-      </div>
-    </header>
-  );
-}
+

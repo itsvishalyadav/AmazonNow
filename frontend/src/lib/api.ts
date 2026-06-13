@@ -96,3 +96,24 @@ export interface ProactiveResponse {
 export function getProactive(userId: string): Promise<ProactiveResponse> {
   return apiGet<ProactiveResponse>(`/api/proactive/${userId}`);
 }
+
+// ── GET /api/history/:userId ─────────────────────────────────────────────────
+export interface HistoryResponse {
+  orders: {
+    id: string;
+    date: string;
+    status: string;
+    total: number;
+    items: {
+      productId: string;
+      name: string;
+      qty: number;
+      image: string;
+      price: number;
+    }[];
+  }[];
+}
+
+export function getHistory(userId: string): Promise<HistoryResponse> {
+  return apiGet<HistoryResponse>(`/api/history/${userId}`);
+}
