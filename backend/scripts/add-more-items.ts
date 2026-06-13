@@ -1,22 +1,17 @@
 import "dotenv/config";
-import OpenAI from "openai";
 import fs from "fs";
 import path from "path";
-
-const client = new OpenAI({
-  apiKey: process.env.AGENTROUTER_API_KEY!,
-  baseURL: process.env.AGENTROUTER_BASE_URL!,
-});
-
-const MODEL = process.env.AGENTROUTER_MODEL ?? "gpt-4o";
+import { chatJSON } from "../src/services/agentrouter.js";
 
 const CATEGORIES = [
-  { category: "Party Supplies", subcategories: ["Snacks", "Beverages", "Disposables", "Ice"], count: 25 },
-  { category: "Baking Needs", subcategories: ["Flours", "Essence & Colors", "Chocolate & Cocoa", "Baking Tools"], count: 25 },
-  { category: "Pooja Needs", subcategories: ["Agarbatti & Dhoop", "Pooja Ghee & Oil", "Items & Accessories"], count: 25 },
-  { category: "Pet Care", subcategories: ["Dog Food", "Cat Food", "Pet Grooming"], count: 20 },
-  { category: "Instant & Frozen Food", subcategories: ["Frozen Snacks", "Ready to Cook", "Desserts"], count: 30 },
-  { category: "Gourmet & World Food", subcategories: ["Pasta & Noodles", "Sauces & Spreads", "Exotic Veggies"], count: 30 },
+  { category: "Birthday Party Supplies", subcategories: ["Balloons & Decor"], count: 15 },
+  { category: "Birthday Party Supplies", subcategories: ["Cakes & Candles", "Return Gifts"], count: 15 },
+  { category: "Festivals & Occasions", subcategories: ["Diwali & Pooja"], count: 15 },
+  { category: "Festivals & Occasions", subcategories: ["Christmas Decor", "Sweets"], count: 15 },
+  { category: "Weather Essentials", subcategories: ["Monsoon Care", "Umbrellas"], count: 15 },
+  { category: "Weather Essentials", subcategories: ["Summer Cooling", "Skin Protection"], count: 15 },
+  { category: "Party Snacks & Drinks", subcategories: ["Chips & Nachos"], count: 15 },
+  { category: "Party Snacks & Drinks", subcategories: ["Cold Drinks", "Ice Cream"], count: 15 }
 ];
 
 const VOCAB = [
@@ -85,18 +80,8 @@ Fields for each product:
 Return JSON { "products": [...] }`;
 }
 
-async function chatJSON(system: string, user: string): Promise<any> {
-  const res = await client.chat.completions.create({
-    model: MODEL,
-    messages: [
-      { role: "system", content: system },
-      { role: "user", content: user },
-    ],
-    temperature: 0.4,
-    response_format: { type: "json_object" },
-  });
-  return JSON.parse(res.choices[0].message.content!);
-}
+// Using imported chatJSON from agentrouter.js
+// function removed as it is imported.
 
 async function main() {
   const catalogPath = path.join(__dirname, "..", "src", "data", "seed-catalog.json");

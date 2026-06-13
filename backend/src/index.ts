@@ -15,6 +15,7 @@ import reorderRouter from "./routes/reorder.js";
 import proactiveRouter from "./routes/proactive.js";
 import checkoutRouter from "./routes/checkout.js";
 import historyRouter from "./routes/history.js";
+import authRouter from "./routes/auth.js";
 
 // Proxy removed
 const app = express();
@@ -43,6 +44,7 @@ app.use("/api/reorder", reorderRouter);
 app.use("/api/proactive", proactiveRouter);
 app.use("/api/checkout", checkoutRouter);
 app.use("/api/history", historyRouter);
+app.use("/api/auth", authRouter);
 
 // Proxy startup removed
 initCatalog().then(() => {

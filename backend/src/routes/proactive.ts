@@ -4,6 +4,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 import { Router } from "express";
 import { buildCart } from "../agent/nowAgent.js";
+import { getUpcomingEvents } from "../services/calendar.js";
 
 const router = Router();
 
@@ -51,10 +52,13 @@ router.get("/:userId", async (req, res) => {
   const monthDay = `${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
   const month = today.getMonth() + 1;
 
-  // Pick festival signal first, then season
+  // Check Calendar first!
+  const calendarEvent = await getUpcomingEvents(userId);
+
+  // Pick calendar first, then festival, then season
   const festival = FESTIVAL_CALENDAR[monthDay];
   const season = getSeasonSignal(month);
-  const signal = festival ?? season;
+  const signal = calendarEvent ?? festival ?? season;
 
   if (!signal) {
     return res.json({ suggestions: [] });

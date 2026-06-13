@@ -3,7 +3,7 @@
 // Handles the full intent → cart → checkout flow.
 // ─────────────────────────────────────────────────────────────────────────────
 import { useState, useEffect } from 'react';
-import { Sparkles, RefreshCw, MessageSquare, Bot, CheckCircle2 } from 'lucide-react';
+import { Sparkles, RefreshCw, MessageSquare, Bot, CheckCircle2, Calendar } from 'lucide-react';
 import IntentBar from '../components/IntentBar';
 import CartProposalCard from '../components/CartProposalCard';
 import LoadingState from '../components/LoadingState';
@@ -42,9 +42,18 @@ export default function Home() {
   // Phase 11 state
   const [proactiveSuggestion, setProactiveSuggestion] = useState<ProactiveSuggestion | null>(null);
   const [reorderCandidates, setReorderCandidates] = useState<CartItem[]>([]);
+  const [isCalendarConnected, setIsCalendarConnected] = useState(false);
 
   // ── Fetch Signals on Mount (Phase 11) ──────────────────────────────────────
   useEffect(() => {
+    // Check if calendar was just connected via OAuth redirect
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('calendarConnected') === 'true') {
+      setIsCalendarConnected(true);
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
     getProactive(DEMO_USER_ID)
       .then(res => {
         if (res.suggestions && res.suggestions.length > 0) {
@@ -182,19 +191,34 @@ export default function Home() {
             isLoading={appState === 'loading'}
           />
 
-          {/* Example prompts (idle) */}
+          {/* Example prompts and Calendar Connect */}
           {appState === 'idle' && (
-            <div className="example-prompts mt-2">
-              <span className="example-prompts-label">Try:</span>
-              {EXAMPLE_PROMPTS.map((p) => (
-                <button
-                  key={p}
-                  className="example-chip"
-                  onClick={() => handleIntentSubmit(p)}
+            <div className="flex flex-col sm:flex-row items-center justify-between mt-2 gap-4">
+              <div className="example-prompts">
+                <span className="example-prompts-label">Try:</span>
+                {EXAMPLE_PROMPTS.slice(0, 3).map((p) => (
+                  <button
+                    key={p}
+                    className="example-chip"
+                    onClick={() => handleIntentSubmit(p)}
+                  >
+                    {p}
+                  </button>
+                ))}
+              </div>
+              
+              {!isCalendarConnected ? (
+                <button 
+                  onClick={() => window.location.href = 'http://localhost:4001/api/auth/google'}
+                  className="flex items-center gap-2 text-sm font-semibold bg-[#2a2a2a] text-white px-3 py-1.5 rounded-lg border border-white/10 hover:bg-[#333] transition-colors whitespace-nowrap"
                 >
-                  {p}
+                  <Calendar size={16} className="text-blue-400" /> Connect Calendar
                 </button>
-              ))}
+              ) : (
+                <div className="flex items-center gap-2 text-sm font-semibold text-green-400 bg-green-400/10 px-3 py-1.5 rounded-lg border border-green-400/20 whitespace-nowrap">
+                  <CheckCircle2 size={16} /> Calendar Sync Active
+                </div>
+              )}
             </div>
           )}
 

@@ -74,46 +74,62 @@ async function seedData() {
 
   // 2. Load JSON
   const dataDir = path.join(__dirname, "..", "src", "data");
-  const users = JSON.parse(fs.readFileSync(path.join(dataDir, "seed-user.json"), "utf-8"));
-  const orders = JSON.parse(fs.readFileSync(path.join(dataDir, "seed-orders.json"), "utf-8"));
-  let catalog = [];
+  let users: any = [];
+  try {
+    users = JSON.parse(fs.readFileSync(path.join(dataDir, "seed-user.json"), "utf-8"));
+  } catch (err) {
+    console.log("No seed-user.json found. Skipping user seed.");
+  }
+  
+  let orders: any = [];
+  try {
+    orders = JSON.parse(fs.readFileSync(path.join(dataDir, "seed-orders.json"), "utf-8"));
+  } catch (err) {
+    console.log("No seed-orders.json found. Skipping orders seed.");
+  }
+
+  let catalog: any = [];
   try {
     catalog = JSON.parse(fs.readFileSync(path.join(dataDir, "seed-catalog.json"), "utf-8"));
   } catch (err) {
     console.log("No seed-catalog.json found. Skipping catalog seed.");
   }
 
-  const userArray = Array.isArray(users) ? users : [users];
+  const userArray = Array.isArray(users) ? users : (users ? [users] : []);
 
   // 3. Batch Write Users
-  console.log(`Writing ${userArray.length} users...`);
-  for (let i = 0; i < userArray.length; i += 25) {
-    const batch = userArray.slice(i, i + 25);
-    await docClient.send(
-      new BatchWriteCommand({
-        RequestItems: {
-          [USERS_TABLE]: batch.map((u) => ({
-            PutRequest: { Item: u },
-          })),
-        },
-      })
-    );
+  if (userArray.length > 0) {
+    console.log(`Writing ${userArray.length} users...`);
+    for (let i = 0; i < userArray.length; i += 25) {
+      const batch = userArray.slice(i, i + 25);
+      await docClient.send(
+        new BatchWriteCommand({
+          RequestItems: {
+            [USERS_TABLE]: batch.map((u: any) => ({
+              PutRequest: { Item: u },
+            })),
+          },
+        })
+      );
+    }
   }
 
   // 4. Batch Write Orders
-  console.log(`Writing ${orders.length} orders...`);
-  for (let i = 0; i < orders.length; i += 25) {
-    const batch = orders.slice(i, i + 25);
-    await docClient.send(
-      new BatchWriteCommand({
-        RequestItems: {
-          [ORDERS_TABLE]: batch.map((o) => ({
-            PutRequest: { Item: o },
-          })),
-        },
-      })
-    );
-    await new Promise((res) => setTimeout(res, 200));
+  if (orders.length > 0) {
+    console.log(`Writing ${orders.length} orders...`);
+    for (let i = 0; i < orders.length; i += 25) {
+      const batch = orders.slice(i, i + 25);
+      await docClient.send(
+        new BatchWriteCommand({
+          RequestItems: {
+            [ORDERS_TABLE]: batch.map((o: any) => ({
+              PutRequest: { Item: o },
+            })),
+          },
+        })
+      );
+      await new Promise((res) => setTimeout(res, 200));
+    }
   }
 
   // 5. Batch Write Catalog
