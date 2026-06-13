@@ -32,6 +32,33 @@ app.get("/health", (_req, res) => {
   });
 });
 
+// ── Debug: raw LLM probe (dev only) ──────────────────────────────────────────
+app.post("/api/debug-llm", async (_req, res) => {
+  try {
+    const OpenAI = (await import("openai")).default;
+    const client = new OpenAI({
+      apiKey: process.env.AGENTROUTER_API_KEY!,
+      baseURL: process.env.AGENTROUTER_BASE_URL!,
+    });
+    const raw = await client.chat.completions.create({
+      model: process.env.AGENTROUTER_MODEL!,
+      messages: [
+        { role: "system", content: "Reply with exactly this JSON: {\"ok\":true}" },
+        { role: "user", content: "ping" },
+      ],
+      temperature: 0,
+    });
+    return res.json({
+      fullResponse: raw,
+      choices: raw.choices,
+      firstChoice: raw.choices?.[0],
+      content: raw.choices?.[0]?.message?.content,
+    });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message, stack: err.stack });
+  }
+});
+
 // ── Routes ────────────────────────────────────────────────────────────────────
 app.use("/api/intent", intentRouter);
 app.use("/api/emergency", emergencyRouter);

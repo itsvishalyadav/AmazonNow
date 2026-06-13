@@ -33,7 +33,8 @@ router.post("/", (req, res) => {
     // Non-fatal — prototype doesn't need perfect persistence
   }
 
-  return res.json({ orderId, status: "confirmed", message: "Order placed successfully! 🎉" });
+  const total = items.reduce((s: number, i: any) => s + (i.price ?? 0) * (i.qty ?? 1), 0);
+  return res.json({ orderId, status: "confirmed", total: Math.round(total), message: "Order placed successfully! 🎉" });
 });
 
 export default router;

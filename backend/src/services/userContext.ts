@@ -11,15 +11,11 @@ const dataDir = path.join(__dirname, "..", "data");
 // ── Loaders ───────────────────────────────────────────────────────────────────
 function loadUsers(): User[] {
   try {
-    return JSON.parse(fs.readFileSync(path.join(dataDir, "seed-user.json"), "utf-8"));
+    const raw = JSON.parse(fs.readFileSync(path.join(dataDir, "seed-user.json"), "utf-8"));
+    // seed-user.json may be a single user object OR an array
+    return Array.isArray(raw) ? raw : [raw];
   } catch {
-    // seed-user.json is a single object (not array) in our setup
-    try {
-      const single = JSON.parse(fs.readFileSync(path.join(dataDir, "seed-user.json"), "utf-8"));
-      return [single];
-    } catch {
-      return [];
-    }
+    return [];
   }
 }
 
