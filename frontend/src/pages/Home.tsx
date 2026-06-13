@@ -30,15 +30,22 @@ export default function Home() {
   const [orderId, setOrderId] = useState<string | null>(null);
   const [orderTotal, setOrderTotal] = useState(0);
   const [orderItemCount, setOrderItemCount] = useState(0);
+  const [hasImage, setHasImage] = useState(false);
 
   // ── Submit intent ──────────────────────────────────────────────────────────
   const handleIntentSubmit = async (text: string, imageBase64?: string) => {
     setError(null);
+    setHasImage(!!imageBase64);
 
-    // If we have an existing proposal with a clarifying question, append the context so the AI remembers it!
+    // If we have an existing proposal, append the context so the AI remembers it!
     let contextualText = text;
-    if (proposal && proposal.clarifyingQuestion) {
-      contextualText = `Context from previous search: "${proposal.intentSummary}". You asked: "${proposal.clarifyingQuestion}". User answers: "${text}"`;
+    if (proposal) {
+      if (proposal.clarifyingQuestion) {
+        contextualText = `Context from previous search: "${proposal.intentSummary}". You asked: "${proposal.clarifyingQuestion}". User answers: "${text}"`;
+      } else {
+        const currentItems = proposal.items.map(i => `${i.qty}x ${i.name}`).join(', ');
+        contextualText = `Previous cart intent: "${proposal.intentSummary}". Current items in cart: [${currentItems}]. Follow-up request from user: "${text}". Please generate the final updated list of all items needed.`;
+      }
     }
 
     setProposal(null);
@@ -141,7 +148,7 @@ export default function Home() {
         )}
 
         {/* ── Loading ────────────────────────────────────────────── */}
-        {appState === 'loading' && <LoadingState />}
+        {appState === 'loading' && <LoadingState hasImage={hasImage} />}
 
         {/* ── Cart result ────────────────────────────────────────── */}
         {(appState === 'result' || appState === 'confirming') && proposal && (

@@ -12,8 +12,10 @@ import {
   PARSE_INTENT_SYSTEM,
   ASSEMBLE_CART_SYSTEM,
   IMAGE_PARSE_SYSTEM,
+  DECOMPOSE_RECIPE_SYSTEM,
   buildParseIntentUser,
   buildAssembleCartUser,
+  buildDecomposeRecipeUser,
 } from "./prompts.js";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -266,6 +268,35 @@ export async function buildCart(input: BuildCartInput): Promise<CartProposal> {
   } catch (err) {
     console.error("[nowAgent] parseIntent failed:", err);
     throw new Error("Could not understand your request. Please try again.");
+  }
+
+  // 2.5 Decompose Recipe if necessary (Phase 8)
+  const isRecipeOrOccasion = intent.isRecipeOrOccasion || 
+    intent.constraints.occasion || 
+    input.text?.toLowerCase().includes("recipe") || 
+    input.text?.toLowerCase().includes("for ") || 
+    input.text?.toLowerCase().includes("party");
+
+  if (isRecipeOrOccasion && input.text) {
+    try {
+      console.log("[nowAgent] Recipe/Occasion detected, running decomposition...");
+      const decompResult = await chatJSON(
+        DECOMPOSE_RECIPE_SYSTEM,
+        buildDecomposeRecipeUser(input.text, userProfile)
+      );
+      
+      console.log("[nowAgent] Decomposition result:", JSON.stringify(decompResult, null, 2));
+
+      // Merge the enhanced subNeeds and excluded staples back into intent
+      if (decompResult && decompResult.subNeeds) {
+        intent.subNeeds = decompResult.subNeeds.filter((sn: any) => !sn.isStaple);
+        if (decompResult.excludedStaples && decompResult.excludedStaples.length > 0) {
+          intent.assumptions.push(`Excluded staples from cart: ${decompResult.excludedStaples.join(", ")}`);
+        }
+      }
+    } catch (err) {
+      console.error("[nowAgent] decomposeRecipe failed, falling back to standard intent:", err);
+    }
   }
 
   // 3. Handle clarifying question early return

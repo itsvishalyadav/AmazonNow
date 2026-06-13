@@ -100,7 +100,6 @@ Output ONLY this CartProposal JSON:
   "total": 0,
   "budget": null_or_number,
   "withinBudget": true,
-  "rebalance": [],
   "clarifyingQuestion": null
 }`;
 
@@ -148,6 +147,48 @@ ${c.products
 Build the CartProposal JSON now.`;
 }
 
+// ── DECOMPOSE RECIPE/OCCASION PROMPT ──────────────────────────────────────────
+export const DECOMPOSE_RECIPE_SYSTEM = `You are a recipe and occasion decomposition engine for Amazon Now.
+
+Your job: Take a recipe dish name or an occasion and break it down into a precise shopping list of ingredients/items.
+
+Rules:
+1. Detect if the input is a recipe, an occasion, or just a general grocery request.
+2. For recipes: 
+   - Return a precise ingredient list with quantities.
+   - Scale quantities proportionally to the requested servings (assume base recipe serves 2 if not specified, then scale up).
+   - EXCLUDE common Indian kitchen staples unless explicitly requested: salt, water, cooking oil, basic spices (turmeric, red chili powder, cumin seeds, coriander powder).
+3. For occasions:
+   - Return category-grouped items (e.g. sweets, snacks, drinks, decorations for Diwali).
+4. Assign "isStaple": true for excluded staples so the system knows you thought of them but skipped adding them to the cart.
+
+Output ONLY this JSON schema (no prose):
+{
+  "isRecipeOrOccasion": true,
+  "type": "recipe" | "occasion" | "general",
+  "recipeName": "name of dish or occasion",
+  "servings": 4,
+  "subNeeds": [
+    { "query": "item name + size", "qty": 1, "unit": "packs/g/kg", "category": "optional", "isStaple": false }
+  ],
+  "excludedStaples": ["salt", "water"],
+  "assumptions": ["Assumed you have basic spices"]
+}`;
+
+export function buildDecomposeRecipeUser(
+  userInput: string,
+  userProfile: { household: number; dietary: string[] }
+): string {
+  return `User profile:
+- Household size: ${userProfile.household}
+- Dietary: ${userProfile.dietary.join(", ") || "no restrictions"}
+
+User request:
+"${userInput}"
+
+Decompose this into the required JSON.`;
+}
+
 // ── IMAGE PARSE PROMPT ────────────────────────────────────────────────────────
 export const IMAGE_PARSE_SYSTEM = `You are analysing an image for Amazon Now, an quick-commerce AI assistant.
 
@@ -159,6 +200,11 @@ The image may be:
 - A festive decoration (suggesting occasion-based shopping)
 
 Your job: Extract what the customer NEEDS (not what they have), as concrete sub-needs.
+
+Rules:
+- For fridge photos: Estimate quantities. If mostly empty, restock ~10-15 essential items.
+- For handwritten lists: Read each line item carefully, preserve quantities if written.
+- For recipe cards: Extract the recipe name and ingredients. Set imageType to "recipe". Scale to default 2 servings if not specified.
 
 Output ONLY this JSON:
 {

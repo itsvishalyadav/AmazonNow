@@ -57,6 +57,16 @@ function localEmbed(text: string): number[] {
   return vec.map((v) => Math.round((v / norm) * 10000) / 10000);
 }
 
+// Global cache to avoid re-computing vectors for common queries
+const embeddingCache = new Map<string, number[]>();
+
+function getCachedLocalEmbed(text: string): number[] {
+  if (embeddingCache.has(text)) return embeddingCache.get(text)!;
+  const vec = localEmbed(text);
+  embeddingCache.set(text, vec);
+  return vec;
+}
+
 // ── Search filters ────────────────────────────────────────────────────────────
 export interface SearchFilters {
   category?: string;        // e.g. "Dairy & Eggs"
@@ -85,23 +95,7 @@ export async function search(
     return [];
   }
 
-  // 1. Embed the query
-  let queryVec: number[];
-  const catalogHasStubEmbeddings = catalog[0]?._stub === true;
-
-  if (catalogHasStubEmbeddings) {
-    // Catalog uses 128-dim local vectors — match with local embedding
-    queryVec = localEmbed(query);
-  } else {
-    try {
-      queryVec = await embed(query);
-    } catch (err) {
-      console.warn("[vectorSearch] AgentRouter embed failed — falling back to local embed:", err);
-      queryVec = localEmbed(query);
-    }
-  }
-
-  // 2. Apply filters
+  // 1. Apply strict filters first (BM25 concept) to drastically reduce the search space
   const { category, subcategory, maxPrice, dietary = [], inStockOnly = true } = filters;
   const candidates = catalog.filter((p) => {
     if (inStockOnly && !p.inStock) return false;
@@ -112,7 +106,12 @@ export async function search(
     return true;
   });
 
-  // 3. Score and sort
+  if (candidates.length === 0) return [];
+
+  // 2. Embed the query strictly using our cached local model (since AgentRouter has no embedding models)
+  const queryVec = getCachedLocalEmbed(query);
+
+  // 3. Score and sort ONLY the filtered candidates (O(Filtered_N) instead of O(Total_N))
   const scored = candidates
     .filter((p) => p.embedding && p.embedding.length > 0)
     .map((p) => ({

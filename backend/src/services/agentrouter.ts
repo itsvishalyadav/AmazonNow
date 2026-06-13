@@ -104,17 +104,25 @@ export async function chatVisionJSON(
   text: string,
   imageBase64: string
 ): Promise<any> {
+  const detectMimeType = (base64: string) => {
+    if (base64.startsWith('/9j/')) return 'image/jpeg';
+    if (base64.startsWith('iVBOR')) return 'image/png';
+    if (base64.startsWith('R0lGOD')) return 'image/gif';
+    if (base64.startsWith('UklGR')) return 'image/webp';
+    return 'image/jpeg'; // default fallback
+  };
+
+  console.log("[agentrouter] chatVisionJSON called");
   const res = await client.chat.completions.create({
-    model: MODEL,
+    model: process.env.AGENTROUTER_VISION_MODEL || "claude-opus-4-7",
     messages: [
-      { role: "system", content: system },
       {
         role: "user",
         content: [
-          { type: "text", text },
+          { type: "text", text: `${system}\n\n${text}` },
           {
             type: "image_url",
-            image_url: { url: `data:image/jpeg;base64,${imageBase64}` },
+            image_url: { url: `data:${detectMimeType(imageBase64)};base64,${imageBase64}` },
           },
         ],
       },
@@ -122,9 +130,12 @@ export async function chatVisionJSON(
     temperature: 0.2,
   });
 
-  const content = res.choices?.[0]?.message?.content;
+  // Handle proxy bug where Claude endpoints sometimes return a stringified response instead of parsed JSON
+  const parsedRes = typeof res === "string" ? JSON.parse(res) : res;
+
+  const content = parsedRes.choices?.[0]?.message?.content;
   if (!content) {
-    console.error("[agentrouter] chatVisionJSON: empty response. choices:", JSON.stringify(res.choices));
+    console.error("[agentrouter] chatVisionJSON: empty response. Raw res:", res);
     throw new Error("Vision LLM returned an empty response");
   }
   return safeJSON(content);

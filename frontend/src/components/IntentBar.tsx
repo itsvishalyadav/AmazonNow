@@ -24,10 +24,36 @@ export default function IntentBar({ onSubmit, isLoading }: IntentBarProps) {
     const reader = new FileReader();
     reader.onload = (e) => {
       const dataUrl = e.target?.result as string;
-      setImagePreview(dataUrl);
-      // Strip the data:image/...;base64, prefix
-      const base64 = dataUrl.split(',')[1];
-      setImageBase64(base64);
+      
+      // Compress image
+      const img = new Image();
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+        const MAX_DIM = 1280;
+        
+        if (width > MAX_DIM || height > MAX_DIM) {
+          if (width > height) {
+            height *= MAX_DIM / width;
+            width = MAX_DIM;
+          } else {
+            width *= MAX_DIM / height;
+            height = MAX_DIM;
+          }
+        }
+        
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, width, height);
+        
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        setImagePreview(compressedDataUrl);
+        const base64 = compressedDataUrl.split(',')[1];
+        setImageBase64(base64);
+      };
+      img.src = dataUrl;
     };
     reader.readAsDataURL(file);
   }, []);
@@ -111,7 +137,7 @@ export default function IntentBar({ onSubmit, isLoading }: IntentBarProps) {
           >
             <X size={14} />
           </button>
-          <span className="intent-image-label">📷 Image attached</span>
+          <span className="intent-image-label">📷 Photo ready to analyze</span>
         </div>
       )}
 
@@ -139,6 +165,7 @@ export default function IntentBar({ onSubmit, isLoading }: IntentBarProps) {
             ref={fileInputRef}
             type="file"
             accept="image/*"
+            capture="environment"
             onChange={handleFileChange}
             style={{ display: 'none' }}
             aria-hidden="true"

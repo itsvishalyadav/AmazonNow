@@ -99,10 +99,13 @@ export interface ParsedIntent {
   };
   assumptions: string[];
   clarifyingQuestion?: string;    // AT MOST ONE
+  isRecipeOrOccasion?: boolean;
 }
 
 export interface SubNeed {
   query: string;     // e.g. "milk for breakfast"
   qty?: number;      // e.g. 2 (litres / packs)
+  unit?: string;     // e.g. "packs (200g each)"
   category?: string; // optional hint for filtering
+  isStaple?: boolean;// true if it's a staple like salt/water
 }

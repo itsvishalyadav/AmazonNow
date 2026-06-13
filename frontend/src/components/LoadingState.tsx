@@ -4,15 +4,19 @@
 // ─────────────────────────────────────────────────────────────────────────────
 import { useEffect, useState } from 'react';
 
-const STEPS = [
-  { icon: '🧠', text: 'Parsing your need…' },
-  { icon: '🔍', text: 'Searching catalog…' },
-  { icon: '⚖️',  text: 'Selecting best picks…' },
-  { icon: '💰', text: 'Checking your budget…' },
-  { icon: '✨', text: 'Finalising your cart…' },
-];
+export default function LoadingState({ hasImage }: { hasImage?: boolean }) {
+  const baseSteps = [
+    { icon: '🧠', text: 'Parsing your need…' },
+    { icon: '🔍', text: 'Searching catalog…' },
+    { icon: '⚖️',  text: 'Selecting best picks…' },
+    { icon: '💰', text: 'Checking your budget…' },
+    { icon: '✨', text: 'Finalising your cart…' },
+  ];
+  
+  const STEPS = hasImage 
+    ? [{ icon: '🖼️', text: 'Analyzing your photo…' }, ...baseSteps] 
+    : baseSteps;
 
-export default function LoadingState() {
   const [stepIdx, setStepIdx] = useState(0);
 
   useEffect(() => {

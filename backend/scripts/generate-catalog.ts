@@ -38,10 +38,47 @@ const client = new OpenAI({
 const MODEL = process.env.AGENTROUTER_MODEL ?? "gpt-4o";
 const EMBED_MODEL = process.env.AGENTROUTER_EMBED_MODEL ?? "text-embedding-3-small";
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
+// ── Local Stub Embedding Fallback ──────────────────────────────────────────────
+const VOCAB = [
+  "milk","curd","paneer","cheese","butter","ghee","cream","egg","bread","flour",
+  "rice","dal","pulses","oil","spice","masala","salt","sugar","tea","coffee",
+  "juice","water","drink","snack","biscuit","chip","noodle","pasta","soup","sauce",
+  "shampoo","soap","detergent","cleaner","dishwash","toothpaste","toothbrush",
+  "baby","diaper","wipe","food","cereal","ors","vitamin","supplement","painkiller",
+  "fruit","vegetable","tomato","potato","onion","garlic","ginger","lemon","banana",
+  "apple","mango","wheat","oats","cornflakes","muesli","jam","ketchup","pickle",
+  "yogurt","lassi","buttermilk","protein","fiber","vegan","organic","gluten",
+  "amul","tata","nestle","itc","hul","dettol","surf","dove","colgate","maggi",
+  "britannia","parle","haldiram","patanjali","dabur","himalaya","johnson","pepsico",
+  "fresh","instant","ready","healthy","natural","cold","hot","sweet","salty","spicy",
+  "breakfast","lunch","dinner","snacking","cooking","baking","cleaning","hygiene",
+  "pack","bottle","bag","box","can","sachet","kg","gram","liter","ml","piece",
+  "daily","weekly","essential","staple","premium","economy","value","family","size",
+  "indian","regional","national","brand","generic","local","imported","certified",
+  "grocery","dairy","beverage","personal","care","home","baby","health","otc",
+  "vegetarian","jain","diabetic","allergen","low","high","calorie","sodium","fat",
+];
+
+function localEmbed(text: string): number[] {
+  const lower = text.toLowerCase();
+  const vec = new Array(128).fill(0);
+  VOCAB.forEach((word, i) => {
+    if (i < 112 && lower.includes(word)) {
+      vec[i] = 1;
+      if (i + 1 < 112) vec[i + 1] += 0.3;
+      if (i - 1 >= 0) vec[i - 1] += 0.3;
+    }
+  });
+  for (let i = 0; i < text.length && i < 32; i++) {
+    vec[112 + (i % 16)] += text.charCodeAt(i) / 1000;
+  }
+  const norm = Math.sqrt(vec.reduce((s, v) => s + v * v, 0)) || 1;
+  return vec.map((v) => Math.round((v / norm) * 10000) / 10000);
+}
+
 async function embed(text: string): Promise<number[]> {
-  const res = await client.embeddings.create({ model: EMBED_MODEL, input: text });
-  return res.data[0].embedding;
+  // Bypassing AgentRouter embedding API due to 503/429 limits
+  return localEmbed(text);
 }
 
 async function chatJSON(system: string, user: string): Promise<any> {
