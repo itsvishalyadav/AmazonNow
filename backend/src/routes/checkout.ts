@@ -5,6 +5,7 @@
 import { Router } from "express";
 import fs from "fs";
 import path from "path";
+import { addOrderToContext } from "../services/userContext.js";
 
 const ordersPath = path.join(__dirname, "..", "data", "seed-orders.json");
 
@@ -21,14 +22,19 @@ router.post("/", (req, res) => {
 
   // Persist to seed-orders.json (in-memory prototype)
   try {
-    const existing = JSON.parse(fs.readFileSync(ordersPath, "utf-8"));
-    existing.push({
+    const newOrder = {
       id: orderId,
       userId,
       items: items.map((i: any) => ({ productId: i.productId, qty: i.qty })),
       createdAt: new Date().toISOString(),
-    });
+    };
+    
+    const existing = JSON.parse(fs.readFileSync(ordersPath, "utf-8"));
+    existing.push(newOrder);
     fs.writeFileSync(ordersPath, JSON.stringify(existing, null, 2));
+
+    // Update in-memory cache so history tab sees it immediately
+    addOrderToContext(newOrder);
   } catch {
     // Non-fatal — prototype doesn't need perfect persistence
   }

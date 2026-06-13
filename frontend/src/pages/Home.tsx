@@ -3,7 +3,7 @@
 // Handles the full intent → cart → checkout flow.
 // ─────────────────────────────────────────────────────────────────────────────
 import { useState } from 'react';
-import { Sparkles, RefreshCw } from 'lucide-react';
+import { Sparkles, RefreshCw, MessageSquare, Bot, CheckCircle2 } from 'lucide-react';
 import IntentBar from '../components/IntentBar';
 import CartProposalCard from '../components/CartProposalCard';
 import LoadingState from '../components/LoadingState';
@@ -215,9 +215,9 @@ export default function Home() {
           <section className="idle-hero">
             <div className="idle-hero-steps">
               {[
-                { n: '1', icon: '💬', label: 'Tell us your need' },
-                { n: '2', icon: '🤖', label: 'Agent builds the cart' },
-                { n: '3', icon: '✅', label: 'One tap to buy' },
+                { n: '1', icon: <MessageSquare size={24} className="text-amazon-orange" />, label: 'Tell us your need' },
+                { n: '2', icon: <Bot size={24} className="text-amazon-orange" />, label: 'Agent builds the cart' },
+                { n: '3', icon: <CheckCircle2 size={24} className="text-amazon-orange" />, label: 'One tap to buy' },
               ].map((s) => (
                 <div key={s.n} className="idle-step">
                   <div className="idle-step-icon">{s.icon}</div>
