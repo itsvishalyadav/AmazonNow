@@ -1,0 +1,38 @@
+service: amazon-now-backend
+
+package:
+  patterns:
+    - '!.env'
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: ap-south-1
+  memorySize: 512
+  timeout: 29
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - "dynamodb:*"
+          Resource: "*"
+        - Effect: "Allow"
+          Action:
+            - "bedrock:InvokeModel"
+          Resource: "*"
+  environment:
+    NODE_ENV: production
+    PORT: 4000
+    GOOGLE_CLIENT_ID: ${env:GOOGLE_CLIENT_ID, 'YOUR_GOOGLE_CLIENT_ID'}
+    GOOGLE_CLIENT_SECRET: ${env:GOOGLE_CLIENT_SECRET, 'YOUR_GOOGLE_CLIENT_SECRET'}
+    GOOGLE_REDIRECT_URI: https://obp7v1p477.execute-api.ap-south-1.amazonaws.com/api/auth/google/callback
+    FRONTEND_URL: https://amazonnow.tech
+
+functions:
+  api:
+    handler: dist/lambda.handler
+    events:
+      - httpApi:
+          path: /{proxy+}
+          method: '*'

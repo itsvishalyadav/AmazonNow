@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Package, ChevronRight, Clock, Repeat, ChevronDown, ChevronUp } from 'lucide-react';
+import { Package, Clock, Repeat, ChevronDown, ChevronUp } from 'lucide-react';
 import { getHistory, postCheckout, type HistoryResponse } from '../lib/api';
 
 const DEMO_USER_ID = 'user-demo-01';

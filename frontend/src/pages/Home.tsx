@@ -50,21 +50,25 @@ export default function Home() {
   useEffect(() => {
     // Check if calendar was just connected via OAuth redirect
     const params = new URLSearchParams(window.location.search);
-    if (params.get('calendarConnected') === 'true') {
+    const calendarToken = params.get('calendarToken');
+    if (calendarToken) {
+      localStorage.setItem('amazon_now_calendar_token', calendarToken);
       setIsCalendarConnected(true);
       // Clean up URL
       window.history.replaceState({}, document.title, window.location.pathname);
     } else {
-      // Otherwise, ask backend for current status
+      // Otherwise, ask backend for current status (which reads from localStorage header)
+      // Added v=2 to bust browser CORS preflight cache
       getCalendarStatus(DEMO_USER_ID)
         .then(res => setIsCalendarConnected(res.connected))
         .catch(err => console.error('Calendar status fetch failed:', err));
     }
 
+    // Phase 11: Call the proactive endpoint with cache buster for CORS preflight
     getProactive(DEMO_USER_ID)
-      .then(res => {
-        if (res.suggestions && res.suggestions.length > 0) {
-          setProactiveSuggestion(res.suggestions[0]);
+      .then((data) => {
+        if (data.suggestions && data.suggestions.length > 0) {
+          setProactiveSuggestion(data.suggestions[0]);
         }
       })
       .catch((err) => {
@@ -168,6 +172,7 @@ export default function Home() {
   const handleDisconnectCalendar = async () => {
     try {
       await postDisconnectCalendar(DEMO_USER_ID);
+      localStorage.removeItem('amazon_now_calendar_token');
       setIsCalendarConnected(false);
       setProactiveSuggestion(null); // Clear the calendar suggestion
     } catch (err) {
@@ -227,7 +232,7 @@ export default function Home() {
               
               {!isCalendarConnected ? (
                 <button 
-                  onClick={() => window.location.href = 'http://localhost:4001/api/auth/google'}
+                  onClick={() => window.location.href = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:4001'}/api/auth/google`}
                   className="flex items-center gap-2 text-sm font-semibold bg-[#2a2a2a] text-white px-3 py-1.5 rounded-lg border border-white/10 hover:bg-[#333] transition-colors whitespace-nowrap"
                 >
                   <Calendar size={16} className="text-blue-400" /> Connect Calendar

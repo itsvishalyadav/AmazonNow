@@ -5,7 +5,7 @@
 import { chatJSON, chatVisionJSON } from "../services/agentrouter.js";
 import { search, findSubstitute } from "../services/vectorSearch.js";
 import { getUserContext } from "../services/userContext.js";
-import { getById } from "../services/catalog.js";
+import { getById, catalogReady } from "../services/catalog.js";
 import { CartProposalSchema } from "../types/index.js";
 import type { CartProposal, CartItem, ParsedIntent, Product } from "../types/index.js";
 import {
@@ -275,6 +275,10 @@ async function enforceBudget(
 
 // ── Main entry point ───────────────────────────────────────────────────────────
 export async function buildCart(input: BuildCartInput): Promise<CartProposal> {
+  // Ensure the catalog is fully loaded before processing any request.
+  // This prevents Lambda cold starts from processing requests with an empty catalog.
+  await catalogReady;
+
   const { userId } = input;
 
   // 1. Load user context
@@ -282,7 +286,7 @@ export async function buildCart(input: BuildCartInput): Promise<CartProposal> {
   const userProfile = {
     dietary: ctx.user.household.dietary ?? [],
     household: ctx.user.household.size ?? 2,
-    budget: ctx.user.defaultBudget,
+    budget: undefined,
     recentProductNames: ctx.recentProducts.map((p) => p.name),
     learnedPrefs: ctx.learnedPrefs,
   };
@@ -333,7 +337,7 @@ export async function buildCart(input: BuildCartInput): Promise<CartProposal> {
       assumptions: intent.assumptions,
       items: [],
       total: 0,
-      budget: intent.constraints?.budget ?? userProfile.budget ?? null,
+      budget: intent.constraints?.budget ?? null,
       withinBudget: true,
       clarifyingQuestion: intent.clarifyingQuestion,
     };
@@ -363,7 +367,7 @@ export async function buildCart(input: BuildCartInput): Promise<CartProposal> {
   proposal = await enforceAvailability(proposal);
 
   // 7. Enforce budget (F3) — deterministic swaps
-  const effectiveBudget = intent.constraints?.budget ?? userProfile.budget ?? null;
+  const effectiveBudget = intent.constraints?.budget ?? null;
   proposal = { ...proposal, budget: effectiveBudget };
   proposal = await enforceBudget(proposal, candidatesBySubNeed);
 

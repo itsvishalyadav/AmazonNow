@@ -3,7 +3,7 @@
 // nudge / dietaryFlag chips, and a "substituted" tag if F7 swapped it.
 // ─────────────────────────────────────────────────────────────────────────────
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, ArrowLeftRight, Zap, AlertCircle, ShieldCheck, Sparkles, TrendingDown } from 'lucide-react';
+import { ChevronDown, ChevronUp, ArrowLeftRight, Zap, ShieldCheck, Sparkles, TrendingDown } from 'lucide-react';
 import type { CartItem } from '../lib/types';
 
 interface ItemRowProps {

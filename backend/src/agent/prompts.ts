@@ -115,7 +115,7 @@ Output ONLY this CartProposal JSON:
   "budget": null_or_number,
   "withinBudget": true,
   "occasion": {
-    "name": "Diwali Party",
+    "name": "Name of the occasion based on input",
     "icon": "PartyPopper",
     "colorGradient": "from-orange-500 to-red-500"
   },

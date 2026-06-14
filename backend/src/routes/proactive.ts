@@ -54,12 +54,13 @@ router.get("/:userId", async (req, res) => {
 
   // Check calendar first if connected
   let calendarEvent = null;
-  if (req.cookies && req.cookies.amazon_now_calendar) {
+  const calendarTokenBase64 = req.headers['x-calendar-token'] as string;
+  if (calendarTokenBase64) {
     try {
-      const tokens = JSON.parse(req.cookies.amazon_now_calendar);
+      const tokens = JSON.parse(Buffer.from(calendarTokenBase64, 'base64').toString('utf-8'));
       calendarEvent = await getUpcomingEvents(tokens);
     } catch (err) {
-      console.error("Failed to parse calendar cookies", err);
+      console.error("Failed to parse calendar token", err);
     }
   }
 

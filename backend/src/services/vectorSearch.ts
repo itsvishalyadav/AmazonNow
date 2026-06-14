@@ -1,7 +1,7 @@
 // backend/src/services/vectorSearch.ts
 // Phase 3: In-memory cosine-similarity vector search over the product catalog.
 // ─────────────────────────────────────────────────────────────────────────────
-import { embed } from "./agentrouter.js";
+
 import { all as allProducts } from "./catalog.js";
 import type { Product } from "../types/index.js";
 

@@ -1,4 +1,4 @@
-import { Plus, Clock, RefreshCcw } from 'lucide-react';
+import { Plus, RefreshCcw } from 'lucide-react';
 import type { CartItem } from '../lib/types';
 
 interface ReorderStripProps {

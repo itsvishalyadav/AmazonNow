@@ -9,9 +9,15 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:4001';
 
 // ── Generic fetch helper ─────────────────────────────────────────────────────
 async function apiPost<T>(path: string, body: unknown): Promise<T> {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  const calendarToken = localStorage.getItem('amazon_now_calendar_token');
+  if (calendarToken) {
+    headers['x-calendar-token'] = calendarToken;
+  }
+
   const res = await fetch(`${API_BASE}${path}`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify(body),
     credentials: 'include',
   });
@@ -23,7 +29,14 @@ async function apiPost<T>(path: string, body: unknown): Promise<T> {
 }
 
 async function apiGet<T>(path: string): Promise<T> {
+  const headers: Record<string, string> = {};
+  const calendarToken = localStorage.getItem('amazon_now_calendar_token');
+  if (calendarToken) {
+    headers['x-calendar-token'] = calendarToken;
+  }
+
   const res = await fetch(`${API_BASE}${path}`, {
+    headers,
     credentials: 'include',
   });
   if (!res.ok) {
@@ -50,7 +63,7 @@ export function postDisconnectCalendar(userId: string): Promise<{ success: boole
 }
 
 export function getCalendarStatus(userId: string): Promise<{ connected: boolean }> {
-  return apiGet<{ connected: boolean }>(`/api/auth/google/status?userId=${userId}`);
+  return apiGet<{ connected: boolean }>(`/api/auth/google/status?userId=${userId}&v=2`);
 }
 
 // ── POST /api/emergency ──────────────────────────────────────────────────────
@@ -114,7 +127,7 @@ export interface ProactiveResponse {
 }
 
 export function getProactive(userId: string): Promise<ProactiveResponse> {
-  return apiGet<ProactiveResponse>(`/api/proactive/${userId}`);
+  return apiGet<ProactiveResponse>(`/api/proactive/${userId}?v=2`);
 }
 
 // ── GET /api/history/:userId ─────────────────────────────────────────────────

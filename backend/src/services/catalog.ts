@@ -5,10 +5,16 @@ import { fetchFullCatalogFromDynamo } from "./dynamodb.js";
 let _catalog: Product[] = [];
 
 // ── Initialization (called once during server startup) ────────────────────────
+let catalogReadyResolver: () => void;
+export const catalogReady = new Promise<void>((resolve) => {
+  catalogReadyResolver = resolve;
+});
+
 export async function initCatalog(): Promise<void> {
   console.log("[catalog] Fetching catalog from DynamoDB...");
   _catalog = await fetchFullCatalogFromDynamo();
   console.log(`[catalog] Loaded ${_catalog.length} products from DynamoDB cache`);
+  catalogReadyResolver();
 }
 
 // ── Public API (Synchronous cache access) ─────────────────────────────────────

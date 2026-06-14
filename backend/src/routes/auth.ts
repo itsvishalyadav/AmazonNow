@@ -50,16 +50,9 @@ router.get("/google/callback", async (req, res) => {
   try {
     const { tokens } = await oauth2Client.getToken(code as string);
     
-    // Store tokens in a secure HttpOnly cookie for 24 hours
-    res.cookie('amazon_now_calendar', JSON.stringify(tokens), {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      maxAge: 24 * 60 * 60 * 1000 // 24 hours
-    });
-    
-    // Redirect back to frontend
-    res.redirect(`${FRONTEND_URL}?calendarConnected=true`);
+    // Encode tokens to base64 and pass via URL instead of a third-party cookie
+    const tokenStr = Buffer.from(JSON.stringify(tokens)).toString('base64');
+    res.redirect(`${FRONTEND_URL}?calendarToken=${encodeURIComponent(tokenStr)}`);
   } catch (err) {
     console.error("Error retrieving access token", err);
     res.status(500).send("Authentication failed");
@@ -68,17 +61,13 @@ router.get("/google/callback", async (req, res) => {
 
 // POST /api/auth/google/disconnect
 router.post("/google/disconnect", (req, res) => {
-  res.clearCookie('amazon_now_calendar', {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
-  });
+  // Frontend will handle clearing localStorage
   res.json({ success: true });
 });
 
 // GET /api/auth/google/status
 router.get("/google/status", (req, res) => {
-  const connected = !!req.cookies.amazon_now_calendar;
+  const connected = !!req.headers['x-calendar-token'];
   res.json({ connected });
 });
 
