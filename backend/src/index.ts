@@ -5,6 +5,7 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import { count, initCatalog } from "./services/catalog.js";
 
 // ── Routes ────────────────────────────────────────────────────────────────────
@@ -20,10 +21,15 @@ import authRouter from "./routes/auth.js";
 // Proxy removed
 const app = express();
 const PORT = process.env.PORT ?? 4000;
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 
 // ── Middleware ────────────────────────────────────────────────────────────────
-app.use(cors());
+app.use(cors({
+  origin: FRONTEND_URL,
+  credentials: true,
+}));
 app.use(express.json({ limit: "10mb" })); // allow base64 images
+app.use(cookieParser());
 
 // ── Health ────────────────────────────────────────────────────────────────────
 app.get("/health", (_req, res) => {

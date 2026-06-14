@@ -17,30 +17,8 @@ export const oauth2Client = new google.auth.OAuth2(
   REDIRECT_URI
 );
 
-// In-memory store for demo purposes (userId -> tokens)
-export const userTokens = new Map<string, any>();
-
-// Load tokens from disk if they exist to survive server restarts
-const TOKENS_FILE = path.join(process.cwd(), "src", "data", "userTokens.json");
-if (fs.existsSync(TOKENS_FILE)) {
-  try {
-    const data = JSON.parse(fs.readFileSync(TOKENS_FILE, "utf-8"));
-    for (const [k, v] of Object.entries(data)) {
-      userTokens.set(k, v);
-    }
-  } catch (err) {
-    console.error("Failed to load user tokens from disk:", err);
-  }
-}
-
-function saveTokens() {
-  try {
-    const obj = Object.fromEntries(userTokens.entries());
-    fs.writeFileSync(TOKENS_FILE, JSON.stringify(obj, null, 2));
-  } catch (err) {
-    console.error("Failed to save user tokens to disk:", err);
-  }
-}
+// We no longer use an in-memory map or disk persistence.
+// Tokens will be stored in an HTTP-Only secure cookie on the user's browser.
 
 // GET /api/auth/google
 router.get("/google", (req, res) => {
@@ -71,9 +49,14 @@ router.get("/google/callback", async (req, res) => {
 
   try {
     const { tokens } = await oauth2Client.getToken(code as string);
-    // Store tokens in memory and persist to disk
-    userTokens.set(userId, tokens);
-    saveTokens();
+    
+    // Store tokens in a secure HttpOnly cookie for 24 hours
+    res.cookie('amazon_now_calendar', JSON.stringify(tokens), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    });
     
     // Redirect back to frontend
     res.redirect(`${FRONTEND_URL}?calendarConnected=true`);
@@ -85,19 +68,17 @@ router.get("/google/callback", async (req, res) => {
 
 // POST /api/auth/google/disconnect
 router.post("/google/disconnect", (req, res) => {
-  const userId = req.body.userId || "user-demo-01";
-  if (userTokens.has(userId)) {
-    // Optionally revoke from Google, but for now just delete locally
-    userTokens.delete(userId);
-    saveTokens();
-  }
+  res.clearCookie('amazon_now_calendar', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+  });
   res.json({ success: true });
 });
 
 // GET /api/auth/google/status
 router.get("/google/status", (req, res) => {
-  const userId = req.query.userId as string || "user-demo-01";
-  const connected = userTokens.has(userId);
+  const connected = !!req.cookies.amazon_now_calendar;
   res.json({ connected });
 });
 

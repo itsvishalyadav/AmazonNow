@@ -1,8 +1,7 @@
 import { google } from "googleapis";
-import { oauth2Client, userTokens } from "../routes/auth.js";
+import { oauth2Client } from "../routes/auth.js";
 
-export async function getUpcomingEvents(userId: string) {
-  const tokens = userTokens.get(userId);
+export async function getUpcomingEvents(tokens: any) {
   if (!tokens) {
     return null; // Not connected
   }

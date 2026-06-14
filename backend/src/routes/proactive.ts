@@ -52,8 +52,16 @@ router.get("/:userId", async (req, res) => {
   const monthDay = `${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
   const month = today.getMonth() + 1;
 
-  // Check Calendar first!
-  const calendarEvent = await getUpcomingEvents(userId);
+  // Check calendar first if connected
+  let calendarEvent = null;
+  if (req.cookies && req.cookies.amazon_now_calendar) {
+    try {
+      const tokens = JSON.parse(req.cookies.amazon_now_calendar);
+      calendarEvent = await getUpcomingEvents(tokens);
+    } catch (err) {
+      console.error("Failed to parse calendar cookies", err);
+    }
+  }
 
   // Pick calendar first, then festival, then season
   const festival = FESTIVAL_CALENDAR[monthDay];
