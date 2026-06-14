@@ -34,9 +34,9 @@ export interface Swap {
   reason: string;
 }
 
-export interface OccasionTheme {
+export interface Occasion {
   name: string;
-  emoji: string;
+  icon: string;
   colorGradient: string;
 }
 
@@ -48,7 +48,7 @@ export interface CartProposal {
   budget: number | null;
   withinBudget: boolean;
   rebalance?: Swap[];           // F3: shown when budget exceeded then fixed
-  occasion?: OccasionTheme;
+  occasion?: Occasion;
   clarifyingQuestion: string | null;
 }
 
@@ -57,6 +57,6 @@ export interface ReorderCandidate extends CartItem {}
 export interface EmergencyScenario {
   id: string;
   label: string;
-  emoji: string;
+  icon: string;
   description: string;
 }

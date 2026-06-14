@@ -9,26 +9,26 @@ const router = Router();
 
 // Pre-defined scenario → intent text mapping
 const SCENARIOS: Record<string, string> = {
-  sick: "I'm sick and need immediate essentials — ORS packets, electrolytes, fever tablets like Dolo, Vicks VapoRub, light food like khichdi ingredients, soup, and plenty of water",
-  guests: "Guests arriving in an hour! Need snacks, cold drinks, biscuits, namkeen, tea, coffee, and quick things to serve",
-  out_of_staples: "I've run out of daily staples — urgent need for milk, bread, eggs, ghee, toor dal, tata salt, and cooking oil",
-  baby_emergency: "Baby emergency — need diapers, baby wipes, baby food or formula, and baby powder immediately",
-  power_cut: "Power cut expected — need candles or torches, water bottles, ready-to-eat food that doesn't need cooking, and cold drinks",
+  cut_finger: "I've cut my finger and need immediate first-aid — band-aids, dettol or savlon, cotton rolls, and antiseptic cream",
+  burned_cooking: "I burned the cooking and have a minor burn — need Burnol or Silverex cream, plus ready-to-eat dinner like Maggi or pasta and cold drinks",
+  severe_cramps: "Having severe period cramps — urgent need for a heating pad or hot water bag, Meftal Spas (mocked), dark chocolate, and sanitary pads",
+  sudden_guests: "Unexpected guests arrived! Need snacks, cold drinks, biscuits, namkeen, instant coffee, and quick things to serve",
+  sick_pet: "My pet dog is sick with an upset stomach — need plain rice, curd, digestive pet supplements or easy-to-digest dog food",
 };
 
-const SCENARIO_META: Record<string, { label: string; emoji: string; description: string }> = {
-  sick:           { label: "I'm Sick",       emoji: "🤒", description: "ORS, medicines, light food" },
-  guests:         { label: "Guests Coming",  emoji: "🎉", description: "Snacks, drinks, namkeen" },
-  out_of_staples: { label: "Out of Staples", emoji: "🏠", description: "Milk, bread, eggs, dal" },
-  baby_emergency: { label: "Baby Emergency", emoji: "👶", description: "Diapers, wipes, formula" },
-  power_cut:      { label: "Power Cut",      emoji: "🔦", description: "Candles, water, ready-to-eat" },
+const SCENARIO_META: Record<string, { label: string; icon: string; description: string }> = {
+  cut_finger:     { label: "Cut Finger",     icon: "Activity", description: "Band-aids, Dettol, cotton" },
+  burned_cooking: { label: "Burned Cooking", icon: "Flame",    description: "Burnol, ready-to-eat dinner" },
+  severe_cramps:  { label: "Severe Cramps",  icon: "HeartPulse", description: "Heating pad, Meftal, chocolate" },
+  sudden_guests:  { label: "Sudden Guests",  icon: "Users",    description: "Drinks, snacks, instant coffee" },
+  sick_pet:       { label: "Sick Pet",       icon: "Bone",     description: "Digestive supplements, plain food" },
 };
 
 router.get("/scenarios", (_req, res) => {
   const scenarios = Object.entries(SCENARIOS).map(([id]) => ({
     id,
     label: SCENARIO_META[id].label,
-    emoji: SCENARIO_META[id].emoji,
+    icon: SCENARIO_META[id].icon,
     description: SCENARIO_META[id].description,
   }));
   return res.json({ scenarios });

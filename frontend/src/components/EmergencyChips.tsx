@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { getEmergencyScenarios } from '../lib/api';
 import type { EmergencyScenario } from '../lib/types';
 import { Zap, Loader2 } from 'lucide-react';
+import IconRenderer from './IconRenderer';
 
 interface EmergencyChipsProps {
   onSelect: (scenario: string) => void;
@@ -11,11 +12,11 @@ interface EmergencyChipsProps {
 
 // Fallback hardcoded scenarios if API fails
 const FALLBACK_SCENARIOS: EmergencyScenario[] = [
-  { id: 'sick', label: "I'm Sick", emoji: "🤒", description: "ORS, medicines, light food" },
-  { id: 'guests', label: "Guests Coming", emoji: "🎉", description: "Snacks, drinks, namkeen" },
-  { id: 'out_of_staples', label: "Out of Staples", emoji: "🏠", description: "Milk, bread, eggs, dal" },
-  { id: 'baby_emergency', label: "Baby Emergency", emoji: "👶", description: "Diapers, wipes, formula" },
-  { id: 'power_cut', label: "Power Cut", emoji: "🔦", description: "Candles, water, ready-to-eat" },
+  { id: 'cut_finger', label: "Cut Finger", icon: "Activity", description: "Band-aids, Dettol, cotton" },
+  { id: 'burned_cooking', label: "Burned Cooking", icon: "Flame", description: "Burnol, ready-to-eat dinner" },
+  { id: 'severe_cramps', label: "Severe Cramps", icon: "HeartPulse", description: "Heating pad, Meftal, chocolate" },
+  { id: 'sudden_guests', label: "Sudden Guests", icon: "Users", description: "Drinks, snacks, instant coffee" },
+  { id: 'sick_pet', label: "Sick Pet", icon: "Bone", description: "Digestive supplements, plain food" },
 ];
 
 export default function EmergencyChips({ onSelect, isLoading, activeScenario }: EmergencyChipsProps) {
@@ -50,7 +51,9 @@ export default function EmergencyChips({ onSelect, isLoading, activeScenario }: 
                 aria-label={scenario.description}
                 title={scenario.description}
               >
-                <span className="emergency-chip-emoji">{scenario.emoji}</span>
+                <span className="emergency-chip-emoji">
+                  <IconRenderer iconName={scenario.icon} size={18} />
+                </span>
                 <span className="emergency-chip-label">{scenario.label}</span>
                 {isActive && isLoading && <Loader2 size={12} className="spin emergency-spinner" />}
               </button>

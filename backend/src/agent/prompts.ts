@@ -83,7 +83,7 @@ Rules:
 - If an item conflicts with dietary profile, set dietaryFlag and suggest the healthier option in reason.
 - If confidence is < 0.8, populate "alternatives" with 1 or 2 other relevant in-stock products from the candidate list (include id, name, price, and why it might be better).
 - Write assumptions for any inference you made.
-- If the intent is an event, party, or occasion, output an 'occasion' object with a 'name', an 'emoji', and a Tailwind 'colorGradient' (e.g. "from-purple-600 to-pink-500").
+- If the intent is an event, party, or occasion, output an 'occasion' object with a 'name', an 'icon' (a single valid LucideReact icon name like "Flame", "PartyPopper", "HeartPulse", "Users", "Sun", "CloudRain", "Star", "Activity"), and a Tailwind 'colorGradient' (e.g. "from-purple-600 to-pink-500").
 - For each item, provide a logical 'category' string to group them (e.g., "Food", "Decorations", "Beverages").
 - clarifyingQuestion: null unless ONE question would fundamentally change the cart.
 
@@ -114,7 +114,7 @@ Output ONLY this CartProposal JSON:
   "withinBudget": true,
   "occasion": {
     "name": "Diwali Party",
-    "emoji": "🎉",
+    "icon": "PartyPopper",
     "colorGradient": "from-orange-500 to-red-500"
   },
   "clarifyingQuestion": null

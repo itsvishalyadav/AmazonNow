@@ -7,6 +7,8 @@ import { ShoppingCart, Info, CheckCircle2, AlertTriangle } from 'lucide-react';
 import type { CartProposal, CartItem, Swap } from '../lib/types';
 import ItemRow from './ItemRow';
 import RebalanceBanner from './RebalanceBanner';
+import SwipeCheckoutButton from './SwipeCheckoutButton';
+import IconRenderer from './IconRenderer';
 
 interface CartProposalCardProps {
   proposal: CartProposal;
@@ -132,7 +134,9 @@ export default function CartProposalCard({
         <div className={`w-full p-6 text-white rounded-t-[14px] bg-gradient-to-r ${proposal.occasion.colorGradient} shadow-inner`}>
           <div className="flex justify-between items-start">
             <div>
-              <span className="text-4xl block mb-2 drop-shadow-md">{proposal.occasion.emoji}</span>
+              <span className="block mb-2 drop-shadow-md text-white/90">
+                <IconRenderer iconName={proposal.occasion.icon} size={38} strokeWidth={2.5} />
+              </span>
               <h2 className="text-[26px] font-black tracking-tight drop-shadow-md mb-1">{proposal.occasion.name}</h2>
               <p className="text-[14px] font-semibold opacity-90 drop-shadow-sm max-w-[80%]">{proposal.intentSummary}</p>
             </div>
@@ -302,15 +306,14 @@ export default function CartProposalCard({
           <span>Total</span>
           <strong>₹{Math.round(total)}</strong>
         </div>
-        <button
-          id="buy-now-btn"
-          className="buy-now-btn"
-          onClick={() => onCheckout(displayedItems)}
-          disabled={isCheckingOut || displayedItems.length === 0}
-          aria-label="Place order"
-        >
-          {isCheckingOut ? 'Placing order…' : `⚡ Buy now (${deliveryMode === 'flash' ? '10 mins' : '45 mins'})`}
-        </button>
+        <div className="flex-1 ml-4 min-w-[200px]">
+          <SwipeCheckoutButton 
+            onConfirm={() => onCheckout(displayedItems)}
+            disabled={displayedItems.length === 0}
+            isLoading={isCheckingOut}
+            text={`Swipe to buy (${deliveryMode === 'flash' ? '10 mins' : '45 mins'})`}
+          />
+        </div>
       </div>
     </div>
   );

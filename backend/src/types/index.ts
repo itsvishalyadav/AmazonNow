@@ -90,9 +90,9 @@ export type Swap = z.infer<typeof SwapSchema>;
 
 // ── Occasion Theme ────────────────────────────────────────────────────────────
 export const OccasionThemeSchema = z.object({
-  name: z.string(),              // e.g. "Diwali Party" or "Birthday Bash"
-  emoji: z.string(),             // e.g. "🎉"
-  colorGradient: z.string(),     // Tailwind gradient e.g. "from-orange-500 to-red-500"
+  name: z.string(),              // e.g. "Diwali Party"
+  icon: z.string(),              // e.g. "Flame" (Lucide icon name)
+  colorGradient: z.string(),     // e.g. "from-purple-600 to-pink-500"
 });
 export type OccasionTheme = z.infer<typeof OccasionThemeSchema>;
 

@@ -3,7 +3,7 @@
 // nudge / dietaryFlag chips, and a "substituted" tag if F7 swapped it.
 // ─────────────────────────────────────────────────────────────────────────────
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, ArrowLeftRight, Zap, AlertCircle } from 'lucide-react';
+import { ChevronDown, ChevronUp, ArrowLeftRight, Zap, AlertCircle, ShieldCheck, Sparkles, TrendingDown } from 'lucide-react';
 import type { CartItem } from '../lib/types';
 
 interface ItemRowProps {
@@ -109,8 +109,39 @@ export default function ItemRow({ item, onRemove, onClickProduct }: ItemRowProps
           </div>
         </div>
 
-        {/* Confidence */}
-        <ConfidencePip value={item.confidence} />
+        {/* ── Trust Badges ────────────────────────────────────────── */}
+        <div className="flex flex-wrap gap-1.5 mt-2 mb-2">
+          {item.confidence >= 0.9 && !item.substituteFor && (
+            <span className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-yellow-500/10 text-yellow-500 border border-yellow-500/20">
+              <Sparkles size={10} /> Top Match
+            </span>
+          )}
+          {item.price < 50 && (
+            <span className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <TrendingDown size={10} /> Best Value
+            </span>
+          )}
+          {item.dietaryFlag && (
+            <span className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-green-500/10 text-green-400 border border-green-500/20">
+              <ShieldCheck size={10} /> {item.dietaryFlag}
+            </span>
+          )}
+          {item.nudge && (
+            <span className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-blue-500/10 text-blue-400 border border-blue-500/20">
+              <Zap size={10} /> {item.nudge}
+            </span>
+          )}
+          {item.substituteFor && (
+            <span className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-orange-500/10 text-orange-400 border border-orange-500/20">
+              <ArrowLeftRight size={10} /> Sub: {item.substituteFor.slice(0, 15)}
+            </span>
+          )}
+        </div>
+
+        {/* Confidence (small pip) */}
+        <div className="mb-2 opacity-80">
+          <ConfidencePip value={item.confidence} />
+        </div>
 
         {/* Reason — collapsible */}
         <button
@@ -127,26 +158,7 @@ export default function ItemRow({ item, onRemove, onClickProduct }: ItemRowProps
           )}
         </button>
 
-        {/* Chips row */}
-        {(item.nudge || item.dietaryFlag || item.substituteFor) && (
-          <div className="item-chips">
-            {item.nudge && (
-              <span className="chip chip--nudge">
-                <Zap size={11} /> {item.nudge}
-              </span>
-            )}
-            {item.dietaryFlag && (
-              <span className="chip chip--diet">
-                <AlertCircle size={11} /> {item.dietaryFlag}
-              </span>
-            )}
-            {item.substituteFor && (
-              <span className="chip chip--sub">
-                Was: {item.substituteFor}
-              </span>
-            )}
-          </div>
-        )}
+        {/* Chips row removed in favor of Trust Badges above */}
 
         {/* Alternatives row */}
         {item.alternatives && item.alternatives.length > 0 && (
