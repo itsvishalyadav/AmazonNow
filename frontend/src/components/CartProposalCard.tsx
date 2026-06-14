@@ -163,7 +163,7 @@ export default function CartProposalCard({
       {/* ── Smart Slider (Speed vs Price) ───────────────────────── */}
       <div className="mx-5 mb-4 mt-2 p-1 bg-black/40 backdrop-blur-md rounded-xl border border-white/10 flex relative overflow-hidden shrink-0">
         <div 
-          className="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-gradient-to-r from-amazon-orange to-yellow-500 rounded-lg transition-transform duration-300 shadow-lg"
+          className="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-[#f97316] rounded-lg transition-transform duration-300 shadow-lg"
           style={{ transform: deliveryMode === 'flash' ? 'translateX(4px)' : 'translateX(calc(100% + 4px))' }}
         />
         <button 

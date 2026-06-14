@@ -131,7 +131,7 @@ export default function SwipeCheckoutButton({
           disabled ? 'bg-white/20' : 
           isSuccess ? 'bg-amazon-success text-black' : 
           isLoading ? 'bg-amazon-orange/50 text-white/50' :
-          'bg-gradient-to-br from-amazon-orange to-yellow-500 text-black cursor-grab active:cursor-grabbing hover:scale-105'
+          'bg-[#f97316] text-black cursor-grab active:cursor-grabbing hover:scale-105'
         }`}
         style={{
           transform: `translateX(${dragX}px)`,

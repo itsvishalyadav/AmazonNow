@@ -54,7 +54,12 @@ export async function search(
     if (category && p.category.toLowerCase() !== category.toLowerCase()) return false;
     if (subcategory && p.subcategory.toLowerCase() !== subcategory.toLowerCase()) return false;
     if (maxPrice !== undefined && p.price > maxPrice) return false;
-    if (dietary.length > 0 && !dietary.every((d) => p.dietary.includes(d))) return false;
+    if (dietary.length > 0) {
+      const isFoodCategory = !["Health & OTC", "Personal Care", "Home & Cleaning", "Pet Care", "Stationery"].includes(p.category);
+      if (isFoodCategory && !dietary.every((d) => p.dietary.includes(d))) {
+        return false;
+      }
+    }
     return true;
   });
 

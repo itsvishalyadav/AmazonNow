@@ -105,7 +105,7 @@ export const CartProposalSchema = z.object({
   budget: z.number().nullable(),
   withinBudget: z.boolean(),
   rebalance: z.array(SwapSchema).nullable().optional(),
-  occasion: OccasionThemeSchema.optional(),
+  occasion: OccasionThemeSchema.nullable().optional(),
   clarifyingQuestion: z.string().nullable(),
 });
 export type CartProposal = z.infer<typeof CartProposalSchema>;

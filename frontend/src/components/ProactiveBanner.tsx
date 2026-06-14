@@ -21,7 +21,7 @@ export default function ProactiveBanner({ suggestion, onReview, onDismiss }: Pro
           <div className="flex flex-col justify-center pt-0.5">
             <div className="flex items-center gap-2.5 mb-1">
               <h3 className="text-base sm:text-lg font-extrabold text-white tracking-tight drop-shadow-sm">{suggestion.signal}</h3>
-              <span className="px-2 py-0.5 rounded-md bg-gradient-to-r from-amazon-orange to-yellow-500 text-black text-[10px] font-extrabold uppercase tracking-widest shadow-sm">
+              <span className="px-2 py-0.5 rounded-md bg-[#f97316] text-black text-[10px] font-extrabold uppercase tracking-widest shadow-sm">
                 Suggested
               </span>
             </div>
