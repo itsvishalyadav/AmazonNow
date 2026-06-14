@@ -4,9 +4,10 @@ import type { CartItem } from '../lib/types';
 interface ReorderStripProps {
   candidates: CartItem[];
   onAppendToSearch: (productName: string) => void;
+  onClickProduct?: (item: CartItem) => void;
 }
 
-export default function ReorderStrip({ candidates, onAppendToSearch }: ReorderStripProps) {
+export default function ReorderStrip({ candidates, onAppendToSearch, onClickProduct }: ReorderStripProps) {
   if (!candidates || candidates.length === 0) return null;
 
   return (
@@ -63,10 +64,40 @@ export default function ReorderStrip({ candidates, onAppendToSearch }: ReorderSt
                 </div>
               </div>
               
-              <div className="p-4 flex flex-col flex-1">
-                <h4 className="text-[14px] font-bold text-white leading-snug line-clamp-2 mb-1.5 group-hover:text-amazon-orange transition-colors" title={item.name}>
+              <div 
+                className="p-4 flex flex-col flex-1 cursor-pointer"
+                onClick={() => onClickProduct?.(item)}
+              >
+                <h4 className="text-[14px] font-bold text-white leading-snug line-clamp-2 mb-1 group-hover:text-amazon-orange transition-colors" title={item.name}>
                   {item.name}
                 </h4>
+                
+                {/* Amazon-like metadata row */}
+                {(item.rating || item.deliveryTime || item.isPrime) && (
+                  <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 mb-2">
+                    {item.rating && (
+                      <div className="flex items-center gap-0.5">
+                        <span className="text-[11px] font-bold text-[#FF9900]">{item.rating.toFixed(1)}</span>
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="#FF9900" xmlns="http://www.w3.org/2000/svg" className="mt-[1px]">
+                          <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+                        </svg>
+                        {item.reviewCount && (
+                          <span className="text-[10px] text-gray-400 ml-0.5">({item.reviewCount.toLocaleString()})</span>
+                        )}
+                      </div>
+                    )}
+                    {item.isPrime && (
+                      <div className="flex items-center">
+                        <span className="text-[#00A8E1] font-extrabold italic text-[11px] tracking-tight">prime</span>
+                      </div>
+                    )}
+                    {item.deliveryTime && (
+                      <span className="text-[10px] font-medium text-gray-300 w-full">
+                        Get it <span className="font-bold text-white">{item.deliveryTime}</span>
+                      </span>
+                    )}
+                  </div>
+                )}
                 
                 <p className="text-[11px] text-gray-400 line-clamp-2 flex-1 mb-4 leading-relaxed" title={item.reason}>
                   {item.reason}
@@ -78,7 +109,10 @@ export default function ReorderStrip({ candidates, onAppendToSearch }: ReorderSt
                     <span className="text-[16px] font-extrabold text-white">₹{item.price}</span>
                   </div>
                   <button 
-                    onClick={() => onAppendToSearch(item.name)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onAppendToSearch(item.name);
+                    }}
                     className="flex items-center justify-center w-9 h-9 rounded-full bg-white/10 text-white hover:bg-amazon-orange hover:text-black hover:scale-110 active:scale-95 transition-all shadow-md group/add"
                     aria-label={`Add ${item.name}`}
                   >

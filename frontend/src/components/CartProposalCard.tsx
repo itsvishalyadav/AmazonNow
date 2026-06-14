@@ -15,6 +15,7 @@ interface CartProposalCardProps {
   onFeedbackRemove?: (productId: string, productName: string) => void;
   onFeedbackAdd?: (productName: string) => void;
   onReply?: (text: string) => void;
+  onClickProduct?: (item: CartItem) => void;
 }
 
 export default function CartProposalCard({
@@ -24,6 +25,7 @@ export default function CartProposalCard({
   onFeedbackRemove,
   onFeedbackAdd,
   onReply,
+  onClickProduct,
 }: CartProposalCardProps) {
   const [items, setItems] = useState<CartItem[]>(proposal.items);
   const [swapsReverted, setSwapsReverted] = useState<Set<string>>(new Set());
@@ -235,14 +237,14 @@ export default function CartProposalCard({
               </h3>
               <div className="p-2">
                 {catItems.map((item) => (
-                  <ItemRow key={item.productId} item={item} onRemove={(id) => handleRemove(id, item.name)} />
+                  <ItemRow key={item.productId} item={item} onRemove={(id) => handleRemove(id, item.name)} onClickProduct={onClickProduct} />
                 ))}
               </div>
             </div>
           ))
         ) : (
           displayedItems.map((item) => (
-            <ItemRow key={item.productId} item={item} onRemove={(id) => handleRemove(id, item.name)} />
+            <ItemRow key={item.productId} item={item} onRemove={(id) => handleRemove(id, item.name)} onClickProduct={onClickProduct} />
           ))
         )}
       </div>

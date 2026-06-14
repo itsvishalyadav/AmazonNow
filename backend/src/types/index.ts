@@ -19,6 +19,10 @@ export interface Product {
   inStock: boolean;
   popularity: number;     // 0–1
   imageUrl: string;
+  rating?: number;        // e.g. 4.5
+  reviewCount?: number;   // e.g. 1250
+  deliveryTime?: string;  // e.g. "10 mins"
+  isPrime?: boolean;
   embedding?: number[];
   _stub?: boolean;        // true when embeddings are local stubs, not real model vectors
 }
@@ -62,6 +66,10 @@ export const CartItemSchema = z.object({
   nudge: z.string().nullable().optional(),           // F11: unit-economics tip
   dietaryFlag: z.string().nullable().optional(),     // F10: e.g. "high sugar"
   imageUrl: z.string().nullable().optional(),
+  rating: z.number().optional(),
+  reviewCount: z.number().optional(),
+  deliveryTime: z.string().optional(),
+  isPrime: z.boolean().optional(),
   alternatives: z.array(z.object({
     id: z.string(),
     name: z.string(),

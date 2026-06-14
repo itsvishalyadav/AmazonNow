@@ -41,6 +41,15 @@ export function postIntent(req: IntentRequest): Promise<CartProposal> {
   return apiPost<CartProposal>('/api/intent', req);
 }
 
+// ── POST /api/auth/google/disconnect ─────────────────────────────────────────
+export function postDisconnectCalendar(userId: string): Promise<{ success: boolean }> {
+  return apiPost<{ success: boolean }>('/api/auth/google/disconnect', { userId });
+}
+
+export function getCalendarStatus(userId: string): Promise<{ connected: boolean }> {
+  return apiGet<{ connected: boolean }>(`/api/auth/google/status?userId=${userId}`);
+}
+
 // ── POST /api/emergency ──────────────────────────────────────────────────────
 export interface EmergencyRequest {
   userId: string;

@@ -9,6 +9,7 @@ import type { CartItem } from '../lib/types';
 interface ItemRowProps {
   item: CartItem;
   onRemove?: (productId: string) => void;
+  onClickProduct?: (item: CartItem) => void;
 }
 
 function ConfidencePip({ value }: { value: number }) {
@@ -34,7 +35,7 @@ function ConfidencePip({ value }: { value: number }) {
   );
 }
 
-export default function ItemRow({ item, onRemove }: ItemRowProps) {
+export default function ItemRow({ item, onRemove, onClickProduct }: ItemRowProps) {
   const [reasonExpanded, setReasonExpanded] = useState(false);
   const [altExpanded, setAltExpanded] = useState(false);
 
@@ -43,7 +44,10 @@ export default function ItemRow({ item, onRemove }: ItemRowProps) {
   return (
     <div className={`item-row ${item.substituteFor ? 'item-row--substituted' : ''}`}>
       {/* Left: image placeholder */}
-      <div className="item-image">
+      <div 
+        className="item-image cursor-pointer hover:opacity-80 transition-opacity"
+        onClick={() => onClickProduct?.(item)}
+      >
         {item.imageUrl ? (
           <img src={item.imageUrl} alt={item.name} loading="lazy" />
         ) : (
@@ -58,11 +62,43 @@ export default function ItemRow({ item, onRemove }: ItemRowProps) {
         {/* Top row: name + price */}
         <div className="item-top">
           <div className="item-name-group">
-            <span className="item-name">{item.name}</span>
+            <span 
+              className="item-name cursor-pointer hover:text-amazon-orange transition-colors"
+              onClick={() => onClickProduct?.(item)}
+            >
+              {item.name}
+            </span>
             {item.substituteFor && (
               <span className="item-tag item-tag--sub" title={`Substituted for: ${item.substituteFor}`}>
                 <ArrowLeftRight size={10} /> Sub
               </span>
+            )}
+            
+            {/* Amazon-like metadata row */}
+            {(item.rating || item.deliveryTime || item.isPrime) && (
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1">
+                {item.rating && (
+                  <div className="flex items-center gap-0.5">
+                    <span className="text-[12px] font-bold text-[#FF9900]">{item.rating.toFixed(1)}</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="#FF9900" xmlns="http://www.w3.org/2000/svg" className="mt-[1px]">
+                      <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+                    </svg>
+                    {item.reviewCount && (
+                      <span className="text-[11px] text-gray-400 ml-0.5">({item.reviewCount.toLocaleString()})</span>
+                    )}
+                  </div>
+                )}
+                {item.isPrime && (
+                  <div className="flex items-center">
+                    <span className="text-[#00A8E1] font-extrabold italic text-[12px] tracking-tight">prime</span>
+                  </div>
+                )}
+                {item.deliveryTime && (
+                  <span className="text-[11px] font-medium text-gray-300">
+                    Get it <span className="font-bold text-white">{item.deliveryTime}</span>
+                  </span>
+                )}
+              </div>
             )}
           </div>
           <div className="item-price-group">

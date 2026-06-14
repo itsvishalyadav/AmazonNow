@@ -62,6 +62,10 @@ router.get("/:userId", async (req, res) => {
           reason: `You typically reorder this every ${Math.round(avgInterval)} days — last ordered ${Math.round(daysSinceLast)} days ago.`,
           confidence: Math.round(confidence * 100) / 100,
           imageUrl: product.imageUrl,
+          rating: product.rating,
+          reviewCount: product.reviewCount,
+          isPrime: product.isPrime,
+          deliveryTime: product.deliveryTime,
         });
       }
     }

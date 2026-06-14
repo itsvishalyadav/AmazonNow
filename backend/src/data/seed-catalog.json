@@ -149,7 +149,11 @@
       0.1638,
       0.1638,
       0.1653
-    ]
+    ],
+    "rating": 3.7,
+    "reviewCount": 6568,
+    "isPrime": true,
+    "deliveryTime": "Next Day"
   },
   {
     "id": "prod-1001",
@@ -301,7 +305,11 @@
       0.2954,
       0.1943,
       0.149
-    ]
+    ],
+    "rating": 3.6,
+    "reviewCount": 3014,
+    "isPrime": true,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1002",
@@ -453,7 +461,11 @@
       0.1803,
       0.2554,
       0.2988
-    ]
+    ],
+    "rating": 4.5,
+    "reviewCount": 9998,
+    "isPrime": true,
+    "deliveryTime": "Next Day"
   },
   {
     "id": "prod-1003",
@@ -605,7 +617,11 @@
       0.2712,
       0.2937,
       0.1945
-    ]
+    ],
+    "rating": 4.8,
+    "reviewCount": 8295,
+    "isPrime": false,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1004",
@@ -757,7 +773,11 @@
       0.2551,
       0.2652,
       0.2513
-    ]
+    ],
+    "rating": 4.8,
+    "reviewCount": 3904,
+    "isPrime": true,
+    "deliveryTime": "Same Day"
   },
   {
     "id": "prod-1005",
@@ -909,7 +929,11 @@
       0.1076,
       0.1353,
       0.163
-    ]
+    ],
+    "rating": 4.7,
+    "reviewCount": 6682,
+    "isPrime": true,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1006",
@@ -1061,7 +1085,11 @@
       0.1485,
       0.2188,
       0.2851
-    ]
+    ],
+    "rating": 4.3,
+    "reviewCount": 11904,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1007",
@@ -1213,7 +1241,11 @@
       0.2958,
       0.3192,
       0.2008
-    ]
+    ],
+    "rating": 4.7,
+    "reviewCount": 4895,
+    "isPrime": false,
+    "deliveryTime": "Same Day"
   },
   {
     "id": "prod-1008",
@@ -1365,7 +1397,11 @@
       0.2813,
       0.2631,
       0.2696
-    ]
+    ],
+    "rating": 4.7,
+    "reviewCount": 1579,
+    "isPrime": true,
+    "deliveryTime": "Next Day"
   },
   {
     "id": "prod-1009",
@@ -1517,7 +1553,11 @@
       0.0851,
       0.1463,
       0.1769
-    ]
+    ],
+    "rating": 4.4,
+    "reviewCount": 9990,
+    "isPrime": true,
+    "deliveryTime": "Same Day"
   },
   {
     "id": "prod-1010",
@@ -1669,7 +1709,11 @@
       0.2008,
       0.1312,
       0.2218
-    ]
+    ],
+    "rating": 4.4,
+    "reviewCount": 8007,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1011",
@@ -1821,7 +1865,11 @@
       0.2994,
       0.1934,
       0.2411
-    ]
+    ],
+    "rating": 3.7,
+    "reviewCount": 7652,
+    "isPrime": true,
+    "deliveryTime": "Next Day"
   },
   {
     "id": "prod-1012",
@@ -1973,7 +2021,11 @@
       0.3028,
       0.0825,
       0.192
-    ]
+    ],
+    "rating": 4.1,
+    "reviewCount": 8518,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1013",
@@ -2125,7 +2177,11 @@
       0.2942,
       0.1801,
       0.2295
-    ]
+    ],
+    "rating": 4.9,
+    "reviewCount": 11127,
+    "isPrime": true,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1014",
@@ -2277,7 +2333,11 @@
       0.3014,
       0.1885,
       0.127
-    ]
+    ],
+    "rating": 4.6,
+    "reviewCount": 2392,
+    "isPrime": true,
+    "deliveryTime": "Same Day"
   },
   {
     "id": "prod-1015",
@@ -2432,7 +2492,11 @@
       0.0494,
       0.1026,
       0.1558
-    ]
+    ],
+    "rating": 4.3,
+    "reviewCount": 9513,
+    "isPrime": true,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1016",
@@ -2583,7 +2647,11 @@
       0.2919,
       0.2962,
       0.3076
-    ]
+    ],
+    "rating": 4.4,
+    "reviewCount": 1935,
+    "isPrime": false,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1017",
@@ -2735,7 +2803,11 @@
       0.0888,
       0.2096,
       0.2887
-    ]
+    ],
+    "rating": 3.7,
+    "reviewCount": 11330,
+    "isPrime": true,
+    "deliveryTime": "Same Day"
   },
   {
     "id": "prod-1018",
@@ -2887,7 +2959,11 @@
       0.2902,
       0.1926,
       0.2434
-    ]
+    ],
+    "rating": 4.1,
+    "reviewCount": 4971,
+    "isPrime": true,
+    "deliveryTime": "Same Day"
   },
   {
     "id": "prod-1019",
@@ -3039,7 +3115,11 @@
       0.297,
       0.0823,
       0.1761
-    ]
+    ],
+    "rating": 3.6,
+    "reviewCount": 8388,
+    "isPrime": true,
+    "deliveryTime": "Next Day"
   },
   {
     "id": "prod-1020",
@@ -3191,7 +3271,11 @@
       0.2894,
       0.1921,
       0.2362
-    ]
+    ],
+    "rating": 4.2,
+    "reviewCount": 7167,
+    "isPrime": true,
+    "deliveryTime": "Next Day"
   },
   {
     "id": "prod-1021",
@@ -3343,7 +3427,11 @@
       0.2513,
       0.1793,
       0.2382
-    ]
+    ],
+    "rating": 3.7,
+    "reviewCount": 6514,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1022",
@@ -3495,7 +3583,11 @@
       0.1986,
       0.1337,
       0.2375
-    ]
+    ],
+    "rating": 4.3,
+    "reviewCount": 6778,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1023",
@@ -3647,7 +3739,11 @@
       0.2994,
       0.1882,
       0.2299
-    ]
+    ],
+    "rating": 4.8,
+    "reviewCount": 3545,
+    "isPrime": true,
+    "deliveryTime": "Next Day"
   },
   {
     "id": "prod-1024",
@@ -3799,7 +3895,11 @@
       0.1444,
       0.103,
       0.1293
-    ]
+    ],
+    "rating": 4.5,
+    "reviewCount": 491,
+    "isPrime": true,
+    "deliveryTime": "Same Day"
   },
   {
     "id": "prod-1025",
@@ -3951,7 +4051,11 @@
       0.3006,
       0.1844,
       0.245
-    ]
+    ],
+    "rating": 4.9,
+    "reviewCount": 3335,
+    "isPrime": false,
+    "deliveryTime": "Same Day"
   },
   {
     "id": "prod-1026",
@@ -4103,7 +4207,11 @@
       0.2826,
       0.1884,
       0.2342
-    ]
+    ],
+    "rating": 4.1,
+    "reviewCount": 1588,
+    "isPrime": false,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1027",
@@ -4255,7 +4363,11 @@
       0.2967,
       0.1866,
       0.2341
-    ]
+    ],
+    "rating": 4.4,
+    "reviewCount": 11167,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1028",
@@ -4407,7 +4519,11 @@
       0.2952,
       0.0818,
       0.2019
-    ]
+    ],
+    "rating": 4.5,
+    "reviewCount": 5861,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1029",
@@ -4559,7 +4675,11 @@
       0.2971,
       0.0823,
       0.1775
-    ]
+    ],
+    "rating": 4.3,
+    "reviewCount": 7116,
+    "isPrime": true,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1030",
@@ -4711,7 +4831,11 @@
       0.259,
       0.293,
       0.1923
-    ]
+    ],
+    "rating": 4.2,
+    "reviewCount": 7711,
+    "isPrime": true,
+    "deliveryTime": "Same Day"
   },
   {
     "id": "prod-1031",
@@ -4865,7 +4989,11 @@
       0.109,
       0.1232,
       0.135
-    ]
+    ],
+    "rating": 4.4,
+    "reviewCount": 11310,
+    "isPrime": true,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1032",
@@ -5017,7 +5145,11 @@
       0.1967,
       0.2613,
       0.282
-    ]
+    ],
+    "rating": 4.2,
+    "reviewCount": 6278,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1033",
@@ -5169,7 +5301,11 @@
       0.2934,
       0.1819,
       0.2562
-    ]
+    ],
+    "rating": 4.4,
+    "reviewCount": 5740,
+    "isPrime": true,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1034",
@@ -5321,7 +5457,11 @@
       0.2937,
       0.2583,
       0.2823
-    ]
+    ],
+    "rating": 4.8,
+    "reviewCount": 3217,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1035",
@@ -5473,7 +5613,11 @@
       0.1942,
       0.2629,
       0.2919
-    ]
+    ],
+    "rating": 4.8,
+    "reviewCount": 11859,
+    "isPrime": true,
+    "deliveryTime": "Same Day"
   },
   {
     "id": "prod-1036",
@@ -5625,7 +5769,11 @@
       0.2836,
       0.2849,
       0.3062
-    ]
+    ],
+    "rating": 4.8,
+    "reviewCount": 11110,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1037",
@@ -5777,7 +5925,11 @@
       0.2764,
       0.3055,
       0.0846
-    ]
+    ],
+    "rating": 4.1,
+    "reviewCount": 9125,
+    "isPrime": false,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1038",
@@ -5931,7 +6083,11 @@
       0.0813,
       0.1091,
       0.1234
-    ]
+    ],
+    "rating": 4.2,
+    "reviewCount": 2645,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1039",
@@ -6083,7 +6239,11 @@
       0.2605,
       0.281,
       0.2687
-    ]
+    ],
+    "rating": 4.8,
+    "reviewCount": 7268,
+    "isPrime": true,
+    "deliveryTime": "Next Day"
   },
   {
     "id": "prod-1040",
@@ -6235,7 +6395,11 @@
       0.2823,
       0.2915,
       0.3033
-    ]
+    ],
+    "rating": 4,
+    "reviewCount": 7058,
+    "isPrime": false,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1041",
@@ -6387,7 +6551,11 @@
       0.2607,
       0.2813,
       0.269
-    ]
+    ],
+    "rating": 3.5,
+    "reviewCount": 11570,
+    "isPrime": true,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1042",
@@ -6539,7 +6707,11 @@
       0.2836,
       0.2849,
       0.3062
-    ]
+    ],
+    "rating": 3.6,
+    "reviewCount": 11957,
+    "isPrime": false,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1043",
@@ -6691,7 +6863,11 @@
       0.0867,
       0.1598,
       0.1937
-    ]
+    ],
+    "rating": 4.8,
+    "reviewCount": 6867,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1044",
@@ -6845,7 +7021,11 @@
       0.1112,
       0.0756,
       0.1082
-    ]
+    ],
+    "rating": 4.7,
+    "reviewCount": 11016,
+    "isPrime": true,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1045",
@@ -6996,7 +7176,11 @@
       0.28,
       0.0833,
       0.1784
-    ]
+    ],
+    "rating": 4.6,
+    "reviewCount": 3927,
+    "isPrime": false,
+    "deliveryTime": "Next Day"
   },
   {
     "id": "prod-1046",
@@ -7147,7 +7331,11 @@
       0.1973,
       0.145,
       0.2322
-    ]
+    ],
+    "rating": 4.2,
+    "reviewCount": 6916,
+    "isPrime": false,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1047",
@@ -7298,7 +7486,11 @@
       0.2694,
       0.2527,
       0.2849
-    ]
+    ],
+    "rating": 4.4,
+    "reviewCount": 7504,
+    "isPrime": true,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1048",
@@ -7449,7 +7641,11 @@
       0.215,
       0.2677,
       0.2574
-    ]
+    ],
+    "rating": 4.9,
+    "reviewCount": 2342,
+    "isPrime": true,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1049",
@@ -7600,7 +7796,11 @@
       0.2557,
       0.1898,
       0.1498
-    ]
+    ],
+    "rating": 4.1,
+    "reviewCount": 6595,
+    "isPrime": true,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1050",
@@ -7753,7 +7953,11 @@
       0.098,
       0.1405,
       0.1565
-    ]
+    ],
+    "rating": 4.9,
+    "reviewCount": 6550,
+    "isPrime": true,
+    "deliveryTime": "Same Day"
   },
   {
     "id": "prod-1051",
@@ -7906,7 +8110,11 @@
       0.1627,
       0.162,
       0.0976
-    ]
+    ],
+    "rating": 4.3,
+    "reviewCount": 2686,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1052",
@@ -8059,7 +8267,11 @@
       0.1018,
       0.1377,
       0.1645
-    ]
+    ],
+    "rating": 4.5,
+    "reviewCount": 4026,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1053",
@@ -8212,7 +8424,11 @@
       0.1402,
       0.1561,
       0.1713
-    ]
+    ],
+    "rating": 4.2,
+    "reviewCount": 5018,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1054",
@@ -8365,7 +8581,11 @@
       0.0924,
       0.0783,
       0.1059
-    ]
+    ],
+    "rating": 4.9,
+    "reviewCount": 5939,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1055",
@@ -8516,7 +8736,11 @@
       0.2486,
       0.288,
       0.2765
-    ]
+    ],
+    "rating": 4.2,
+    "reviewCount": 7889,
+    "isPrime": true,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1056",
@@ -8667,7 +8891,11 @@
       0.2516,
       0.2797,
       0.2745
-    ]
+    ],
+    "rating": 4.7,
+    "reviewCount": 7942,
+    "isPrime": true,
+    "deliveryTime": "Same Day"
   },
   {
     "id": "prod-1057",
@@ -8818,7 +9046,11 @@
       0.2592,
       0.2669,
       0.2734
-    ]
+    ],
+    "rating": 4.8,
+    "reviewCount": 9829,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1058",
@@ -8969,7 +9201,11 @@
       0.214,
       0.2666,
       0.2614
-    ]
+    ],
+    "rating": 4.2,
+    "reviewCount": 10661,
+    "isPrime": true,
+    "deliveryTime": "Same Day"
   },
   {
     "id": "prod-1059",
@@ -9120,7 +9356,11 @@
       0.2807,
       0.0832,
       0.1962
-    ]
+    ],
+    "rating": 4.4,
+    "reviewCount": 1913,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1060",
@@ -9271,7 +9511,11 @@
       0.1217,
       0.1608,
       0.1638
-    ]
+    ],
+    "rating": 4.3,
+    "reviewCount": 3725,
+    "isPrime": false,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1061",
@@ -9422,7 +9666,11 @@
       0.097,
       0.1499,
       0.1507
-    ]
+    ],
+    "rating": 4.1,
+    "reviewCount": 4044,
+    "isPrime": true,
+    "deliveryTime": "Next Day"
   },
   {
     "id": "prod-1062",
@@ -9573,7 +9821,11 @@
       0.1367,
       0.0974,
       0.1518
-    ]
+    ],
+    "rating": 3.5,
+    "reviewCount": 2588,
+    "isPrime": true,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1063",
@@ -9724,7 +9976,11 @@
       0.1621,
       0.1591,
       0.1727
-    ]
+    ],
+    "rating": 4.5,
+    "reviewCount": 6563,
+    "isPrime": false,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1064",
@@ -9875,7 +10131,11 @@
       0.2378,
       0.2927,
       0.1699
-    ]
+    ],
+    "rating": 4.3,
+    "reviewCount": 6584,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1065",
@@ -10026,7 +10286,11 @@
       0.162,
       0.107,
       0.0746
-    ]
+    ],
+    "rating": 4.5,
+    "reviewCount": 3688,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1066",
@@ -10177,7 +10441,11 @@
       0.2629,
       0.2872,
       0.2577
-    ]
+    ],
+    "rating": 4.7,
+    "reviewCount": 11773,
+    "isPrime": false,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1067",
@@ -10328,7 +10596,11 @@
       0.1515,
       0.098,
       0.1387
-    ]
+    ],
+    "rating": 4.2,
+    "reviewCount": 1913,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1068",
@@ -10479,7 +10751,11 @@
       0.1539,
       0.1069,
       0.1446
-    ]
+    ],
+    "rating": 4.9,
+    "reviewCount": 3473,
+    "isPrime": true,
+    "deliveryTime": "Same Day"
   },
   {
     "id": "prod-1069",
@@ -10630,7 +10906,11 @@
       0.1371,
       0.1688,
       0.0979
-    ]
+    ],
+    "rating": 4.3,
+    "reviewCount": 8865,
+    "isPrime": true,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1070",
@@ -10781,7 +11061,11 @@
       0.152,
       0.1686,
       0.1001
-    ]
+    ],
+    "rating": 4.4,
+    "reviewCount": 2793,
+    "isPrime": true,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1071",
@@ -10932,7 +11216,11 @@
       0.2851,
       0.1655,
       0.2558
-    ]
+    ],
+    "rating": 3.5,
+    "reviewCount": 4112,
+    "isPrime": true,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1072",
@@ -11083,7 +11371,11 @@
       0.1031,
       0.1332,
       0.0971
-    ]
+    ],
+    "rating": 4.2,
+    "reviewCount": 946,
+    "isPrime": true,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1073",
@@ -11234,7 +11526,11 @@
       0.2751,
       0.2712,
       0.2712
-    ]
+    ],
+    "rating": 4.3,
+    "reviewCount": 9194,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1074",
@@ -11385,7 +11681,11 @@
       0.1666,
       0.1606,
       0.0972
-    ]
+    ],
+    "rating": 4.4,
+    "reviewCount": 4266,
+    "isPrime": true,
+    "deliveryTime": "Same Day"
   },
   {
     "id": "prod-1075",
@@ -11536,7 +11836,11 @@
       0.1337,
       0.1616,
       0.108
-    ]
+    ],
+    "rating": 4,
+    "reviewCount": 6713,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1076",
@@ -11687,7 +11991,11 @@
       0.1299,
       0.1237,
       0.1237
-    ]
+    ],
+    "rating": 4.3,
+    "reviewCount": 10705,
+    "isPrime": true,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1077",
@@ -11838,7 +12146,11 @@
       0.2435,
       0.2994,
       0.2874
-    ]
+    ],
+    "rating": 4.8,
+    "reviewCount": 8196,
+    "isPrime": true,
+    "deliveryTime": "Same Day"
   },
   {
     "id": "prod-1078",
@@ -11989,7 +12301,11 @@
       0.0777,
       0.0654,
       0.1151
-    ]
+    ],
+    "rating": 3.7,
+    "reviewCount": 1703,
+    "isPrime": true,
+    "deliveryTime": "Same Day"
   },
   {
     "id": "prod-1079",
@@ -12140,7 +12456,11 @@
       0.118,
       0.1221,
       0.1227
-    ]
+    ],
+    "rating": 4.6,
+    "reviewCount": 8267,
+    "isPrime": false,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1080",
@@ -12291,7 +12611,11 @@
       0.1043,
       0.1307,
       0.1657
-    ]
+    ],
+    "rating": 4.3,
+    "reviewCount": 2159,
+    "isPrime": true,
+    "deliveryTime": "Next Day"
   },
   {
     "id": "prod-1081",
@@ -12442,7 +12766,11 @@
       0.2837,
       0.2903,
       0.2771
-    ]
+    ],
+    "rating": 4.1,
+    "reviewCount": 10138,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1082",
@@ -12593,7 +12921,11 @@
       0.1473,
       0.1737,
       0.1096
-    ]
+    ],
+    "rating": 4.8,
+    "reviewCount": 6860,
+    "isPrime": true,
+    "deliveryTime": "Next Day"
   },
   {
     "id": "prod-1083",
@@ -12744,7 +13076,11 @@
       0.1558,
       0.1603,
       0.0993
-    ]
+    ],
+    "rating": 4.6,
+    "reviewCount": 4003,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1084",
@@ -12895,7 +13231,11 @@
       0.3059,
       0.3101,
       0.2846
-    ]
+    ],
+    "rating": 4.7,
+    "reviewCount": 5447,
+    "isPrime": true,
+    "deliveryTime": "Same Day"
   },
   {
     "id": "prod-1085",
@@ -13046,7 +13386,11 @@
       0.2354,
       0.2896,
       0.2856
-    ]
+    ],
+    "rating": 4.2,
+    "reviewCount": 10981,
+    "isPrime": true,
+    "deliveryTime": "Same Day"
   },
   {
     "id": "prod-1086",
@@ -13197,7 +13541,11 @@
       0.286,
       0.1898,
       0.2158
-    ]
+    ],
+    "rating": 4.3,
+    "reviewCount": 2579,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1087",
@@ -13348,7 +13696,11 @@
       0.1514,
       0.1544,
       0.1589
-    ]
+    ],
+    "rating": 4.7,
+    "reviewCount": 7363,
+    "isPrime": true,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1088",
@@ -13499,7 +13851,11 @@
       0.1138,
       0.1434,
       0.1621
-    ]
+    ],
+    "rating": 4.3,
+    "reviewCount": 5258,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1089",
@@ -13650,7 +14006,11 @@
       0.2836,
       0.2901,
       0.277
-    ]
+    ],
+    "rating": 3.7,
+    "reviewCount": 9990,
+    "isPrime": false,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1090",
@@ -13804,7 +14164,11 @@
       0.0513,
       0.0718,
       0.0845
-    ]
+    ],
+    "rating": 3.6,
+    "reviewCount": 6437,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1091",
@@ -13958,7 +14322,11 @@
       0.0719,
       0.053,
       0.0682
-    ]
+    ],
+    "rating": 4.2,
+    "reviewCount": 6941,
+    "isPrime": true,
+    "deliveryTime": "Same Day"
   },
   {
     "id": "prod-1092",
@@ -14112,7 +14480,11 @@
       0.0898,
       0.058,
       0.067
-    ]
+    ],
+    "rating": 4.1,
+    "reviewCount": 2823,
+    "isPrime": true,
+    "deliveryTime": "Same Day"
   },
   {
     "id": "prod-1093",
@@ -14266,7 +14638,11 @@
       0.0287,
       0.0447,
       0.08
-    ]
+    ],
+    "rating": 4.6,
+    "reviewCount": 4782,
+    "isPrime": true,
+    "deliveryTime": "Same Day"
   },
   {
     "id": "prod-1094",
@@ -14420,7 +14796,11 @@
       0.0513,
       0.0719,
       0.0846
-    ]
+    ],
+    "rating": 3.8,
+    "reviewCount": 7438,
+    "isPrime": true,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1095",
@@ -14574,7 +14954,11 @@
       0.0557,
       0.0704,
       0.0884
-    ]
+    ],
+    "rating": 4.5,
+    "reviewCount": 5281,
+    "isPrime": false,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1096",
@@ -14727,7 +15111,11 @@
       0.0851,
       0.0579,
       0.0441
-    ]
+    ],
+    "rating": 4.3,
+    "reviewCount": 10336,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1097",
@@ -14879,7 +15267,11 @@
       0.0882,
       0.1129,
       0.1172
-    ]
+    ],
+    "rating": 4.5,
+    "reviewCount": 10878,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1098",
@@ -15031,7 +15423,11 @@
       0.088,
       0.0944,
       0.0586
-    ]
+    ],
+    "rating": 3.8,
+    "reviewCount": 4533,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1099",
@@ -15183,7 +15579,11 @@
       0.0694,
       0.0979,
       0.1168
-    ]
+    ],
+    "rating": 4,
+    "reviewCount": 4361,
+    "isPrime": true,
+    "deliveryTime": "Same Day"
   },
   {
     "id": "prod-1100",
@@ -15335,7 +15735,11 @@
       0.0992,
       0.1182,
       0.0792
-    ]
+    ],
+    "rating": 4.7,
+    "reviewCount": 4812,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1101",
@@ -15487,7 +15891,11 @@
       0.0897,
       0.1188,
       0.1182
-    ]
+    ],
+    "rating": 4.3,
+    "reviewCount": 7289,
+    "isPrime": false,
+    "deliveryTime": "Same Day"
   },
   {
     "id": "prod-1102",
@@ -15639,7 +16047,11 @@
       0.0541,
       0.105,
       0.1094
-    ]
+    ],
+    "rating": 4.8,
+    "reviewCount": 4209,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1103",
@@ -15791,7 +16203,11 @@
       0.1096,
       0.0639,
       0.09
-    ]
+    ],
+    "rating": 3.6,
+    "reviewCount": 5678,
+    "isPrime": true,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1104",
@@ -15943,7 +16359,11 @@
       0.086,
       0.099,
       0.0679
-    ]
+    ],
+    "rating": 4.8,
+    "reviewCount": 8563,
+    "isPrime": true,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1105",
@@ -16097,7 +16517,11 @@
       0.0875,
       0.0538,
       0.0696
-    ]
+    ],
+    "rating": 4.7,
+    "reviewCount": 10106,
+    "isPrime": true,
+    "deliveryTime": "Same Day"
   },
   {
     "id": "prod-1106",
@@ -16251,7 +16675,11 @@
       0.0837,
       0.0834,
       0.0538
-    ]
+    ],
+    "rating": 4.6,
+    "reviewCount": 2333,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1107",
@@ -16405,7 +16833,11 @@
       0.0536,
       0.0695,
       0.0919
-    ]
+    ],
+    "rating": 4.2,
+    "reviewCount": 8645,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1108",
@@ -16559,7 +16991,11 @@
       0.0554,
       0.0702,
       0.0786
-    ]
+    ],
+    "rating": 4.3,
+    "reviewCount": 9154,
+    "isPrime": true,
+    "deliveryTime": "Same Day"
   },
   {
     "id": "prod-1109",
@@ -16713,7 +17149,11 @@
       0.0659,
       0.0501,
       0.067
-    ]
+    ],
+    "rating": 4.4,
+    "reviewCount": 6810,
+    "isPrime": true,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1110",
@@ -16867,7 +17307,11 @@
       0.0801,
       0.0244,
       0.0427
-    ]
+    ],
+    "rating": 4.3,
+    "reviewCount": 4052,
+    "isPrime": true,
+    "deliveryTime": "Same Day"
   },
   {
     "id": "prod-1111",
@@ -17021,7 +17465,11 @@
       0.0759,
       0.0609,
       0.0609
-    ]
+    ],
+    "rating": 4.2,
+    "reviewCount": 1633,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1112",
@@ -17175,7 +17623,11 @@
       0.0505,
       0.0646,
       0.079
-    ]
+    ],
+    "rating": 4.2,
+    "reviewCount": 9002,
+    "isPrime": true,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1113",
@@ -17329,7 +17781,11 @@
       0.0768,
       0.0814,
       0.0779
-    ]
+    ],
+    "rating": 4,
+    "reviewCount": 698,
+    "isPrime": true,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1114",
@@ -17484,7 +17940,11 @@
       0.085,
       0.0858,
       0.0862
-    ]
+    ],
+    "rating": 3.5,
+    "reviewCount": 9406,
+    "isPrime": true,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1115",
@@ -17637,7 +18097,11 @@
       0.0501,
       0.0728,
       0.0823
-    ]
+    ],
+    "rating": 4.3,
+    "reviewCount": 4788,
+    "isPrime": false,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1116",
@@ -17791,7 +18255,11 @@
       0.0483,
       0.067,
       0.0816
-    ]
+    ],
+    "rating": 4.1,
+    "reviewCount": 8796,
+    "isPrime": true,
+    "deliveryTime": "Same Day"
   },
   {
     "id": "prod-1117",
@@ -17945,7 +18413,11 @@
       0.0805,
       0.0606,
       0.0801
-    ]
+    ],
+    "rating": 4.3,
+    "reviewCount": 7957,
+    "isPrime": false,
+    "deliveryTime": "10 mins"
   },
   {
     "id": "prod-1118",
@@ -18099,7 +18571,11 @@
       0.0845,
       0.1008,
       0.0985
-    ]
+    ],
+    "rating": 4.1,
+    "reviewCount": 7988,
+    "isPrime": true,
+    "deliveryTime": "15 mins"
   },
   {
     "id": "prod-1119",
@@ -18252,6 +18728,10 @@
       0.0662,
       0.0851,
       0.0859
-    ]
+    ],
+    "rating": 4.4,
+    "reviewCount": 11605,
+    "isPrime": false,
+    "deliveryTime": "10 mins"
   }
 ]

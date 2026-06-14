@@ -3,7 +3,7 @@
 // Handles the full intent → cart → checkout flow.
 // ─────────────────────────────────────────────────────────────────────────────
 import { useState, useEffect } from 'react';
-import { Sparkles, RefreshCw, MessageSquare, Bot, CheckCircle2, Calendar } from 'lucide-react';
+import { Sparkles, RefreshCw, MessageSquare, Bot, CheckCircle2, Calendar, X } from 'lucide-react';
 import IntentBar from '../components/IntentBar';
 import CartProposalCard from '../components/CartProposalCard';
 import LoadingState from '../components/LoadingState';
@@ -12,7 +12,8 @@ import EmergencyChips from '../components/EmergencyChips';
 import FeedbackToast from '../components/FeedbackToast';
 import ProactiveBanner from '../components/ProactiveBanner';
 import ReorderStrip from '../components/ReorderStrip';
-import { postIntent, postCheckout, postFeedback, postEmergency, getProactive, getReorder } from '../lib/api';
+import ProductOverlay from '../components/ProductOverlay';
+import { postIntent, postCheckout, postFeedback, postEmergency, getProactive, getReorder, postDisconnectCalendar, getCalendarStatus } from '../lib/api';
 import type { ProactiveSuggestion } from '../lib/api';
 import type { CartProposal, CartItem } from '../lib/types';
 
@@ -43,6 +44,7 @@ export default function Home() {
   const [proactiveSuggestion, setProactiveSuggestion] = useState<ProactiveSuggestion | null>(null);
   const [reorderCandidates, setReorderCandidates] = useState<CartItem[]>([]);
   const [isCalendarConnected, setIsCalendarConnected] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<CartItem | null>(null);
 
   // ── Fetch Signals on Mount (Phase 11) ──────────────────────────────────────
   useEffect(() => {
@@ -52,6 +54,11 @@ export default function Home() {
       setIsCalendarConnected(true);
       // Clean up URL
       window.history.replaceState({}, document.title, window.location.pathname);
+    } else {
+      // Otherwise, ask backend for current status
+      getCalendarStatus(DEMO_USER_ID)
+        .then(res => setIsCalendarConnected(res.connected))
+        .catch(err => console.error('Calendar status fetch failed:', err));
     }
 
     getProactive(DEMO_USER_ID)
@@ -157,6 +164,17 @@ export default function Home() {
     }
   };
 
+  // ── Disconnect Calendar ────────────────────────────────────────────────────
+  const handleDisconnectCalendar = async () => {
+    try {
+      await postDisconnectCalendar(DEMO_USER_ID);
+      setIsCalendarConnected(false);
+      setProactiveSuggestion(null); // Clear the calendar suggestion
+    } catch (err) {
+      console.error('Failed to disconnect calendar', err);
+    }
+  };
+
   // ── Reset ──────────────────────────────────────────────────────────────────
   const handleReset = () => {
     setProposal(null);
@@ -217,6 +235,9 @@ export default function Home() {
               ) : (
                 <div className="flex items-center gap-2 text-sm font-semibold text-green-400 bg-green-400/10 px-3 py-1.5 rounded-lg border border-green-400/20 whitespace-nowrap">
                   <CheckCircle2 size={16} /> Calendar Sync Active
+                  <button onClick={handleDisconnectCalendar} className="ml-2 hover:bg-green-400/20 p-1 rounded-full transition-colors" title="Disconnect Calendar">
+                    <X size={14} className="text-green-500" />
+                  </button>
                 </div>
               )}
             </div>
@@ -251,6 +272,7 @@ export default function Home() {
                     input.focus();
                   }
                 }}
+                onClickProduct={setSelectedProduct}
               />
             </div>
           )}
@@ -293,6 +315,7 @@ export default function Home() {
               onFeedbackRemove={handleFeedbackRemove}
               onFeedbackAdd={handleFeedbackAdd}
               onReply={(text) => handleIntentSubmit(text)}
+              onClickProduct={setSelectedProduct}
             />
           </section>
         )}
@@ -325,6 +348,14 @@ export default function Home() {
             message={toast.message}
             type={toast.type}
             onDismiss={() => setToast(null)}
+          />
+        )}
+
+        {/* ── Product Overlay ────────────────────────────────────── */}
+        {selectedProduct && (
+          <ProductOverlay 
+            item={selectedProduct} 
+            onClose={() => setSelectedProduct(null)} 
           />
         )}
       </main>

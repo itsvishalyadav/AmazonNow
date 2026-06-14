@@ -152,6 +152,10 @@ async function enforceAvailability(proposal: CartProposal): Promise<CartProposal
         inStock: false,
         popularity: 0,
         imageUrl: item.imageUrl ?? "",
+        rating: undefined,
+        reviewCount: undefined,
+        deliveryTime: undefined,
+        isPrime: undefined,
       };
 
       const sub = await findSubstitute(baseProduct as Product);
@@ -162,6 +166,10 @@ async function enforceAvailability(proposal: CartProposal): Promise<CartProposal
           name: sub.name,
           price: sub.price,
           imageUrl: sub.imageUrl,
+          rating: sub.rating,
+          reviewCount: sub.reviewCount,
+          deliveryTime: sub.deliveryTime,
+          isPrime: sub.isPrime,
           substituteFor: item.substituteFor ?? item.name,
           reason: `Substituted for "${item.name}" (out of stock). ${sub.name} is the closest available alternative.`,
           confidence: Math.min(item.confidence, 0.75),
@@ -174,7 +182,14 @@ async function enforceAvailability(proposal: CartProposal): Promise<CartProposal
         });
       }
     } else {
-      updatedItems.push(item);
+      updatedItems.push({
+        ...item,
+        imageUrl: product.imageUrl,
+        rating: product.rating,
+        reviewCount: product.reviewCount,
+        deliveryTime: product.deliveryTime,
+        isPrime: product.isPrime,
+      });
     }
   }
 
@@ -238,6 +253,10 @@ async function enforceBudget(
             name: cheaper.name,
             price: cheaper.price,
             imageUrl: cheaper.imageUrl,
+            rating: cheaper.rating,
+            reviewCount: cheaper.reviewCount,
+            deliveryTime: cheaper.deliveryTime,
+            isPrime: cheaper.isPrime,
             reason: `Budget-optimised pick (swapped from ${mostExpensive.name}, saved ₹${Math.round(saved)}).`,
           }
         : i
