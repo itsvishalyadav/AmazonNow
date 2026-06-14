@@ -58,8 +58,9 @@ Amazon Now does not rebuild Amazon's storefront or logistics; it builds the **in
 - **Frontend**: React + TypeScript + Vite + Tailwind CSS (Mobile-first, Premium Amazon Aesthetic)
 - **Backend**: Node.js + Express (AWS Lambda-ready architecture)
 - **Database**: AWS DynamoDB (Full product catalog with ratings, Prime badges, delivery times, and order history)
-- **AI / LLM**: AgentRouter API (OpenAI-compatible) powering reasoning, vision, and vector embeddings.
-- **Search**: OpenSearch Serverless (Vector retrieval)
+- **AI / LLM**: AWS Bedrock (Nova Lite) powering reasoning and vision.
+- **Embeddings**: AWS Bedrock (Titan Text Embeddings V2)
+- **Search**: In-Memory Vector Search (Cosine Similarity) with caching.
 
 ### How the Now Agent Works
 1. **Parse Intent**: Text, voice, or image → structured goal + constraints.
@@ -75,8 +76,10 @@ Amazon Now does not rebuild Amazon's storefront or logistics; it builds the **in
 
 ### Prerequisites
 - Node.js 18+
-- An **AgentRouter** account + API key
-- AWS account + credentials (for DynamoDB)
+- AWS account + credentials (for DynamoDB and Bedrock)
+- Amazon Bedrock access enabled for:
+  - `us.amazon.nova-lite-v1:0`
+  - `amazon.titan-embed-text-v2:0`
 
 ### Local Setup
 ```bash
@@ -85,11 +88,13 @@ cd backend && npm install
 cd ../frontend && npm install
 
 # 2. Configure Environment (backend/.env)
-AGENTROUTER_BASE_URL=https://agentrouter.org/v1
-AGENTROUTER_API_KEY=<your-key>
-AGENTROUTER_MODEL=<vision-capable-model-id>
-AGENTROUTER_EMBED_MODEL=<embedding-model-id>
-AWS_REGION=ap-south-1
+AWS_REGION=us-east-1  # Bedrock Nova Lite is typically in us-east-1
+AWS_ACCESS_KEY_ID=<your-aws-access-key>
+AWS_SECRET_ACCESS_KEY=<your-aws-secret-key>
+GOOGLE_CLIENT_ID=<your-google-client-id>
+GOOGLE_CLIENT_SECRET=<your-google-client-secret>
+GOOGLE_REDIRECT_URI=http://localhost:4001/api/auth/google/callback
+FRONTEND_URL=http://localhost:5173
 
 # 3. Seed the Database
 cd backend
