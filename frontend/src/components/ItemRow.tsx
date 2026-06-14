@@ -3,13 +3,15 @@
 // nudge / dietaryFlag chips, and a "substituted" tag if F7 swapped it.
 // ─────────────────────────────────────────────────────────────────────────────
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, ArrowLeftRight, Zap, ShieldCheck, Sparkles, TrendingDown } from 'lucide-react';
+import { ChevronDown, ChevronUp, ArrowLeftRight, Zap, AlertCircle, ShieldCheck, Sparkles, TrendingDown, Plus, Minus } from 'lucide-react';
 import type { CartItem } from '../lib/types';
 
 interface ItemRowProps {
   item: CartItem;
   onRemove?: (productId: string) => void;
   onClickProduct?: (item: CartItem) => void;
+  onUpdateQty?: (productId: string, newQty: number) => void;
+  onSwap?: (oldProductId: string, altItem: { id: string, name: string, price: number, reason: string }) => void;
 }
 
 function ConfidencePip({ value }: { value: number }) {
@@ -35,7 +37,7 @@ function ConfidencePip({ value }: { value: number }) {
   );
 }
 
-export default function ItemRow({ item, onRemove, onClickProduct }: ItemRowProps) {
+export default function ItemRow({ item, onRemove, onClickProduct, onUpdateQty, onSwap }: ItemRowProps) {
   const [reasonExpanded, setReasonExpanded] = useState(false);
   const [altExpanded, setAltExpanded] = useState(false);
 
@@ -101,11 +103,24 @@ export default function ItemRow({ item, onRemove, onClickProduct }: ItemRowProps
               </div>
             )}
           </div>
-          <div className="item-price-group">
+          <div className="item-price-group flex flex-col items-end">
             <span className="item-price">₹{total}</span>
-            <span className="item-unit">
-              {item.qty > 1 ? `${item.qty} × ₹${item.price}` : `₹${item.price}`}
-            </span>
+            <div className="flex items-center gap-2 mt-1 bg-white/5 rounded-md p-1 border border-white/10">
+              <button 
+                className="w-5 h-5 flex items-center justify-center rounded-sm hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+                onClick={(e) => { e.stopPropagation(); onUpdateQty?.(item.productId, Math.max(1, item.qty - 1)); }}
+              >
+                <Minus size={12} />
+              </button>
+              <span className="text-[12px] font-medium w-3 text-center leading-none">{item.qty}</span>
+              <button 
+                className="w-5 h-5 flex items-center justify-center rounded-sm hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+                onClick={(e) => { e.stopPropagation(); onUpdateQty?.(item.productId, item.qty + 1); }}
+              >
+                <Plus size={12} />
+              </button>
+            </div>
+            {item.qty > 1 && <span className="text-[10px] text-gray-400 mt-1">₹{item.price} each</span>}
           </div>
         </div>
 
@@ -173,12 +188,25 @@ export default function ItemRow({ item, onRemove, onClickProduct }: ItemRowProps
             {altExpanded && (
               <ul className="item-alt-list">
                 {item.alternatives.map(alt => (
-                  <li key={alt.id} className="item-alt-row">
-                    <div className="item-alt-top">
-                      <span className="item-alt-name">{alt.name}</span>
-                      <span className="item-alt-price">₹{alt.price}</span>
+                  <li key={alt.id} className="item-alt-row flex justify-between items-start gap-4">
+                    <div className="flex-1">
+                      <div className="item-alt-top">
+                        <span className="item-alt-name">{alt.name}</span>
+                        <span className="item-alt-price">₹{alt.price}</span>
+                      </div>
+                      <p className="item-alt-reason">{alt.reason}</p>
                     </div>
-                    <p className="item-alt-reason">{alt.reason}</p>
+                    {onSwap && (
+                      <button 
+                        className="px-3 py-1.5 rounded-lg bg-[#f97316]/10 text-[#f97316] text-[11px] font-bold border border-[#f97316]/20 hover:bg-[#f97316] hover:text-black transition-colors shrink-0 mt-1"
+                        onClick={() => {
+                          onSwap(item.productId, alt);
+                          setAltExpanded(false);
+                        }}
+                      >
+                        Swap
+                      </button>
+                    )}
                   </li>
                 ))}
               </ul>

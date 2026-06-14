@@ -331,7 +331,7 @@ export async function buildCart(input: BuildCartInput): Promise<CartProposal> {
   }
 
   // 3. Handle clarifying question early return
-  if (intent.clarifyingQuestion && (!input.text || input.text.length < 10)) {
+  if (intent.clarifyingQuestion) {
     return {
       intentSummary: intent.summary,
       assumptions: intent.assumptions,

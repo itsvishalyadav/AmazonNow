@@ -8,10 +8,13 @@ import type { Product } from "../types/index.js";
 // ── Cosine similarity ─────────────────────────────────────────────────────────
 function cosineSim(a: number[], b: number[]): number {
   let dot = 0, normA = 0, normB = 0;
-  for (let i = 0; i < a.length; i++) {
-    dot += a[i] * b[i];
-    normA += a[i] * a[i];
-    normB += b[i] * b[i];
+  const len = Math.max(a.length, b.length);
+  for (let i = 0; i < len; i++) {
+    const valA = a[i] || 0;
+    const valB = b[i] || 0;
+    dot += valA * valB;
+    normA += valA * valA;
+    normB += valB * valB;
   }
   if (normA === 0 || normB === 0) return 0;
   return dot / (Math.sqrt(normA) * Math.sqrt(normB));
@@ -54,12 +57,6 @@ export async function search(
     if (category && p.category.toLowerCase() !== category.toLowerCase()) return false;
     if (subcategory && p.subcategory.toLowerCase() !== subcategory.toLowerCase()) return false;
     if (maxPrice !== undefined && p.price > maxPrice) return false;
-    if (dietary.length > 0) {
-      const isFoodCategory = !["Health & OTC", "Personal Care", "Home & Cleaning", "Pet Care", "Stationery"].includes(p.category);
-      if (isFoodCategory && !dietary.every((d) => p.dietary.includes(d))) {
-        return false;
-      }
-    }
     return true;
   });
 
@@ -71,10 +68,22 @@ export async function search(
   // 3. Score and sort ONLY the filtered candidates (O(Filtered_N) instead of O(Total_N))
   const scored = candidates
     .filter((p) => p.embedding && p.embedding.length > 0)
-    .map((p) => ({
-      ...p,
-      _score: cosineSim(queryVec, p.embedding!),
-    }))
+    .map((p) => {
+      let score = cosineSim(queryVec, p.embedding!);
+      
+      // Soft-filter: Penalize items that violate dietary constraints so they only appear if they are an extremely strong exact match
+      if (dietary.length > 0) {
+        const isFoodCategory = !["Health & OTC", "Personal Care", "Home & Cleaning", "Pet Care", "Stationery"].includes(p.category);
+        if (isFoodCategory && !dietary.every((d) => p.dietary.includes(d))) {
+          score -= 0.2;
+        }
+      }
+
+      return {
+        ...p,
+        _score: score,
+      };
+    })
     .sort((a, b) => b._score - a._score);
 
   return scored.slice(0, topK);

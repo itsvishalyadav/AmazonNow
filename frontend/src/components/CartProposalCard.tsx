@@ -60,6 +60,27 @@ export default function CartProposalCard({
     onFeedbackRemove?.(productId, productName);
   };
 
+  const handleUpdateQty = (productId: string, newQty: number) => {
+    setItems((prev) => prev.map((i) => i.productId === productId ? { ...i, qty: newQty } : i));
+  };
+
+  const handleSwap = (oldProductId: string, altItem: { id: string, name: string, price: number, reason: string }) => {
+    setItems((prev) => prev.map((i) => {
+      if (i.productId === oldProductId) {
+        return {
+          ...i,
+          productId: altItem.id,
+          name: altItem.name,
+          price: altItem.price,
+          reason: altItem.reason,
+          substituteFor: i.name,
+          imageUrl: '', // Clear image so placeholder handles it
+        };
+      }
+      return i;
+    }));
+  };
+
   const handleAddItemSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       const val = e.currentTarget.value.trim();
@@ -241,14 +262,28 @@ export default function CartProposalCard({
               </h3>
               <div className="p-2">
                 {catItems.map((item) => (
-                  <ItemRow key={item.productId} item={item} onRemove={(id) => handleRemove(id, item.name)} onClickProduct={onClickProduct} />
+                  <ItemRow 
+                    key={item.productId} 
+                    item={item} 
+                    onRemove={(id) => handleRemove(id, item.name)} 
+                    onClickProduct={onClickProduct} 
+                    onUpdateQty={handleUpdateQty}
+                    onSwap={handleSwap}
+                  />
                 ))}
               </div>
             </div>
           ))
         ) : (
           displayedItems.map((item) => (
-            <ItemRow key={item.productId} item={item} onRemove={(id) => handleRemove(id, item.name)} onClickProduct={onClickProduct} />
+            <ItemRow 
+              key={item.productId} 
+              item={item} 
+              onRemove={(id) => handleRemove(id, item.name)} 
+              onClickProduct={onClickProduct} 
+              onUpdateQty={handleUpdateQty}
+              onSwap={handleSwap}
+            />
           ))
         )}
       </div>

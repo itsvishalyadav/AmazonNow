@@ -6,7 +6,7 @@ async function run() {
   const eggs = all().find(p => p.name.includes('Farm Fresh Eggs'));
   const chillies = all().find(p => p.name.includes('Green Chillies'));
   
-  console.log('Eggs Has embedding:', !!eggs?.embedding, 'Length:', eggs?.embedding ? eggs.embedding.length : 0);
-  console.log('Chillies Has embedding:', !!chillies?.embedding, 'Length:', chillies?.embedding ? chillies.embedding.length : 0);
+  console.log('Eggs inStock:', eggs?.inStock);
+  console.log('Chillies inStock:', chillies?.inStock);
 }
 run().catch(console.error);
