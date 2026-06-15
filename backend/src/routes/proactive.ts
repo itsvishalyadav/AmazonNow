@@ -101,4 +101,18 @@ router.get("/:userId", async (req, res) => {
   }
 });
 
+// Phase 11: Route to update the cache so the banner state persists on reload
+router.post("/:userId/update", (req, res) => {
+  const { userId } = req.params;
+  const { signal, proposal } = req.body;
+  if (!signal || !proposal) {
+    return res.status(400).json({ error: "Missing signal or proposal" });
+  }
+
+  const cacheKey = `${userId}_${signal}`;
+  proactiveCache.set(cacheKey, { timestamp: Date.now(), proposal });
+
+  return res.json({ success: true });
+});
+
 export default router;

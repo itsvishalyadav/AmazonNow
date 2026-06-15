@@ -370,7 +370,31 @@ export const RAW_PRODUCTS: Omit<Product, "id" | "embedding">[] = [
   // Raw Meats (For Curry)
   {"name":"Fresh Raw Chicken Breast (Boneless) 500g","category":"Meat & Seafood","subcategory":"Chicken","brand":"Licious","price":280,"unit":"500g","tags":["raw chicken","breast","boneless","meat","curry","protein","fresh"],"dietary":["non-vegetarian"],"inStock":true,"popularity":0.95,"imageUrl":"https://placehold.co/200x200/FF9900/131A22?text=Chickn"},
   {"name":"Chicken Curry Cut (Small Portions) 500g","category":"Meat & Seafood","subcategory":"Chicken","brand":"Licious","price":220,"unit":"500g","tags":["chicken","curry cut","meat","raw chicken","protein","cooking"],"dietary":["non-vegetarian"],"inStock":true,"popularity":0.97,"imageUrl":"https://placehold.co/200x200/FF9900/131A22?text=CurryC"},
-  {"name":"Whole Chicken (With Skin) 1kg","category":"Meat & Seafood","subcategory":"Chicken","brand":"Fresho","price":350,"unit":"1kg","tags":["whole chicken","meat","raw chicken","roast","skin-on","protein"],"dietary":["non-vegetarian"],"inStock":true,"popularity":0.85,"imageUrl":"https://placehold.co/200x200/FF9900/131A22?text=WholeC"}
+  {"name":"Whole Chicken (With Skin) 1kg","category":"Meat & Seafood","subcategory":"Chicken","brand":"Fresho","price":350,"unit":"1kg","tags":["whole chicken","meat","raw chicken","roast","skin-on","protein"],"dietary":["non-vegetarian"],"inStock":true,"popularity":0.85,"imageUrl":"https://placehold.co/200x200/FF9900/131A22?text=WholeC"},
+
+  // --- NEW ADDITIONS FOR DEMO & TESTING ---
+  
+  // Travel Related
+  {"name":"Memory Foam Travel Neck Pillow","category":"Travel Accessories","subcategory":"Pillows","brand":"Travo","price":699,"unit":"1 pc","tags":["travel","pillow","neck","memory foam","flight","bus","sleep"],"dietary":[],"inStock":true,"popularity":0.90,"imageUrl":"https://placehold.co/200x200/FF9900/131A22?text=Pillow"},
+  {"name":"Universal Travel Power Adapter","category":"Travel Accessories","subcategory":"Adapters","brand":"RTS","price":450,"unit":"1 pc","tags":["travel","adapter","plug","international","charger","power"],"dietary":[],"inStock":true,"popularity":0.85,"imageUrl":"https://placehold.co/200x200/FF9900/131A22?text=Adaptr"},
+  {"name":"TSA Approved Luggage Lock Pack of 2","category":"Travel Accessories","subcategory":"Locks","brand":"Godrej","price":550,"unit":"2 pcs","tags":["luggage","lock","tsa","travel","safety","suitcase"],"dietary":[],"inStock":true,"popularity":0.82,"imageUrl":"https://placehold.co/200x200/FF9900/131A22?text=Locks"},
+  {"name":"Manali Travel Guidebook 2026 Edition","category":"Books","subcategory":"Travel Guides","brand":"Lonely Planet","price":350,"unit":"1 pc","tags":["travel","guide","manali","book","tourism","map"],"dietary":[],"inStock":true,"popularity":0.75,"imageUrl":"https://placehold.co/200x200/FF9900/131A22?text=Manali"},
+
+  // Mobiles & Accessories
+  {"name":"Apple iPhone 15 Pro (128GB) - Natural Titanium","category":"Electronics","subcategory":"Mobiles","brand":"Apple","price":125000,"unit":"1 pc","tags":["iphone","apple","smartphone","mobile","15 pro","ios"],"dietary":[],"inStock":true,"popularity":0.95,"imageUrl":"https://placehold.co/200x200/FF9900/131A22?text=iPhone"},
+  {"name":"Samsung Galaxy S24 Ultra 5G (256GB)","category":"Electronics","subcategory":"Mobiles","brand":"Samsung","price":129999,"unit":"1 pc","tags":["samsung","galaxy","s24","smartphone","mobile","android"],"dietary":[],"inStock":true,"popularity":0.92,"imageUrl":"https://placehold.co/200x200/FF9900/131A22?text=Galaxy"},
+  {"name":"Mi 10000mAH Power Bank","category":"Electronics","subcategory":"Mobile Accessories","brand":"Xiaomi","price":1199,"unit":"1 pc","tags":["power bank","charger","battery","mobile","mi","usb"],"dietary":[],"inStock":true,"popularity":0.98,"imageUrl":"https://placehold.co/200x200/FF9900/131A22?text=PwrBnk"},
+  {"name":"Type-C Fast Charging Cable 1.5m","category":"Electronics","subcategory":"Mobile Accessories","brand":"Boat","price":299,"unit":"1 pc","tags":["type-c","cable","charger","fast charging","usb","boat"],"dietary":[],"inStock":true,"popularity":0.96,"imageUrl":"https://placehold.co/200x200/FF9900/131A22?text=Cable"},
+
+  // Kitchen Electronics
+  {"name":"Philips 750W Mixer Grinder with 3 Jars","category":"Home Appliances","subcategory":"Kitchen","brand":"Philips","price":3499,"unit":"1 pc","tags":["mixer","grinder","blender","philips","kitchen","electronics","appliance"],"dietary":[],"inStock":true,"popularity":0.88,"imageUrl":"https://placehold.co/200x200/FF9900/131A22?text=Mixer"},
+  {"name":"Prestige 1.5L Electric Kettle","category":"Home Appliances","subcategory":"Kitchen","brand":"Prestige","price":899,"unit":"1 pc","tags":["kettle","electric","water","boiler","prestige","kitchen","hot"],"dietary":[],"inStock":true,"popularity":0.92,"imageUrl":"https://placehold.co/200x200/FF9900/131A22?text=Kettle"},
+  {"name":"Pigeon 2-Slice Pop-up Toaster","category":"Home Appliances","subcategory":"Kitchen","brand":"Pigeon","price":1150,"unit":"1 pc","tags":["toaster","bread","breakfast","kitchen","appliance","pop-up"],"dietary":[],"inStock":true,"popularity":0.85,"imageUrl":"https://placehold.co/200x200/FF9900/131A22?text=Toastr"},
+  
+  // Judging/Demo Specific Items
+  {"name":"Amazon Echo Dot (5th Gen) Smart Speaker","category":"Electronics","subcategory":"Smart Home","brand":"Amazon","price":4499,"unit":"1 pc","tags":["echo","dot","alexa","speaker","smart","amazon","voice"],"dietary":[],"inStock":true,"popularity":0.98,"imageUrl":"https://placehold.co/200x200/FF9900/131A22?text=EchoDt"},
+  {"name":"Amazon Fire TV Stick 4K","category":"Electronics","subcategory":"Entertainment","brand":"Amazon","price":5999,"unit":"1 pc","tags":["fire tv","stick","streaming","amazon","4k","remote","prime"],"dietary":[],"inStock":true,"popularity":0.96,"imageUrl":"https://placehold.co/200x200/FF9900/131A22?text=FireTV"},
+  {"name":"Sony WH-1000XM5 Wireless ANC Headphones","category":"Electronics","subcategory":"Audio","brand":"Sony","price":29990,"unit":"1 pc","tags":["sony","headphones","audio","bluetooth","wireless","noise cancelling","music"],"dietary":[],"inStock":true,"popularity":0.90,"imageUrl":"https://placehold.co/200x200/FF9900/131A22?text=SonyHP"}
 ];
 
 

@@ -114,6 +114,7 @@ async function assembleCart(
           imageUrl: p.imageUrl,
           brand: p.brand,
           tags: p.tags,
+          _score: (p as any)._score ?? 0,
         })),
       })),
       userProfile

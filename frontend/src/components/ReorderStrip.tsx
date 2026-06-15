@@ -3,12 +3,13 @@ import type { CartItem } from '../lib/types';
 
 interface ReorderStripProps {
   candidates: CartItem[];
+  isLoading?: boolean;
   onAppendToSearch: (productName: string) => void;
   onClickProduct?: (item: CartItem) => void;
 }
 
-export default function ReorderStrip({ candidates, onAppendToSearch, onClickProduct }: ReorderStripProps) {
-  if (!candidates || candidates.length === 0) return null;
+export default function ReorderStrip({ candidates, isLoading, onAppendToSearch, onClickProduct }: ReorderStripProps) {
+  if (!isLoading && (!candidates || candidates.length === 0)) return null;
 
   return (
     <div className="flex flex-col gap-3 mt-4 mb-6 animate-fadeUp">
@@ -26,9 +27,31 @@ export default function ReorderStrip({ candidates, onAppendToSearch, onClickProd
       
       {/* Horizontal scrolling container */}
       <div className="flex overflow-x-auto gap-4 pb-4 -mx-4 px-4 snap-x hide-scrollbar">
-        {candidates.map((item, idx) => {
-          // Extract exactly how many days ago, e.g. "last ordered 4 days ago" -> "4 days"
-          const daysMatch = item.reason.match(/last ordered (\d+) days/i);
+        {isLoading ? (
+          /* Shimmer Skeleton Cards */
+          Array.from({ length: 4 }).map((_, idx) => (
+            <div 
+              key={`skeleton-${idx}`}
+              className="premium-skeleton flex-shrink-0 w-64 bg-slate-900/40 backdrop-blur-2xl border border-white/5 rounded-[20px] overflow-hidden shadow-2xl flex flex-col relative isolate"
+            >
+              <div className="h-36 relative p-4 flex items-center justify-center bg-black/20">
+                <div className="w-24 h-24 bg-white/5 rounded-2xl animate-pulse" />
+              </div>
+              <div className="p-4 flex flex-col flex-1">
+                <div className="h-4 bg-white/10 rounded w-3/4 mb-2 animate-pulse" />
+                <div className="h-3 bg-white/10 rounded w-1/2 mb-4 animate-pulse" />
+                <div className="h-8 bg-white/5 rounded w-full mb-4 animate-pulse" />
+                <div className="flex justify-between items-center mt-auto">
+                  <div className="h-5 bg-white/10 rounded w-12 animate-pulse" />
+                  <div className="w-9 h-9 bg-white/10 rounded-full animate-pulse" />
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          candidates.map((item, idx) => {
+          // Extract exactly how many days ago from various reason formats
+          const daysMatch = item.reason.match(/(?:last ordered|ordered)\s*(?:it|them)?\s*(\d+)\s*day/i);
           const daysAgo = daysMatch ? daysMatch[1] : '?';
           
           return (
@@ -122,7 +145,8 @@ export default function ReorderStrip({ candidates, onAppendToSearch, onClickProd
               </div>
             </div>
           );
-        })}
+        })
+      )}
       </div>
     </div>
   );

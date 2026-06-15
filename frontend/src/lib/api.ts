@@ -130,6 +130,10 @@ export function getProactive(userId: string): Promise<ProactiveResponse> {
   return apiGet<ProactiveResponse>(`/api/proactive/${userId}?v=2`);
 }
 
+export function postProactiveUpdate(userId: string, suggestion: ProactiveSuggestion): Promise<{ success: boolean }> {
+  return apiPost<{ success: boolean }>(`/api/proactive/${userId}/update`, suggestion);
+}
+
 // ── GET /api/history/:userId ─────────────────────────────────────────────────
 export interface HistoryResponse {
   orders: {

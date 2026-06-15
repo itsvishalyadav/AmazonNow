@@ -31,6 +31,11 @@ export interface SearchFilters {
   inStockOnly?: boolean;    // default true
 }
 
+// Minimum cosine similarity threshold — below this, the match is semantically garbage.
+// This prevents the LLM from receiving completely irrelevant candidates.
+// Note: Titan Text v2 embeddings often produce scores around 0.25-0.30 for short queries vs long product strings.
+const MIN_SIMILARITY = 0.25;
+
 // ── Main search function ──────────────────────────────────────────────────────
 /**
  * Semantic search over the in-memory product catalog.
@@ -38,6 +43,7 @@ export interface SearchFilters {
  * 1. Embeds the query via AgentRouter (falls back to local stub if API is down).
  * 2. Computes cosine similarity against every product's stored embedding.
  * 3. Applies filters, sorts by score, returns top-K.
+ * 4. Filters out any result below MIN_SIMILARITY to avoid garbage matches.
  */
 export async function search(
   query: string,
@@ -84,7 +90,8 @@ export async function search(
         _score: score,
       };
     })
-    .sort((a, b) => b._score - a._score);
+    .sort((a, b) => b._score - a._score)
+    .filter((p) => p._score >= MIN_SIMILARITY);
 
   return scored.slice(0, topK);
 }

@@ -130,12 +130,23 @@ import type { Product } from "../types/index.js";
 
 export async function fetchFullCatalogFromDynamo(): Promise<Product[]> {
   try {
-    const res = await docClient.send(
-      new ScanCommand({
-        TableName: CATALOG_TABLE,
-      })
-    );
-    return (res.Items as Product[]) || [];
+    let allProducts: Product[] = [];
+    let lastKey: any = undefined;
+
+    do {
+      const res = await docClient.send(
+        new ScanCommand({
+          TableName: CATALOG_TABLE,
+          ExclusiveStartKey: lastKey,
+        })
+      );
+      if (res.Items) {
+        allProducts = allProducts.concat(res.Items as Product[]);
+      }
+      lastKey = res.LastEvaluatedKey;
+    } while (lastKey);
+
+    return allProducts;
   } catch (err) {
     console.error(`[dynamodb] Failed to fetch catalog from DynamoDB:`, err);
     return [];

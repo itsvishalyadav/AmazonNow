@@ -137,15 +137,28 @@ async function seedData() {
     console.log(`Writing ${catalog.length} products to catalog...`);
     for (let i = 0; i < catalog.length; i += 25) {
       const batch = catalog.slice(i, i + 25);
-      await docClient.send(
-        new BatchWriteCommand({
-          RequestItems: {
-            [CATALOG_TABLE]: batch.map((p: any) => ({
-              PutRequest: { Item: p },
-            })),
-          },
-        })
-      );
+      let requestItems: any = {
+        [CATALOG_TABLE]: batch.map((p: any) => ({
+          PutRequest: { Item: p },
+        })),
+      };
+
+      while (Object.keys(requestItems).length > 0) {
+        const response = await docClient.send(
+          new BatchWriteCommand({
+            RequestItems: requestItems,
+          })
+        );
+
+        if (response.UnprocessedItems && Object.keys(response.UnprocessedItems).length > 0) {
+          console.log(`Throttled! Retrying ${response.UnprocessedItems[CATALOG_TABLE]?.length || 0} items...`);
+          requestItems = response.UnprocessedItems;
+          await new Promise((res) => setTimeout(res, 1000));
+        } else {
+          requestItems = {};
+        }
+      }
+      
       // Small delay to avoid provisioning throttle
       await new Promise((res) => setTimeout(res, 200));
     }

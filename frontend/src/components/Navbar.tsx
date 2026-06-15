@@ -36,7 +36,7 @@ export default function Navbar() {
           >
             <MapPin size={14} className="text-amazon-orange" />
             <div className="delivery-text">
-              <span className="delivery-location">Deliver to Vishal, {selectedCity}</span>
+              <span className="delivery-location">Deliver to Priya, {selectedCity}</span>
             </div>
             <ChevronDown size={14} className="text-gray-400 ml-1" />
           </div>
@@ -91,11 +91,11 @@ export default function Navbar() {
               <div className="p-5 border-b border-white/5 bg-gradient-to-br from-white/5 to-transparent">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-amazon-orange to-yellow-400 flex items-center justify-center text-[#131A22] font-black text-xl shadow-lg ring-2 ring-amazon-orange/30">
-                    V
+                    P
                   </div>
                   <div>
-                    <p className="text-[15px] font-bold text-white tracking-wide">Vishal Yadav</p>
-                    <p className="text-[12px] text-gray-400 mt-0.5">vishal@example.com</p>
+                    <p className="text-[15px] font-bold text-white tracking-wide">Priya Sharma</p>
+                    <p className="text-[12px] text-gray-400 mt-0.5">priya.sharma@example.com</p>
                   </div>
                 </div>
               </div>

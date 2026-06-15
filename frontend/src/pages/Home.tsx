@@ -13,7 +13,7 @@ import FeedbackToast from '../components/FeedbackToast';
 import ProactiveBanner from '../components/ProactiveBanner';
 import ReorderStrip from '../components/ReorderStrip';
 import ProductOverlay from '../components/ProductOverlay';
-import { postIntent, postCheckout, postFeedback, postEmergency, getProactive, getReorder, postDisconnectCalendar, getCalendarStatus } from '../lib/api';
+import { postIntent, postCheckout, postFeedback, postEmergency, getProactive, postProactiveUpdate, getReorder, postDisconnectCalendar, getCalendarStatus } from '../lib/api';
 import type { ProactiveSuggestion } from '../lib/api';
 import type { CartProposal, CartItem } from '../lib/types';
 
@@ -45,6 +45,8 @@ export default function Home() {
   const [reorderCandidates, setReorderCandidates] = useState<CartItem[]>([]);
   const [isCalendarConnected, setIsCalendarConnected] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<CartItem | null>(null);
+  const [isProactiveLoading, setIsProactiveLoading] = useState(true);
+  const [isReorderLoading, setIsReorderLoading] = useState(true);
 
   // ── Fetch Signals on Mount (Phase 11) ──────────────────────────────────────
   useEffect(() => {
@@ -73,7 +75,8 @@ export default function Home() {
       })
       .catch((err) => {
         console.error('Proactive signal fetch failed:', err);
-      });
+      })
+      .finally(() => setIsProactiveLoading(false));
 
     getReorder(DEMO_USER_ID)
       .then(res => {
@@ -83,7 +86,8 @@ export default function Home() {
       })
       .catch((err) => {
         console.error('Reorder fetch failed:', err);
-      });
+      })
+      .finally(() => setIsReorderLoading(false));
   }, []);
 
   // ── Submit intent ──────────────────────────────────────────────────────────
@@ -249,24 +253,44 @@ export default function Home() {
           )}
 
           {/* Phase 11: Proactive Banner (Suggested Box) */}
-          {appState === 'idle' && proactiveSuggestion && (
+          {appState === 'idle' && (proactiveSuggestion || isProactiveLoading) && (
             <div className="mt-6 mb-2">
               <ProactiveBanner 
                 suggestion={proactiveSuggestion} 
+                isLoading={isProactiveLoading}
                 onReview={() => {
-                  setProposal(proactiveSuggestion.proposal);
-                  setAppState('result');
+                  if (proactiveSuggestion) {
+                    setProposal(proactiveSuggestion.proposal);
+                    setAppState('result');
+                  }
                 }}
                 onDismiss={() => setProactiveSuggestion(null)}
+                onSubmitAnswer={async (answer) => {
+                  if (proactiveSuggestion) {
+                    setIsProactiveLoading(true);
+                    try {
+                      const text = `Context from proactive event: "${proactiveSuggestion.signal}". You asked: "${proactiveSuggestion.proposal.clarifyingQuestion || ''}". User answers: "${answer}". Please generate the cart items.`;
+                      const result = await postIntent({ userId: DEMO_USER_ID, text });
+                      const updatedSuggestion = { ...proactiveSuggestion, proposal: result };
+                      setProactiveSuggestion(updatedSuggestion);
+                      await postProactiveUpdate(DEMO_USER_ID, updatedSuggestion);
+                    } catch (err) {
+                      console.error("Failed to answer proactive suggestion", err);
+                    } finally {
+                      setIsProactiveLoading(false);
+                    }
+                  }
+                }}
               />
             </div>
           )}
 
           {/* Phase 11: Reorder Strip (Running Low) */}
-          {appState === 'idle' && reorderCandidates.length > 0 && (
+          {appState === 'idle' && (reorderCandidates.length > 0 || isReorderLoading) && (
             <div className="mt-4 mb-2">
               <ReorderStrip 
                 candidates={reorderCandidates}
+                isLoading={isReorderLoading}
                 onAppendToSearch={(productName) => {
                   const input = document.getElementById('intent-input') as HTMLTextAreaElement;
                   if (input) {
