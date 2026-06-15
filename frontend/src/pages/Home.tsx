@@ -20,11 +20,11 @@ import type { CartProposal, CartItem } from '../lib/types';
 const DEMO_USER_ID = 'user-demo-01';
 
 const EXAMPLE_PROMPTS = [
-  'kal subah breakfast for 2, under ₹300',
-  'paneer butter masala for 4 people',
-  'sick at home, need medicines & soup',
-  'Diwali party for 10 guests, sweets & snacks',
-  'restock my fridge essentials',
+  'high fever and body ache, need medicines',
+  'tea, biscuits, and chips for evening snacks',
+  'restock milk, bread, and eggs',
+  'need new Samsung s24 Ultra',
+  'maggi, cold drink, and some chocolate',
 ];
 
 type AppState = 'idle' | 'loading' | 'result' | 'confirming' | 'confirmed';
@@ -47,6 +47,7 @@ export default function Home() {
   const [selectedProduct, setSelectedProduct] = useState<CartItem | null>(null);
   const [isProactiveLoading, setIsProactiveLoading] = useState(true);
   const [isReorderLoading, setIsReorderLoading] = useState(true);
+  const [promptsOffset, setPromptsOffset] = useState(0);
 
   // ── Fetch Signals on Mount (Phase 11) ──────────────────────────────────────
   useEffect(() => {
@@ -88,6 +89,11 @@ export default function Home() {
         console.error('Reorder fetch failed:', err);
       })
       .finally(() => setIsReorderLoading(false));
+
+    const promptTimer = setInterval(() => {
+      setPromptsOffset(prev => (prev + 1) % EXAMPLE_PROMPTS.length);
+    }, 3000);
+    return () => clearInterval(promptTimer);
   }, []);
 
   // ── Submit intent ──────────────────────────────────────────────────────────
@@ -223,15 +229,18 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row items-center justify-between mt-2 gap-4">
               <div className="example-prompts">
                 <span className="example-prompts-label">Try:</span>
-                {EXAMPLE_PROMPTS.slice(0, 3).map((p) => (
-                  <button
-                    key={p}
-                    className="example-chip"
-                    onClick={() => handleIntentSubmit(p)}
-                  >
-                    {p}
-                  </button>
-                ))}
+                {[0, 1, 2].map((i) => {
+                  const p = EXAMPLE_PROMPTS[(promptsOffset + i) % EXAMPLE_PROMPTS.length];
+                  return (
+                    <button
+                      key={p + promptsOffset}
+                      className="example-chip animate-slideLeftFade"
+                      onClick={() => handleIntentSubmit(p)}
+                    >
+                      {p}
+                    </button>
+                  );
+                })}
               </div>
               
               {!isCalendarConnected ? (

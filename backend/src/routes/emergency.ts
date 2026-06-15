@@ -9,19 +9,19 @@ const router = Router();
 
 // Pre-defined scenario → intent text mapping
 const SCENARIOS: Record<string, string> = {
-  cut_finger: "I've cut my finger and need immediate first-aid — band-aids, dettol or savlon, cotton rolls, and antiseptic cream",
-  burned_cooking: "I burned the cooking and have a minor burn — need Burnol or Silverex cream, plus ready-to-eat dinner like Maggi or pasta and cold drinks",
-  severe_cramps: "Having severe period cramps — urgent need for a heating pad or hot water bag, Meftal Spas (mocked), dark chocolate, and sanitary pads",
-  sudden_guests: "Unexpected guests arrived! Need snacks, cold drinks, biscuits, namkeen, instant coffee, and quick things to serve",
-  sick_pet: "My pet dog is sick with an upset stomach — need plain rice, curd, digestive pet supplements or easy-to-digest dog food",
+  cut_finger: "I've cut my finger and need immediate first-aid — band-aids, dettol or savlon, and cotton rolls",
+  burned_cooking: "I burned the cooking and have a minor burn — need Burnol cream, plus ready-to-eat dinner like Maggi and cold drinks",
+  severe_cramps: "Having severe period cramps — urgent need for a hot water bag, Crocin pain relief, dark chocolate, and sanitary pads",
+  sudden_guests: "Unexpected guests arrived! Need chips, cold drinks, biscuits, and instant coffee",
+  sick_pet: "My pet dog is sick with an upset stomach — need plain rice, curd, and pet food",
 };
 
 const SCENARIO_META: Record<string, { label: string; icon: string; description: string }> = {
   cut_finger:     { label: "Cut Finger",     icon: "Activity", description: "Band-aids, Dettol, cotton" },
-  burned_cooking: { label: "Burned Cooking", icon: "Flame",    description: "Burnol, ready-to-eat dinner" },
-  severe_cramps:  { label: "Severe Cramps",  icon: "HeartPulse", description: "Heating pad, Meftal, chocolate" },
-  sudden_guests:  { label: "Sudden Guests",  icon: "Users",    description: "Drinks, snacks, instant coffee" },
-  sick_pet:       { label: "Sick Pet",       icon: "Bone",     description: "Digestive supplements, plain food" },
+  burned_cooking: { label: "Burned Cooking", icon: "Flame",    description: "Burnol, Maggi, drinks" },
+  severe_cramps:  { label: "Severe Cramps",  icon: "HeartPulse", description: "Hot water bag, Crocin, pads" },
+  sudden_guests:  { label: "Sudden Guests",  icon: "Users",    description: "Chips, drinks, coffee" },
+  sick_pet:       { label: "Sick Pet",       icon: "Bone",     description: "Rice, curd, pet food" },
 };
 
 router.get("/scenarios", (_req, res) => {

@@ -16,7 +16,7 @@ Rules:
 4. Extract budget (look for "Rs", "rs", "bucks", "under", "within", "budget").
 5. Extract dietary constraints from the profile or explicit mentions.
 6. Do NOT add sub-needs from the user's "PREFER" list unless they directly fulfill the current request.
-7. Make AT MOST ONE clarifying question — only if it would fundamentally change the cart. Otherwise, state your assumption.
+7. If the user asks for a generic item (e.g., "phone", "laptop", "power bank") without specifying a brand or model, set clarifyingQuestion to: "Do you want any specific brand and model? If so, type the model or brand of each item, or just say 'top rated' to get the best rated items." IMPORTANT: If the user has already answered this question (e.g. they replied "top rated" or specified a brand), DO NOT ask it again.
 8. For image inputs: the image description will be prepended to the user text.
 
 Output ONLY this JSON structure (no prose):
@@ -93,7 +93,7 @@ Your job: Pick THE SINGLE BEST RELEVANT product per sub-need and build a CartPro
 - If confidence is < 0.8, populate "alternatives" with 1-2 other relevant in-stock products.
 - If the intent is an event/party/occasion, output an 'occasion' object with 'name', 'icon' (valid LucideReact icon), and 'colorGradient'.
 - For each item, provide a logical 'category' string to group them.
-- clarifyingQuestion: null unless ONE question would fundamentally change the cart.
+- If the user asks for a generic item (e.g., "phone", "laptop", "power bank") without specifying a brand or model, set clarifyingQuestion to: "Do you want any specific brand and model? If so, type the model or brand of each item, or just say 'top rated' to get the best rated items." IMPORTANT: If the user has already answered this question (e.g. they replied "top rated" or specified a brand), DO NOT ask it again.
 
 Output ONLY this CartProposal JSON:
 {

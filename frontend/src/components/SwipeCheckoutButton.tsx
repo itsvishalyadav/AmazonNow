@@ -135,7 +135,7 @@ export default function SwipeCheckoutButton({
         }`}
         style={{
           transform: `translateX(${dragX}px)`,
-          transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+          transition: isDragging ? 'none' : 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)'
         }}
       >
         {isSuccess ? <Check size={24} strokeWidth={3} /> : <ArrowRight size={20} strokeWidth={2.5} />}

@@ -13,10 +13,10 @@ interface EmergencyChipsProps {
 // Fallback hardcoded scenarios if API fails
 const FALLBACK_SCENARIOS: EmergencyScenario[] = [
   { id: 'cut_finger', label: "Cut Finger", icon: "Activity", description: "Band-aids, Dettol, cotton" },
-  { id: 'burned_cooking', label: "Burned Cooking", icon: "Flame", description: "Burnol, ready-to-eat dinner" },
-  { id: 'severe_cramps', label: "Severe Cramps", icon: "HeartPulse", description: "Heating pad, Meftal, chocolate" },
-  { id: 'sudden_guests', label: "Sudden Guests", icon: "Users", description: "Drinks, snacks, instant coffee" },
-  { id: 'sick_pet', label: "Sick Pet", icon: "Bone", description: "Digestive supplements, plain food" },
+  { id: 'burned_cooking', label: "Burned Cooking", icon: "Flame", description: "Burnol, Maggi, drinks" },
+  { id: 'severe_cramps', label: "Severe Cramps", icon: "HeartPulse", description: "Hot water bag, Crocin, pads" },
+  { id: 'sudden_guests', label: "Sudden Guests", icon: "Users", description: "Chips, drinks, coffee" },
+  { id: 'sick_pet', label: "Sick Pet", icon: "Bone", description: "Rice, curd, pet food" },
 ];
 
 export default function EmergencyChips({ onSelect, isLoading, activeScenario }: EmergencyChipsProps) {

@@ -5,9 +5,7 @@
   "city": "Bengaluru",
   "household": {
     "size": 4,
-    "dietary": [
-      "vegetarian"
-    ],
+    "dietary": [],
     "budgetSensitivity": "med"
   },
   "defaultBudget": 800,

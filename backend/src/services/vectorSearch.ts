@@ -79,7 +79,7 @@ export async function search(
       
       // Soft-filter: Penalize items that violate dietary constraints so they only appear if they are an extremely strong exact match
       if (dietary.length > 0) {
-        const isFoodCategory = !["Health & OTC", "Personal Care", "Home & Cleaning", "Pet Care", "Stationery"].includes(p.category);
+        const isFoodCategory = p.dietary.length > 0;;
         if (isFoodCategory && !dietary.every((d) => p.dietary.includes(d))) {
           score -= 0.2;
         }

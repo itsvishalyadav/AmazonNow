@@ -63,7 +63,7 @@ export default function ReorderStrip({ candidates, isLoading, onAppendToSearch, 
               <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none -z-10" />
 
               <div className="h-36 relative p-4 flex items-center justify-center bg-black/20">
-                <div className="w-24 h-24 bg-white rounded-2xl shadow-inner p-2 flex items-center justify-center group-hover:scale-105 transition-transform duration-500 relative">
+                <div className="w-20 h-20 bg-white rounded-2xl shadow-inner p-2 flex items-center justify-center group-hover:scale-105 transition-transform duration-500 relative">
                   {item.imageUrl ? (
                     <img src={item.imageUrl} alt={item.name} className="h-full object-contain mix-blend-multiply" />
                   ) : (
@@ -82,7 +82,7 @@ export default function ReorderStrip({ candidates, isLoading, onAppendToSearch, 
                 )}
 
                 {/* Days ago badge */}
-                <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-md border border-white/10 text-white text-[10px] font-medium px-2 py-1 rounded-md shadow-sm">
+                <div className="absolute top-3 right-3 bg-gray-800/90 backdrop-blur-md border border-white/10 text-white text-[10px] font-medium px-2 py-1 rounded-md shadow-sm">
                   {daysAgo}d ago
                 </div>
               </div>

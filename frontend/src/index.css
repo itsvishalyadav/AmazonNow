@@ -232,7 +232,7 @@ html, body, #root {
   letter-spacing: 0.2px;
 }
 
-.intent-textarea::placeholder { color: rgba(255, 255, 255, 0.4); font-weight: 400; }
+.intent-textarea::placeholder { color: #9CA3AF; font-weight: 400; }
 
 .intent-actions {
   display: flex;
@@ -369,9 +369,13 @@ html, body, #root {
 /* ── Example prompts ─────────────────────────────────────────────────────────── */
 .example-prompts {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow: hidden;
   gap: 6px;
   align-items: center;
+  -webkit-mask-image: linear-gradient(to right, black 80%, transparent 100%);
+  mask-image: linear-gradient(to right, black 80%, transparent 100%);
+  padding-right: 20px;
 }
 
 .example-prompts-label {
@@ -393,6 +397,16 @@ html, body, #root {
   cursor: pointer;
   transition: all var(--transition);
   font-family: inherit;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+@keyframes slideLeftFade {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.animate-slideLeftFade {
+  animation: slideLeftFade 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
 .example-chip:hover {

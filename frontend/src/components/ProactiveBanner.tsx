@@ -51,13 +51,24 @@ export default function ProactiveBanner({ suggestion, isLoading, onReview, onDis
                 Suggested
               </span>
             </div>
-            <p className="text-[14px] text-gray-300 leading-snug max-w-lg font-medium opacity-90">
-              {isCartEmpty 
-                ? suggestion.proposal.clarifyingQuestion || "Please provide a budget to generate the cart."
-                : `We've curated a fast-checkout cart of `}
-              {!isCartEmpty && <strong className="text-white">{suggestion.proposal.items.length} items</strong>}
-              {!isCartEmpty && ` for this occasion, tailored to your preferences.`}
-            </p>
+            <div className="flex flex-col gap-2">
+              <p className="text-[14px] text-gray-300 leading-snug max-w-lg font-medium opacity-90">
+                {isCartEmpty 
+                  ? suggestion.proposal.clarifyingQuestion || "Please provide a budget to generate the cart."
+                  : `We've curated a fast-checkout cart of `}
+                {!isCartEmpty && <strong className="text-white">{suggestion.proposal.items.length} items</strong>}
+                {!isCartEmpty && ` for this occasion, tailored to your preferences.`}
+              </p>
+              {!isCartEmpty && (
+                <div className="flex -space-x-2 mt-1">
+                  {suggestion.proposal.items.map((item, i) => (
+                    <div key={i} className="w-8 h-8 rounded-full border-2 border-[#0F172A] bg-white overflow-hidden shadow-sm flex items-center justify-center relative" style={{ zIndex: suggestion.proposal.items.length - i }}>
+                      {item.imageUrl ? <img src={item.imageUrl} className="w-full h-full object-contain mix-blend-multiply p-0.5" alt={item.name} title={item.name} /> : <span className="text-[8px] text-gray-500">Item</span>}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -94,7 +105,7 @@ export default function ProactiveBanner({ suggestion, isLoading, onReview, onDis
           ) : (
             <button 
               onClick={onReview}
-              className="flex-1 sm:flex-none flex-shrink-0 whitespace-nowrap relative overflow-hidden flex items-center justify-center gap-2 bg-white text-black hover:bg-gray-100 px-6 py-3 rounded-xl font-bold text-[14px] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-[0_4px_20px_rgba(255,255,255,0.15)] group/btn"
+              className="flex-1 sm:flex-none flex-shrink-0 whitespace-nowrap relative overflow-hidden flex items-center justify-center gap-2 bg-[#FF9900] text-black hover:bg-[#ea580c] px-6 py-3 rounded-xl font-bold text-[14px] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-[0_4px_20px_rgba(255,153,0,0.3)] group/btn"
             >
               <span className="relative z-10 flex items-center gap-1">
                 Review Cart <ChevronRight size={18} className="transition-transform group-hover/btn:translate-x-1" />
