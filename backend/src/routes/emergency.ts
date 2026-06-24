@@ -9,19 +9,17 @@ const router = Router();
 
 // Pre-defined scenario → intent text mapping
 const SCENARIOS: Record<string, string> = {
-  cut_finger: "I've cut my finger and need immediate first-aid — band-aids, dettol or savlon, and cotton rolls",
-  burned_cooking: "I burned the cooking and have a minor burn — need Burnol cream, plus ready-to-eat dinner like Maggi and cold drinks",
-  severe_cramps: "Having severe period cramps — urgent need for a hot water bag, Crocin pain relief, dark chocolate, and sanitary pads",
-  sudden_guests: "Unexpected guests arrived! Need chips, cold drinks, biscuits, and instant coffee",
-  sick_pet: "My pet dog is sick with an upset stomach — need plain rice, curd, and pet food",
+  cut_finger: "I have a deep cut on my finger, it's bleeding.",
+  burned_cooking: "I burned my hand on the stove.",
+  severe_cramps: "I have unbearable stomach cramps and need immediate relief.",
+  sudden_guests: "3 friends showed up unexpectedly, need quick snacks and drinks.",
 };
 
 const SCENARIO_META: Record<string, { label: string; icon: string; description: string }> = {
-  cut_finger:     { label: "Cut Finger",     icon: "Activity", description: "Band-aids, Dettol, cotton" },
-  burned_cooking: { label: "Burned Cooking", icon: "Flame",    description: "Burnol, Maggi, drinks" },
-  severe_cramps:  { label: "Severe Cramps",  icon: "HeartPulse", description: "Hot water bag, Crocin, pads" },
-  sudden_guests:  { label: "Sudden Guests",  icon: "Users",    description: "Chips, drinks, coffee" },
-  sick_pet:       { label: "Sick Pet",       icon: "Bone",     description: "Rice, curd, pet food" },
+  cut_finger: { label: 'Cut Finger', icon: 'Activity', description: 'Band-aids, Dettol, cotton' },
+  burned_cooking: { label: 'Burned Cooking', icon: 'Flame', description: 'Burnol cream, cooling gel' },
+  severe_cramps: { label: 'Severe Cramps', icon: 'HeartPulse', description: 'Hot water bag, Crocin, pads' },
+  sudden_guests: { label: 'Sudden Guests', icon: 'Users', description: 'Chips, drinks, coffee' },
 };
 
 router.get("/scenarios", (_req, res) => {
@@ -33,6 +31,8 @@ router.get("/scenarios", (_req, res) => {
   }));
   return res.json({ scenarios });
 });
+
+const emergencyCache: Record<string, any> = {};
 
 router.post("/", async (req, res) => {
   const { userId, scenario } = req.body;
@@ -51,12 +51,32 @@ router.post("/", async (req, res) => {
   }
 
   try {
+    if (emergencyCache[scenario]) {
+      console.log(`[POST /api/emergency] Serving ${scenario} from cache for speed.`);
+      return res.json(emergencyCache[scenario]);
+    }
+
     const proposal = await buildCart({ userId, text: scenarioText });
+    emergencyCache[scenario] = proposal;
     return res.json(proposal);
   } catch (err: any) {
     console.error("[POST /api/emergency] Error:", err?.message ?? err);
     return res.status(500).json({ error: err?.message ?? "Internal server error" });
   }
 });
+
+export async function preWarmEmergencyCarts() {
+  console.log("[emergency] Pre-warming emergency carts...");
+  for (const [scenario, text] of Object.entries(SCENARIOS)) {
+    try {
+      const proposal = await buildCart({ userId: "system-prewarm", text });
+      emergencyCache[scenario] = proposal;
+      console.log(`[emergency] Pre-warmed ${scenario}`);
+    } catch (err) {
+      console.error(`[emergency] Failed to pre-warm ${scenario}:`, err);
+    }
+  }
+  console.log("[emergency] Pre-warming complete.");
+}
 
 export default router;

@@ -10,8 +10,9 @@ import { count, initCatalog } from "./services/catalog.js";
 
 // ── Routes ────────────────────────────────────────────────────────────────────
 import intentRouter from "./routes/intent.js";
-import emergencyRouter from "./routes/emergency.js";
+import emergencyRouter, { preWarmEmergencyCarts } from "./routes/emergency.js";
 import feedbackRouter from "./routes/feedback.js";
+import searchRouter from "./routes/search.js";
 import reorderRouter from "./routes/reorder.js";
 import proactiveRouter from "./routes/proactive.js";
 import checkoutRouter from "./routes/checkout.js";
@@ -46,6 +47,7 @@ app.get("/health", (_req, res) => {
 app.use("/api/intent", intentRouter);
 app.use("/api/emergency", emergencyRouter);
 app.use("/api/feedback", feedbackRouter);
+app.use("/api/search", searchRouter);
 app.use("/api/reorder", reorderRouter);
 app.use("/api/proactive", proactiveRouter);
 app.use("/api/checkout", checkoutRouter);
@@ -54,6 +56,7 @@ app.use("/api/auth", authRouter);
 
 // Proxy startup removed
 initCatalog().then(() => {
+  preWarmEmergencyCarts(); // Pre-build emergency carts asynchronously
   app.listen(PORT, () => {
     console.log(`\n🚀 Amazon Now backend running at http://localhost:${PORT}`);
     console.log(`   Health: http://localhost:${PORT}/health`);

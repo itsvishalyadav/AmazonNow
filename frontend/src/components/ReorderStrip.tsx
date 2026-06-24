@@ -17,33 +17,33 @@ export default function ReorderStrip({ candidates, isLoading, onAppendToSearch, 
         <div className="w-6 h-6 rounded-full bg-amazon-orange/20 flex items-center justify-center">
           <RefreshCcw size={12} className="text-amazon-orange" />
         </div>
-        <h3 className="text-[14px] font-bold text-white uppercase tracking-widest flex items-center gap-2">
+        <h3 className="text-[14px] font-bold text-[var(--amazon-text)] uppercase tracking-widest flex items-center gap-2">
           Running Low?
-          <span className="text-[10px] font-medium text-gray-400 normal-case tracking-normal bg-white/5 px-2 py-0.5 rounded-full border border-white/10">
+          <span className="text-[10px] font-medium text-[var(--amazon-muted)] normal-case tracking-normal bg-black/5 dark:bg-white/5 px-2 py-0.5 rounded-full border border-[var(--amazon-border-light)]">
             Based on your history
           </span>
         </h3>
       </div>
       
       {/* Horizontal scrolling container */}
-      <div className="flex overflow-x-auto gap-4 pb-4 -mx-4 px-4 snap-x hide-scrollbar">
+      <div className="flex overflow-x-auto gap-4 pt-2 pb-6 -mt-2 -mx-4 px-4 snap-x hide-scrollbar">
         {isLoading ? (
           /* Shimmer Skeleton Cards */
           Array.from({ length: 4 }).map((_, idx) => (
             <div 
               key={`skeleton-${idx}`}
-              className="premium-skeleton flex-shrink-0 w-64 bg-slate-900/40 backdrop-blur-2xl border border-white/5 rounded-[20px] overflow-hidden shadow-2xl flex flex-col relative isolate"
+              className="premium-skeleton flex-shrink-0 w-64 bg-[var(--amazon-card)] backdrop-blur-2xl border border-[var(--amazon-border)] rounded-[20px] overflow-hidden shadow-2xl flex flex-col relative isolate"
             >
-              <div className="h-36 relative p-4 flex items-center justify-center bg-black/20">
-                <div className="w-24 h-24 bg-white/5 rounded-2xl animate-pulse" />
+              <div className="h-36 relative p-4 flex items-center justify-center bg-black/10 dark:bg-black/20">
+                <div className="w-24 h-24 bg-black/10 dark:bg-white/5 rounded-2xl animate-pulse" />
               </div>
               <div className="p-4 flex flex-col flex-1">
-                <div className="h-4 bg-white/10 rounded w-3/4 mb-2 animate-pulse" />
-                <div className="h-3 bg-white/10 rounded w-1/2 mb-4 animate-pulse" />
-                <div className="h-8 bg-white/5 rounded w-full mb-4 animate-pulse" />
+                <div className="h-4 bg-black/10 dark:bg-white/10 rounded w-3/4 mb-2 animate-pulse" />
+                <div className="h-3 bg-black/10 dark:bg-white/10 rounded w-1/2 mb-4 animate-pulse" />
+                <div className="h-8 bg-black/5 dark:bg-white/5 rounded w-full mb-4 animate-pulse" />
                 <div className="flex justify-between items-center mt-auto">
-                  <div className="h-5 bg-white/10 rounded w-12 animate-pulse" />
-                  <div className="w-9 h-9 bg-white/10 rounded-full animate-pulse" />
+                  <div className="h-5 bg-black/10 dark:bg-white/10 rounded w-12 animate-pulse" />
+                  <div className="w-9 h-9 bg-black/10 dark:bg-white/10 rounded-full animate-pulse" />
                 </div>
               </div>
             </div>
@@ -57,12 +57,12 @@ export default function ReorderStrip({ candidates, isLoading, onAppendToSearch, 
           return (
             <div 
               key={`${item.productId}-${idx}`}
-              className="flex-shrink-0 w-64 bg-slate-900/40 backdrop-blur-2xl border border-white/5 rounded-[20px] overflow-hidden shadow-2xl snap-start flex flex-col group transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_rgba(0,0,0,0.6)] hover:border-white/10 relative isolate"
+              className="flex-shrink-0 w-64 bg-[var(--amazon-card)] backdrop-blur-2xl border border-[var(--amazon-border)] rounded-[20px] overflow-hidden shadow-2xl snap-start flex flex-col group transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_rgba(0,0,0,0.2)] dark:hover:shadow-[0_20px_40px_rgba(0,0,0,0.6)] hover:border-[var(--amazon-orange)] relative isolate"
             >
               {/* Subtle hover glow */}
-              <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none -z-10" />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/5 dark:from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none -z-10" />
 
-              <div className="h-36 relative p-4 flex items-center justify-center bg-black/20">
+              <div className="h-36 relative p-4 flex items-center justify-center bg-black/5 dark:bg-black/20">
                 <div className="w-20 h-20 bg-white rounded-2xl shadow-inner p-2 flex items-center justify-center group-hover:scale-105 transition-transform duration-500 relative">
                   {item.imageUrl ? (
                     <img src={item.imageUrl} alt={item.name} className="h-full object-contain mix-blend-multiply" />
@@ -82,7 +82,7 @@ export default function ReorderStrip({ candidates, isLoading, onAppendToSearch, 
                 )}
 
                 {/* Days ago badge */}
-                <div className="absolute top-3 right-3 bg-gray-800/90 backdrop-blur-md border border-white/10 text-white text-[10px] font-medium px-2 py-1 rounded-md shadow-sm">
+                <div className="absolute top-3 right-3 bg-[var(--amazon-navy)]/90 backdrop-blur-md border border-[var(--amazon-border)] text-[var(--amazon-text)] text-[10px] font-medium px-2 py-1 rounded-md shadow-sm">
                   {daysAgo}d ago
                 </div>
               </div>
@@ -91,7 +91,7 @@ export default function ReorderStrip({ candidates, isLoading, onAppendToSearch, 
                 className="p-4 flex flex-col flex-1 cursor-pointer"
                 onClick={() => onClickProduct?.(item)}
               >
-                <h4 className="text-[14px] font-bold text-white leading-snug line-clamp-2 mb-1 group-hover:text-amazon-orange transition-colors" title={item.name}>
+                <h4 className="text-[14px] font-bold text-[var(--amazon-text)] leading-snug line-clamp-2 mb-1 group-hover:text-amazon-orange transition-colors" title={item.name}>
                   {item.name}
                 </h4>
                 
@@ -105,7 +105,7 @@ export default function ReorderStrip({ candidates, isLoading, onAppendToSearch, 
                           <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
                         </svg>
                         {item.reviewCount && (
-                          <span className="text-[10px] text-gray-400 ml-0.5">({item.reviewCount.toLocaleString()})</span>
+                          <span className="text-[10px] text-[var(--amazon-muted)] ml-0.5">({item.reviewCount.toLocaleString()})</span>
                         )}
                       </div>
                     )}
@@ -115,28 +115,28 @@ export default function ReorderStrip({ candidates, isLoading, onAppendToSearch, 
                       </div>
                     )}
                     {item.deliveryTime && (
-                      <span className="text-[10px] font-medium text-gray-300 w-full">
-                        Get it <span className="font-bold text-white">{item.deliveryTime}</span>
+                      <span className="text-[10px] font-medium text-[var(--amazon-text-dim)] w-full">
+                        Get it <span className="font-bold text-[var(--amazon-text)]">{item.deliveryTime}</span>
                       </span>
                     )}
                   </div>
                 )}
                 
-                <p className="text-[11px] text-gray-400 line-clamp-2 flex-1 mb-4 leading-relaxed" title={item.reason}>
+                <p className="text-[11px] text-[var(--amazon-muted)] line-clamp-2 flex-1 mb-4 leading-relaxed" title={item.reason}>
                   {item.reason}
                 </p>
                 
                 <div className="flex items-center justify-between mt-auto">
                   <div className="flex flex-col">
-                    <span className="text-[11px] text-gray-500 font-medium">Estimated</span>
-                    <span className="text-[16px] font-extrabold text-white">₹{item.price}</span>
+                    <span className="text-[11px] text-[var(--amazon-muted)] font-medium">Estimated</span>
+                    <span className="text-[16px] font-extrabold text-[var(--amazon-text)]">₹{item.price}</span>
                   </div>
                   <button 
                     onClick={(e) => {
                       e.stopPropagation();
                       onAppendToSearch(item.name);
                     }}
-                    className="flex items-center justify-center w-9 h-9 rounded-full bg-white/10 text-white hover:bg-amazon-orange hover:text-black hover:scale-110 active:scale-95 transition-all shadow-md group/add"
+                    className="flex items-center justify-center w-9 h-9 rounded-full bg-black/5 dark:bg-white/10 text-[var(--amazon-text)] hover:bg-amazon-orange hover:text-white hover:scale-110 active:scale-95 transition-all shadow-md group/add border border-[var(--amazon-border-light)]"
                     aria-label={`Add ${item.name}`}
                   >
                     <Plus size={18} strokeWidth={2.5} className="group-hover/add:rotate-90 transition-transform duration-300" />

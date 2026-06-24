@@ -51,10 +51,25 @@ export interface IntentRequest {
   userId: string;
   text?: string;
   imageBase64?: string;
+  isChatMode?: boolean;
 }
 
 export function postIntent(req: IntentRequest): Promise<CartProposal> {
   return apiPost<CartProposal>('/api/intent', req);
+}
+
+// ── POST /api/search ─────────────────────────────────────────────────────────
+export interface SearchRequest {
+  query: string;
+  topK?: number;
+}
+
+export function postSearchItem(req: SearchRequest): Promise<{ item: CartItem | null }> {
+  return apiPost<{ item: CartItem | null }>('/api/search', { ...req, topK: 1 });
+}
+
+export function postSearchItems(req: SearchRequest): Promise<{ items: CartItem[] }> {
+  return apiPost<{ items: CartItem[] }>('/api/search', req);
 }
 
 // ── POST /api/auth/google/disconnect ─────────────────────────────────────────

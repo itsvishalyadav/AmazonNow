@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Home from './pages/Home';
 import PurchaseHistory from './pages/PurchaseHistory';
 import Navbar from './components/Navbar';
@@ -6,10 +6,22 @@ import { Sparkles, Clock } from 'lucide-react';
 
 function App() {
   const [activeTab, setActiveTab] = useState<'home' | 'history'>('home');
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    return (localStorage.getItem('theme') as 'dark' | 'light') || 'dark';
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+  };
 
   return (
     <div className="app-layout">
-      <Navbar />
+      <Navbar theme={theme} toggleTheme={toggleTheme} />
       
       {/* Premium Segmented Tab Bar */}
       <div className="tab-container-wrapper">

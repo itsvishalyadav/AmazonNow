@@ -86,7 +86,7 @@ export default function ItemRow({ item, onRemove, onClickProduct, onUpdateQty, o
                       <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
                     </svg>
                     {item.reviewCount && (
-                      <span className="text-[11px] text-gray-400 ml-0.5">({item.reviewCount.toLocaleString()})</span>
+                      <span className="text-[11px] text-[var(--amazon-muted)] ml-0.5">({item.reviewCount.toLocaleString()})</span>
                     )}
                   </div>
                 )}
@@ -96,8 +96,8 @@ export default function ItemRow({ item, onRemove, onClickProduct, onUpdateQty, o
                   </div>
                 )}
                 {item.deliveryTime && (
-                  <span className="text-[11px] font-medium text-gray-300">
-                    Get it <span className="font-bold text-white">{item.deliveryTime}</span>
+                  <span className="text-[11px] font-medium text-[var(--amazon-text-dim)]">
+                    Get it <span className="font-bold text-[var(--amazon-text)]">{item.deliveryTime}</span>
                   </span>
                 )}
               </div>
@@ -105,22 +105,22 @@ export default function ItemRow({ item, onRemove, onClickProduct, onUpdateQty, o
           </div>
           <div className="item-price-group flex flex-col items-end">
             <span className="item-price">₹{total}</span>
-            <div className="flex items-center gap-2 mt-1 bg-white/5 rounded-md p-1 border border-white/10">
+            <div className="flex items-center gap-2 mt-1 bg-black/5 dark:bg-white/5 rounded-md p-1 border border-[var(--amazon-border-light)]">
               <button 
-                className="w-5 h-5 flex items-center justify-center rounded-sm hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+                className="w-5 h-5 flex items-center justify-center rounded-sm hover:bg-black/10 dark:hover:bg-white/10 text-[var(--amazon-muted)] hover:text-[var(--amazon-text)] transition-colors"
                 onClick={(e) => { e.stopPropagation(); onUpdateQty?.(item.productId, Math.max(1, item.qty - 1)); }}
               >
                 <Minus size={12} />
               </button>
-              <span className="text-[12px] font-medium w-3 text-center leading-none">{item.qty}</span>
+              <span className="text-[12px] font-medium w-3 text-center leading-none text-[var(--amazon-text)]">{item.qty}</span>
               <button 
-                className="w-5 h-5 flex items-center justify-center rounded-sm hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+                className="w-5 h-5 flex items-center justify-center rounded-sm hover:bg-black/10 dark:hover:bg-white/10 text-[var(--amazon-muted)] hover:text-[var(--amazon-text)] transition-colors"
                 onClick={(e) => { e.stopPropagation(); onUpdateQty?.(item.productId, item.qty + 1); }}
               >
                 <Plus size={12} />
               </button>
             </div>
-            {item.qty > 1 && <span className="text-[10px] text-gray-400 mt-1">₹{item.price} each</span>}
+            {item.qty > 1 && <span className="text-[10px] text-[var(--amazon-muted)] mt-1">₹{item.price} each</span>}
           </div>
         </div>
 
@@ -179,26 +179,26 @@ export default function ItemRow({ item, onRemove, onClickProduct, onUpdateQty, o
         {item.alternatives && item.alternatives.length > 0 && (
           <div className="item-alternatives">
             <button
-              className="item-alt-toggle"
+              className="flex items-center gap-2 mt-2 mb-1 px-3 py-1.5 rounded-full text-[11px] font-bold text-[var(--amazon-text-dim)] bg-[var(--amazon-dark)] hover:bg-[var(--amazon-card-hover)] border border-[var(--amazon-border)] hover:border-[var(--amazon-orange)] hover:text-[var(--amazon-text)] transition-all shadow-sm"
               onClick={() => setAltExpanded((v) => !v)}
               aria-expanded={altExpanded}
             >
-              <ArrowLeftRight size={12} /> {altExpanded ? 'Hide alternatives' : `Show ${item.alternatives.length} alternative${item.alternatives.length > 1 ? 's' : ''}`}
+              <ArrowLeftRight size={12} className="text-[var(--amazon-orange)]" /> {altExpanded ? 'Hide alternatives' : `Show ${item.alternatives.length} alternative${item.alternatives.length > 1 ? 's' : ''}`}
             </button>
             {altExpanded && (
-              <ul className="item-alt-list">
+              <ul className="flex flex-col gap-2 mt-2 pl-3 border-l-2 border-[var(--amazon-border)]">
                 {item.alternatives.map(alt => (
-                  <li key={alt.id} className="item-alt-row flex justify-between items-start gap-4">
-                    <div className="flex-1">
-                      <div className="item-alt-top">
-                        <span className="item-alt-name">{alt.name}</span>
-                        <span className="item-alt-price">₹{alt.price}</span>
+                  <li key={alt.id} className="flex justify-between items-start gap-3 p-2.5 rounded-lg hover:bg-[var(--amazon-dark)] transition-colors border border-transparent hover:border-[var(--amazon-border-light)]">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <span className="text-[13px] font-bold text-[var(--amazon-text)] leading-tight">{alt.name}</span>
+                        <span className="text-[13px] font-black text-[var(--amazon-text)] shrink-0">₹{alt.price}</span>
                       </div>
-                      <p className="item-alt-reason">{alt.reason}</p>
+                      <p className="text-[11px] text-[var(--amazon-muted)] leading-relaxed">{alt.reason}</p>
                     </div>
                     {onSwap && (
                       <button 
-                        className="px-3 py-1.5 rounded-lg bg-[#f97316]/10 text-[#f97316] text-[11px] font-bold border border-[#f97316]/20 hover:bg-[#f97316] hover:text-black transition-colors shrink-0 mt-1"
+                        className="px-3 py-1.5 rounded-lg bg-[var(--amazon-orange-dim)] text-[var(--amazon-orange)] text-[11px] font-bold border border-[var(--amazon-orange-dim)] hover:bg-[var(--amazon-orange)] hover:text-black transition-colors shrink-0 mt-1"
                         onClick={() => {
                           onSwap(item.productId, alt);
                           setAltExpanded(false);
