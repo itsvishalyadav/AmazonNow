@@ -7,7 +7,7 @@ import { useState, useRef, useCallback } from 'react';
 import { Send, Camera, Mic, MicOff, X, Loader2 } from 'lucide-react';
 
 interface IntentBarProps {
-  onSubmit: (text: string, imageBase64?: string) => void;
+  onSubmit: (text: string, imageBase64?: string, isChatMode?: boolean) => void;
   isLoading: boolean;
 }
 
@@ -16,6 +16,7 @@ export default function IntentBar({ onSubmit, isLoading }: IntentBarProps) {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageBase64, setImageBase64] = useState<string | null>(null);
   const [isListening, setIsListening] = useState(false);
+  const [isChatMode, setIsChatMode] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<any>(null);
 
@@ -111,7 +112,7 @@ export default function IntentBar({ onSubmit, isLoading }: IntentBarProps) {
   const handleSubmit = (e?: React.FormEvent) => {
     e?.preventDefault();
     if ((!text.trim() && !imageBase64) || isLoading) return;
-    onSubmit(text.trim(), imageBase64 ?? undefined);
+    onSubmit(text.trim(), imageBase64 ?? undefined, isChatMode);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -142,7 +143,7 @@ export default function IntentBar({ onSubmit, isLoading }: IntentBarProps) {
       )}
 
       {/* Input row */}
-      <div className="intent-input-row">
+      <div className="intent-input-row relative">
         <textarea
           id="intent-input"
           className="intent-textarea"
@@ -159,7 +160,14 @@ export default function IntentBar({ onSubmit, isLoading }: IntentBarProps) {
           aria-label="Shopping intent input"
         />
 
-        <div className="intent-actions">
+        <div className="intent-actions items-center">
+          {/* Animated Pill Toggle */}
+          <div className="flex items-center bg-black/5 dark:bg-white/10 rounded-full p-1 relative cursor-pointer mr-2 shadow-inner h-8" onClick={() => setIsChatMode(!isChatMode)} title={isChatMode ? "Chat Mode: Stepwise questions" : "Quick Build: Direct cart"}>
+            <div className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-[var(--amazon-orange)] rounded-full transition-transform duration-300 ease-out shadow-md ${isChatMode ? 'translate-x-[calc(100%+4px)]' : 'translate-x-0'}`} />
+            <div className={`flex-1 flex items-center justify-center px-3 z-10 text-[11px] font-black tracking-wider transition-colors duration-300 ${!isChatMode ? 'text-white drop-shadow-md' : 'text-[var(--amazon-muted)]'}`}>QUICK</div>
+            <div className={`flex-1 flex items-center justify-center px-3 z-10 text-[11px] font-black tracking-wider transition-colors duration-300 ${isChatMode ? 'text-white drop-shadow-md' : 'text-[var(--amazon-muted)]'}`}>CHAT</div>
+          </div>
+
           {/* Hidden file input */}
           <input
             ref={fileInputRef}

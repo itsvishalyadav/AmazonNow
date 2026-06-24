@@ -2,9 +2,10 @@
 // The hero output component — displays intentSummary, budget bar, assumptions,
 // list of ItemRows, RebalanceBanner, and the "Buy now" action.
 // ─────────────────────────────────────────────────────────────────────────────
-import { useState } from 'react';
-import { ShoppingCart, Info, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ShoppingCart, Info, CheckCircle2, AlertTriangle, Search } from 'lucide-react';
 import type { CartProposal, CartItem, Swap } from '../lib/types';
+import { postSearchItems } from '../lib/api';
 import ItemRow from './ItemRow';
 import RebalanceBanner from './RebalanceBanner';
 import SwipeCheckoutButton from './SwipeCheckoutButton';
@@ -33,7 +34,26 @@ export default function CartProposalCard({
   const [swapsReverted, setSwapsReverted] = useState<Set<string>>(new Set());
   const [isAddingItem, setIsAddingItem] = useState(false);
   const [addItemText, setAddItemText] = useState('');
+  const [suggestions, setSuggestions] = useState<CartItem[]>([]);
   const [deliveryMode, setDeliveryMode] = useState<'flash'|'saver'>('flash');
+
+  useEffect(() => {
+    setItems(proposal.items);
+  }, [proposal.items]);
+
+  useEffect(() => {
+    if (!addItemText.trim() || !isAddingItem) {
+      setSuggestions([]);
+      return;
+    }
+    const timer = setTimeout(async () => {
+      try {
+        const res = await postSearchItems({ query: addItemText, topK: 4 });
+        setSuggestions(res.items || []);
+      } catch (e) {}
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [addItemText, isAddingItem]);
 
   const displayedItems = deliveryMode === 'flash' ? items : items.map(i => ({
     ...i,
@@ -87,11 +107,22 @@ export default function CartProposalCard({
       if (val && onFeedbackAdd) {
         onFeedbackAdd(val);
         setAddItemText('');
+        setSuggestions([]);
         setIsAddingItem(false);
       }
     } else if (e.key === 'Escape') {
       setIsAddingItem(false);
+      setSuggestions([]);
       setAddItemText('');
+    }
+  };
+
+  const handleSelectSuggestion = (item: CartItem) => {
+    if (onFeedbackAdd) {
+      onFeedbackAdd(item.name);
+      setAddItemText('');
+      setSuggestions([]);
+      setIsAddingItem(false);
     }
   };
 
@@ -117,34 +148,6 @@ export default function CartProposalCard({
     }
   };
 
-  if (proposal.clarifyingQuestion && items.length === 0) {
-    return (
-      <div className="cart-card">
-        <div className="cart-clarify">
-          <Info size={22} className="clarify-icon" />
-          <p className="clarify-text">{proposal.clarifyingQuestion}</p>
-          <div style={{ marginTop: '16px', width: '100%', maxWidth: '400px' }}>
-            <input 
-              type="text" 
-              placeholder="Type your answer and press Enter..." 
-              onKeyDown={handleReplySubmit}
-              autoFocus
-              style={{
-                width: '100%',
-                padding: '12px 16px',
-                borderRadius: 'var(--radius-md)',
-                border: '1px solid var(--amazon-border)',
-                background: 'var(--amazon-dark)',
-                color: 'var(--amazon-text)',
-                outline: 'none',
-                fontSize: '15px'
-              }}
-            />
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   const activeSwaps = proposal.rebalance?.filter((s) => !swapsReverted.has(s.from));
 
@@ -152,10 +155,10 @@ export default function CartProposalCard({
     <div className="cart-card">
       {/* ── Header ─────────────────────────────────────────────── */}
       {proposal.occasion ? (
-        <div className={`w-full p-6 text-white rounded-t-[14px] bg-gradient-to-r ${proposal.occasion.colorGradient} shadow-inner`}>
+        <div className={`w-full p-6 text-[var(--amazon-text)] rounded-t-[14px] bg-gradient-to-r ${proposal.occasion.colorGradient} shadow-inner`}>
           <div className="flex justify-between items-start">
             <div>
-              <span className="block mb-2 drop-shadow-md text-white/90">
+              <span className="block mb-2 drop-shadow-md text-[var(--amazon-text-dim)]">
                 <IconRenderer iconName={proposal.occasion.icon} size={38} strokeWidth={2.5} />
               </span>
               <h2 className="text-[26px] font-black tracking-tight drop-shadow-md mb-1">{proposal.occasion.name}</h2>
@@ -256,8 +259,8 @@ export default function CartProposalCard({
       <div className="cart-items">
         {proposal.occasion ? (
           Object.entries(groupedItems).map(([category, catItems]) => (
-            <div key={category} className="mb-4 bg-white/5 border border-white/5 rounded-xl overflow-hidden shadow-sm">
-              <h3 className="text-[13px] font-black text-white/70 uppercase tracking-[0.1em] px-4 py-3 bg-black/20 border-b border-white/5">
+            <div key={category} className="mb-4 bg-[var(--amazon-card)] border border-[var(--amazon-border-light)] rounded-xl overflow-hidden shadow-[var(--shadow-float)]">
+              <h3 className="text-[13px] font-black text-[var(--amazon-text-dim)] uppercase tracking-[0.1em] px-4 py-3 bg-black/5 dark:bg-black/20 border-b border-[var(--amazon-border-light)]">
                 {category}
               </h3>
               <div className="p-2">
@@ -289,18 +292,47 @@ export default function CartProposalCard({
       </div>
 
       {/* ── Add Item (F9) ────────────────────────────────────────── */}
-      <div className="cart-add-item-row">
+      <div className="cart-add-item-row relative">
         {isAddingItem ? (
-          <input
-            type="text"
-            className="add-item-input"
-            autoFocus
-            placeholder="What should we prioritise next time? (Enter to save)"
-            value={addItemText}
-            onChange={(e) => setAddItemText(e.target.value)}
-            onKeyDown={handleAddItemSubmit}
-            onBlur={() => { setIsAddingItem(false); setAddItemText(''); }}
-          />
+          <div className="w-full relative">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+              <input
+                type="text"
+                className="add-item-input pl-10"
+                autoFocus
+                placeholder="Search for an item..."
+                value={addItemText}
+                onChange={(e) => setAddItemText(e.target.value)}
+                onKeyDown={handleAddItemSubmit}
+                onBlur={() => setTimeout(() => { setIsAddingItem(false); setAddItemText(''); setSuggestions([]); }, 200)}
+              />
+            </div>
+            {suggestions.length > 0 && (
+              <div className="absolute left-0 right-0 bottom-full mb-1 bg-[var(--amazon-card)] border border-[var(--amazon-border)] rounded-xl overflow-hidden shadow-[var(--shadow-float)] z-50">
+                {suggestions.map((item) => (
+                  <div 
+                    key={item.productId}
+                    className="px-4 py-3 flex items-center gap-3 hover:bg-[var(--amazon-dark)] cursor-pointer border-b border-[var(--amazon-border-light)] last:border-none transition-colors"
+                    onMouseDown={(e) => { e.preventDefault(); handleSelectSuggestion(item); }}
+                  >
+                    {item.imageUrl ? (
+                      <img src={item.imageUrl} alt={item.name} className="w-8 h-8 rounded-md object-contain bg-black/5 dark:bg-white/10" />
+                    ) : (
+                      <div className="w-8 h-8 rounded-md bg-black/5 dark:bg-white/10 flex items-center justify-center">
+                        <ShoppingCart size={14} className="text-[var(--amazon-muted)]" />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[13px] font-semibold text-[var(--amazon-text)] truncate">{item.name}</p>
+                      <p className="text-[11px] text-[var(--amazon-muted)] truncate">{item.category}</p>
+                    </div>
+                    <span className="text-[13px] font-bold text-amazon-orange">₹{item.price}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         ) : (
           <button className="add-item-btn" onClick={() => setIsAddingItem(true)}>
             + Add a missing item

@@ -13,7 +13,8 @@ import FeedbackToast from '../components/FeedbackToast';
 import ProactiveBanner from '../components/ProactiveBanner';
 import ReorderStrip from '../components/ReorderStrip';
 import ProductOverlay from '../components/ProductOverlay';
-import { postIntent, postCheckout, postFeedback, postEmergency, getProactive, postProactiveUpdate, getReorder, postDisconnectCalendar, getCalendarStatus } from '../lib/api';
+import ChatInterface, { type ChatMessage } from '../components/ChatInterface';
+import { postIntent, postCheckout, postFeedback, postEmergency, getProactive, postProactiveUpdate, getReorder, postDisconnectCalendar, getCalendarStatus, postSearchItem } from '../lib/api';
 import type { ProactiveSuggestion } from '../lib/api';
 import type { CartProposal, CartItem } from '../lib/types';
 
@@ -41,6 +42,8 @@ export default function Home() {
   const [toast, setToast] = useState<{ message: string; type: 'avoid' | 'prefer' } | null>(null);
 
   // Phase 11 state
+  const [activeSessionIsChat, setActiveSessionIsChat] = useState(false);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [proactiveSuggestion, setProactiveSuggestion] = useState<ProactiveSuggestion | null>(null);
   const [reorderCandidates, setReorderCandidates] = useState<CartItem[]>([]);
   const [isCalendarConnected, setIsCalendarConnected] = useState(false);
@@ -97,13 +100,29 @@ export default function Home() {
   }, []);
 
   // ── Submit intent ──────────────────────────────────────────────────────────
-  const handleIntentSubmit = async (text: string, imageBase64?: string) => {
+  const handleIntentSubmit = async (text: string, imageBase64?: string, isChatMode?: boolean) => {
     setError(null);
     setHasImage(!!imageBase64);
 
+    const isContinuingChat = proposal && proposal.clarifyingQuestion && activeSessionIsChat;
+    const currentIsChatMode = isContinuingChat ? true : !!isChatMode;
+    setActiveSessionIsChat(currentIsChatMode);
+
+    let newMessages = [];
+    if (!isContinuingChat) {
+      newMessages = [{ id: Date.now().toString(), role: 'user' as const, text }];
+      setChatMessages(newMessages);
+    } else {
+      newMessages = [...chatMessages, { id: Date.now().toString(), role: 'user' as const, text }];
+      setChatMessages(newMessages);
+    }
+
     // If we have an existing proposal, append the context so the AI remembers it!
     let contextualText = text;
-    if (proposal) {
+    if (isContinuingChat) {
+      const transcript = newMessages.map(m => `${m.role.toUpperCase()}: ${m.text}`).join('\\n');
+      contextualText = `Here is the conversation history so far:\\n${transcript}\\n\\nBased on this full history, parse the intent. Do NOT ask questions the user has already answered (e.g. if they said 'any', use default).`;
+    } else if (proposal) {
       if (proposal.clarifyingQuestion) {
         contextualText = `Context from previous search: "${proposal.intentSummary}". You asked: "${proposal.clarifyingQuestion}". User answers: "${text}"`;
       } else {
@@ -112,11 +131,19 @@ export default function Home() {
       }
     }
 
-    setProposal(null);
+    if (!isContinuingChat) {
+      setProposal(null);
+    }
     setAppState('loading');
 
     try {
-      const result = await postIntent({ userId: DEMO_USER_ID, text: contextualText, imageBase64 });
+      const result = await postIntent({ userId: DEMO_USER_ID, text: contextualText, imageBase64, isChatMode: currentIsChatMode });
+      
+      if (result.clarifyingQuestion) {
+        setActiveSessionIsChat(true);
+        setChatMessages(prev => [...prev, { id: Date.now().toString() + 'a', role: 'agent', text: result.clarifyingQuestion }]);
+      }
+      
       setProposal(result);
       setAppState('result');
     } catch (err: any) {
@@ -143,17 +170,27 @@ export default function Home() {
   // ── Remove/Add feedback ────────────────────────────────────────────────────
   const handleFeedbackRemove = async (productId: string, productName: string) => {
     try {
-      await postFeedback({ userId: DEMO_USER_ID, removed: [productId] });
-      setToast({ message: `✓ Got it — we'll avoid ${productName} in future carts`, type: 'avoid' });
+      if (proposal) {
+        setProposal({
+          ...proposal,
+          items: proposal.items.filter(i => i.productId !== productId),
+        });
+      }
     } catch {
-      // Non-critical — best-effort
+      // Non-critical
     }
   };
 
   const handleFeedbackAdd = async (productName: string) => {
     try {
-      await postFeedback({ userId: DEMO_USER_ID, added: [productName] });
-      setToast({ message: `✓ Noted — we'll prioritise ${productName} next time`, type: 'prefer' });
+      const { item } = await postSearchItem({ query: productName });
+      if (item && proposal) {
+        setProposal({
+          ...proposal,
+          items: [...proposal.items, item],
+          total: proposal.total + item.price
+        });
+      }
     } catch {
       // Non-critical
     }
@@ -196,6 +233,8 @@ export default function Home() {
     setError(null);
     setOrderId(null);
     setAppState('idle');
+    setActiveSessionIsChat(false);
+    setChatMessages([]);
   };
 
   // ── Render: Order confirmation ─────────────────────────────────────────────
@@ -213,6 +252,11 @@ export default function Home() {
       </div>
     );
   }
+
+  const isChatting = activeSessionIsChat && (
+    appState === 'loading' || 
+    (appState === 'result' && !!proposal?.clarifyingQuestion)
+  );
 
   return (
     <div className="home-wrapper">
@@ -334,10 +378,21 @@ export default function Home() {
         )}
 
         {/* ── Loading ────────────────────────────────────────────── */}
-        {appState === 'loading' && <LoadingState hasImage={hasImage} />}
+        {appState === 'loading' && !isChatting && <LoadingState hasImage={hasImage} />}
+
+        {/* ── Chat Interface ────────────────────────────────────── */}
+        {isChatting && (
+          <section className="mt-8 mb-12">
+            <ChatInterface 
+              messages={chatMessages}
+              onReply={(text) => handleIntentSubmit(text, undefined, true)}
+              isLoading={appState === 'loading'}
+            />
+          </section>
+        )}
 
         {/* ── Cart result ────────────────────────────────────────── */}
-        {(appState === 'result' || appState === 'confirming') && proposal && (
+        {(appState === 'result' || appState === 'confirming') && proposal && !isChatting && (
           <section className="result-section">
             {/* Reset / try again */}
             <div className="result-toolbar">
