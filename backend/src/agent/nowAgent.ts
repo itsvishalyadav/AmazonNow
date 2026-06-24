@@ -23,6 +23,7 @@ export interface BuildCartInput {
   userId: string;
   text?: string;
   imageBase64?: string;
+  isChatMode?: boolean;
 }
 
 // ── Step 1: Parse intent ──────────────────────────────────────────────────────
@@ -47,14 +48,14 @@ Customer said: ${userText || "(no additional text)"}`;
 
     return chatJSON(
       PARSE_INTENT_SYSTEM,
-      buildParseIntentUser(combinedText, userProfile)
+      buildParseIntentUser(combinedText, userProfile, input.isChatMode)
     ) as Promise<ParsedIntent>;
   }
 
   // Text-only path
   return chatJSON(
     PARSE_INTENT_SYSTEM,
-    buildParseIntentUser(userText, userProfile)
+    buildParseIntentUser(userText, userProfile, input.isChatMode)
   ) as Promise<ParsedIntent>;
 }
 
@@ -94,7 +95,8 @@ async function searchCandidates(
 async function assembleCart(
   intent: ParsedIntent,
   candidatesBySubNeed: Array<{ subNeed: string; products: Product[] }>,
-  userProfile: { dietary: string[]; household: number; budget?: number; recentProductNames: string[] }
+  userProfile: { dietary: string[]; household: number; budget?: number; recentProductNames: string[] },
+  chatHistory?: string
 ): Promise<CartProposal> {
   const raw = await chatJSON(
     ASSEMBLE_CART_SYSTEM,
@@ -117,7 +119,8 @@ async function assembleCart(
           _score: (p as any)._score ?? 0,
         })),
       })),
-      userProfile
+      userProfile,
+      chatHistory
     )
   );
 
@@ -353,11 +356,11 @@ export async function buildCart(input: BuildCartInput): Promise<CartProposal> {
   // 5. Assemble cart via LLM (with one retry on Zod parse failure)
   let proposal: CartProposal;
   try {
-    proposal = await assembleCart(intent, candidatesBySubNeed, userProfile);
+    proposal = await assembleCart(intent, candidatesBySubNeed, userProfile, input.text);
   } catch (err) {
     console.warn("[nowAgent] First assemble attempt failed, retrying...", err);
     try {
-      proposal = await assembleCart(intent, candidatesBySubNeed, userProfile);
+      proposal = await assembleCart(intent, candidatesBySubNeed, userProfile, input.text);
     } catch (retryErr) {
       console.error("[nowAgent] assembleCart retry failed:", retryErr);
       throw new Error("Failed to build your cart. Please try again.");

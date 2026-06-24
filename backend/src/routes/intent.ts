@@ -8,7 +8,7 @@ import { buildCart } from "../agent/nowAgent.js";
 const router = Router();
 
 router.post("/", async (req, res) => {
-  const { userId, text, imageBase64 } = req.body;
+  const { userId, text, imageBase64, isChatMode } = req.body;
 
   if (!userId) {
     return res.status(400).json({ error: "userId is required" });
@@ -19,7 +19,7 @@ router.post("/", async (req, res) => {
   }
 
   try {
-    const proposal = await buildCart({ userId, text, imageBase64 });
+    const proposal = await buildCart({ userId, text, imageBase64, isChatMode });
     return res.json(proposal);
   } catch (err: any) {
     console.error("[POST /api/intent] Error:", err?.message ?? err);

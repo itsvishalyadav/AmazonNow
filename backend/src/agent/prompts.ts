@@ -43,7 +43,8 @@ export function buildParseIntentUser(
     budget?: number;
     recentProductNames: string[];
     learnedPrefs?: { avoid: string[]; prefer: string[] };
-  }
+  },
+  isChatMode?: boolean
 ): string {
   return `User profile:
 - Household size: ${userProfile.household}
@@ -56,6 +57,21 @@ export function buildParseIntentUser(
 
 User's request:
 "${userInput}"
+
+${isChatMode ? `
+[CHAT MODE ENABLED]
+CRITICAL INSTRUCTION: You MUST ask stepwise follow-up questions to gather more details if the user's request is broad (e.g. "breakfast for tomorrow", "party snacks", "medicines").
+Set \`clarifyingQuestion\` to ask about things like:
+- Number of people?
+- Veg or Non-veg?
+- Budget?
+- Any specific items they have in mind?
+IMPORTANT: If the user has already answered your question or explicitly said 'any' or 'doesn't matter', DO NOT ask it again. Move on to building the cart using defaults or any type.
+Do NOT form the final cart until you are confident you have enough details.
+` : `
+[QUICK BUILD MODE ENABLED]
+CRITICAL INSTRUCTION: Build the cart DIRECTLY. Do NOT ask clarifying questions unless absolutely necessary (e.g., they asked for a very specific electronic device but didn't specify the brand). Use standard defaults (e.g. 2 servings, standard items) and form the cart immediately.
+`}
 
 Parse this into the required JSON.`;
 }
@@ -84,7 +100,8 @@ Your job: Pick THE SINGLE BEST RELEVANT product per sub-need and build a CartPro
 ## Standard Rules:
 - Be decisive: pick AT MOST ONE per sub-need.
 - Respect dietary profile: never include non-veg for vegetarian users without flagging.
-- If a candidate is out of stock (inStock: false), set substituteFor and pick the next best in-stock option.
+- If the best candidate is out of stock (inStock: false), DO NOT pick a substitute automatically. Instead, set clarifyingQuestion to: "[Product Name] is out of stock. Would you like me to find a substitute?" and do NOT include the item in the cart yet.
+- IMPORTANT: If the Conversation History shows the user has already agreed to a substitute (e.g. "Yes"), then pick the next best in-stock option and include it.
 - If the user has AVOID preferences, DO NOT include those products.
 - If the user has PREFER preferences, prioritise those products when they fit.
 - For each item write a one-line reason (plain, helpful, trust-building).
@@ -149,9 +166,11 @@ export function buildAssembleCartUser(
     budget?: number;
     recentProductNames: string[];
     learnedPrefs?: { avoid: string[]; prefer: string[] };
-  }
+  },
+  chatHistory?: string
 ): string {
   return `Intent: ${intent.summary}
+${chatHistory ? `\\nConversation History:\\n${chatHistory}\\n` : ""}
 Budget: ${intent.constraints?.budget ? `Rs${intent.constraints.budget}` : userProfile.budget ? `Rs${userProfile.budget} (default)` : "none"}
 Servings: ${intent.constraints?.servings ?? userProfile.household}
 Dietary: ${[...(intent.constraints?.dietary ?? []), ...userProfile.dietary].filter(Boolean).join(", ") || "none"}
