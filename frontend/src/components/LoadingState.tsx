@@ -1,56 +1,81 @@
-// frontend/src/components/LoadingState.tsx
-// Animated loading state shown while the Now Agent assembles a cart.
-// Shows a multi-step progress animation with Amazon branding.
-// ─────────────────────────────────────────────────────────────────────────────
 import { useEffect, useState } from 'react';
-import { BrainCircuit, Search, Layers, Calculator, Sparkles, Image as ImageIcon } from 'lucide-react';
 
 export default function LoadingState({ hasImage }: { hasImage?: boolean }) {
   const baseSteps = [
-    { icon: <BrainCircuit size={28} className="text-amazon-orange" />, text: 'Parsing your need…' },
-    { icon: <Search size={28} className="text-amazon-orange" />, text: 'Searching catalog…' },
-    { icon: <Layers size={28} className="text-amazon-orange" />,  text: 'Selecting best picks…' },
-    { icon: <Calculator size={28} className="text-amazon-orange" />, text: 'Checking your budget…' },
-    { icon: <Sparkles size={28} className="text-amazon-orange" />, text: 'Finalising your cart…' },
+    'Parsing your request...',
+    'Searching the Amazon catalog...',
+    'Finding the best options...',
+    'Applying Prime delivery...',
+    'Finalising your cart...'
   ];
   
   const STEPS = hasImage 
-    ? [{ icon: <ImageIcon size={28} className="text-amazon-orange" />, text: 'Analyzing your photo…' }, ...baseSteps] 
+    ? ['Analyzing your image...', ...baseSteps] 
     : baseSteps;
 
   const [stepIdx, setStepIdx] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setStepIdx((i) => (i + 1) % STEPS.length);
-    }, 900);
+      setStepIdx((i) => {
+        if (i >= STEPS.length - 1) {
+          clearInterval(interval);
+          return i;
+        }
+        return i + 1;
+      });
+    }, 1500); // 1.5s per step
     return () => clearInterval(interval);
-  }, []);
+  }, [STEPS.length]);
 
   return (
-    <div className="loading-state" role="status" aria-live="polite">
-      {/* Pulsing ring */}
-      <div className="loading-ring">
-        <div className="loading-ring-inner">
-          <span className="loading-step-icon">{STEPS[stepIdx].icon}</span>
+    <div className="flex flex-col items-center justify-center p-8 text-center min-h-[400px] bg-[var(--amazon-bg)] rounded-2xl border border-[var(--amazon-border)] shadow-sm">
+      
+      {/* Circular Video Container with Animated Ring */}
+      <div className="relative w-[180px] h-[180px] mb-10 flex items-center justify-center">
+        {/* Background track ring */}
+        <div className="absolute inset-[-6px] rounded-full border-[4px] border-[var(--amazon-border)]" />
+        {/* Spinning glowing ring */}
+        <div className="absolute inset-[-6px] rounded-full border-[4px] border-transparent border-t-[#FF9900] spin" style={{ filter: 'drop-shadow(0 0 6px rgba(255,153,0,0.6))' }} />
+        
+        {/* Video itself */}
+        <div className="relative w-full h-full rounded-full overflow-hidden bg-white shadow-[0_4px_12px_rgba(0,0,0,0.1)] flex items-center justify-center">
+          <video 
+            src="/Shopping Cart Loader.mp4" 
+            autoPlay 
+            loop 
+            muted 
+            playsInline 
+            className="w-full h-full object-cover mix-blend-multiply scale-[1.2]" 
+          />
         </div>
       </div>
 
-      {/* Step text */}
-      <p className="loading-step-text">{STEPS[stepIdx].text}</p>
+      {/* Step Text with Fade Up Animation */}
+      <div className="h-[32px] overflow-hidden mb-5 flex items-center justify-center">
+        <h3 key={stepIdx} className="text-[20px] font-bold text-[var(--amazon-text)] fade-up leading-none m-0">
+          {STEPS[stepIdx]}
+        </h3>
+      </div>
 
-      {/* Progress dots */}
-      <div className="loading-dots">
+      {/* Progress Dots */}
+      <div className="flex items-center gap-3 mb-5">
         {STEPS.map((_, i) => (
           <div
             key={i}
-            className={`loading-dot ${i === stepIdx ? 'loading-dot--active' : i < stepIdx ? 'loading-dot--done' : ''}`}
+            className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+              i === stepIdx 
+                ? 'bg-[#FF9900] scale-125' 
+                : i < stepIdx 
+                  ? 'bg-[#007185]' 
+                  : 'bg-[var(--amazon-border)]'
+            }`}
           />
         ))}
       </div>
 
-      <p className="loading-subtitle">
-        The Now Agent is thinking… usually takes 3–8 s
+      <p className="text-[14px] text-[var(--amazon-text-dim)]">
+        The Amazon Now Agent is thinking...
       </p>
     </div>
   );

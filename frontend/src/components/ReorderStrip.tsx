@@ -1,152 +1,114 @@
-import { Plus, RefreshCcw } from 'lucide-react';
+import { useCart } from '../context/CartContext';
 import type { CartItem } from '../lib/types';
 
 interface ReorderStripProps {
   candidates: CartItem[];
   isLoading?: boolean;
-  onAppendToSearch: (productName: string) => void;
-  onClickProduct?: (item: CartItem) => void;
 }
 
-export default function ReorderStrip({ candidates, isLoading, onAppendToSearch, onClickProduct }: ReorderStripProps) {
+export default function ReorderStrip({ candidates, isLoading }: ReorderStripProps) {
+  const { addToGlobalCart, setSelectedProduct } = useCart();
+
   if (!isLoading && (!candidates || candidates.length === 0)) return null;
 
+  const handleAddToCart = (item: CartItem) => {
+    addToGlobalCart({ ...item, qty: 1 });
+    alert(`${item.name} added to cart!`);
+  };
+
   return (
-    <div className="flex flex-col gap-3 mt-4 mb-6 animate-fadeUp">
-      <div className="flex items-center gap-2 px-1 mb-1">
-        <div className="w-6 h-6 rounded-full bg-amazon-orange/20 flex items-center justify-center">
-          <RefreshCcw size={12} className="text-amazon-orange" />
-        </div>
-        <h3 className="text-[14px] font-bold text-[var(--amazon-text)] uppercase tracking-widest flex items-center gap-2">
-          Running Low?
-          <span className="text-[10px] font-medium text-[var(--amazon-muted)] normal-case tracking-normal bg-black/5 dark:bg-white/5 px-2 py-0.5 rounded-full border border-[var(--amazon-border-light)]">
-            Based on your history
+    <div className="flex flex-col gap-3 mt-4 mb-8 bg-[var(--amazon-bg)] py-4 rounded-xl px-4">
+      <div className="flex items-center gap-2 mb-2">
+        <h3 className="text-[20px] font-bold text-[var(--amazon-text)] flex items-center gap-2">
+          Buy it again, right on time
+          <span className="text-[11px] font-bold text-[#007185] uppercase tracking-wider bg-blue-50 px-2 py-0.5 rounded-sm border border-blue-100 flex items-center gap-1">
+            <span className="text-lg leading-none">+</span> Predicted for you
           </span>
         </h3>
       </div>
+      <p className="text-[13px] text-[var(--amazon-text-dim)] -mt-2 mb-2">Based on how often you reorder — refill before you run out.</p>
       
       {/* Horizontal scrolling container */}
-      <div className="flex overflow-x-auto gap-4 pt-2 pb-6 -mt-2 -mx-4 px-4 snap-x hide-scrollbar">
+      <div className="flex overflow-x-auto gap-4 pb-4 snap-x hide-scrollbar">
         {isLoading ? (
           /* Shimmer Skeleton Cards */
           Array.from({ length: 4 }).map((_, idx) => (
             <div 
               key={`skeleton-${idx}`}
-              className="premium-skeleton flex-shrink-0 w-64 bg-[var(--amazon-card)] backdrop-blur-2xl border border-[var(--amazon-border)] rounded-[20px] overflow-hidden shadow-2xl flex flex-col relative isolate"
+              className="flex-shrink-0 w-[240px] bg-[var(--amazon-card)] border border-[var(--amazon-border)] rounded-lg p-4 flex flex-col"
             >
-              <div className="h-36 relative p-4 flex items-center justify-center bg-black/10 dark:bg-black/20">
-                <div className="w-24 h-24 bg-black/10 dark:bg-white/5 rounded-2xl animate-pulse" />
-              </div>
-              <div className="p-4 flex flex-col flex-1">
-                <div className="h-4 bg-black/10 dark:bg-white/10 rounded w-3/4 mb-2 animate-pulse" />
-                <div className="h-3 bg-black/10 dark:bg-white/10 rounded w-1/2 mb-4 animate-pulse" />
-                <div className="h-8 bg-black/5 dark:bg-white/5 rounded w-full mb-4 animate-pulse" />
-                <div className="flex justify-between items-center mt-auto">
-                  <div className="h-5 bg-black/10 dark:bg-white/10 rounded w-12 animate-pulse" />
-                  <div className="w-9 h-9 bg-black/10 dark:bg-white/10 rounded-full animate-pulse" />
-                </div>
-              </div>
+              <div className="w-full h-24 bg-[var(--amazon-card-hover)] rounded-md animate-pulse mb-4" />
+              <div className="h-4 bg-[var(--amazon-border)] rounded w-3/4 mb-2 animate-pulse" />
+              <div className="h-3 bg-[var(--amazon-card-hover)] rounded w-1/2 mb-4 animate-pulse" />
+              <div className="h-8 bg-[var(--amazon-border)] rounded w-full mt-auto animate-pulse" />
             </div>
           ))
         ) : (
           candidates.map((item, idx) => {
-          // Extract exactly how many days ago from various reason formats
-          const daysMatch = item.reason.match(/(?:last ordered|ordered)\s*(?:it|them)?\s*(\d+)\s*day/i);
-          const daysAgo = daysMatch ? daysMatch[1] : '?';
-          
-          return (
-            <div 
-              key={`${item.productId}-${idx}`}
-              className="flex-shrink-0 w-64 bg-[var(--amazon-card)] backdrop-blur-2xl border border-[var(--amazon-border)] rounded-[20px] overflow-hidden shadow-2xl snap-start flex flex-col group transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_rgba(0,0,0,0.2)] dark:hover:shadow-[0_20px_40px_rgba(0,0,0,0.6)] hover:border-[var(--amazon-orange)] relative isolate"
-            >
-              {/* Subtle hover glow */}
-              <div className="absolute inset-0 bg-gradient-to-b from-black/5 dark:from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none -z-10" />
-
-              <div className="h-36 relative p-4 flex items-center justify-center bg-black/5 dark:bg-black/20">
-                <div className="w-20 h-20 bg-white rounded-2xl shadow-inner p-2 flex items-center justify-center group-hover:scale-105 transition-transform duration-500 relative">
+            const daysMatch = item.reason.match(/(?:last ordered|ordered)\s*(?:it|them)?\s*(\d+)\s*day/i);
+            const daysAgo = daysMatch ? daysMatch[1] : '3';
+            
+            return (
+              <div 
+                key={`${item.productId}-${idx}`}
+                className="flex-shrink-0 w-[240px] bg-[var(--amazon-card)] border border-[var(--amazon-border)] rounded-lg p-4 snap-start flex flex-col hover:shadow-[0_2px_5px_0_rgba(213,217,217,.5)] transition-shadow"
+              >
+                <div 
+                  className="relative flex justify-center mb-4 h-[120px] cursor-pointer bg-white rounded-md p-2"
+                  onClick={() => setSelectedProduct(item as any)}
+                >
                   {item.imageUrl ? (
-                    <img src={item.imageUrl} alt={item.name} className="h-full object-contain mix-blend-multiply" />
+                    <img src={item.imageUrl} alt={item.name} className="w-full h-full object-contain mix-blend-multiply" />
                   ) : (
-                    <div className="w-full h-full bg-gray-100 rounded-xl flex items-center justify-center text-gray-300 text-xs">
-                      No image
-                    </div>
+                    <div className="w-20 h-20 bg-gray-100 rounded-md flex items-center justify-center text-gray-400 text-xs">No image</div>
                   )}
+                  
+                  {/* Due Now Badge */}
+                  <div className="absolute top-0 right-0 bg-[var(--amazon-card)] border border-[#007600] text-[#007600] text-[11px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    Due now
+                  </div>
                 </div>
                 
-                {/* Premium Confidence badge */}
-                {item.confidence && (
-                  <div className="absolute top-3 left-3 bg-gradient-to-r from-emerald-500/90 to-emerald-400/90 text-black text-[10px] font-extrabold px-2.5 py-1 rounded-full shadow-[0_2px_10px_rgba(16,185,129,0.3)] backdrop-blur-md flex items-center gap-1 border border-emerald-300/30">
-                    <span className="w-1.5 h-1.5 bg-black rounded-full animate-pulse" />
-                    {Math.round(item.confidence * 100)}% Match
-                  </div>
-                )}
-
-                {/* Days ago badge */}
-                <div className="absolute top-3 right-3 bg-[var(--amazon-navy)]/90 backdrop-blur-md border border-[var(--amazon-border)] text-[var(--amazon-text)] text-[10px] font-medium px-2 py-1 rounded-md shadow-sm">
-                  {daysAgo}d ago
-                </div>
-              </div>
-              
-              <div 
-                className="p-4 flex flex-col flex-1 cursor-pointer"
-                onClick={() => onClickProduct?.(item)}
-              >
-                <h4 className="text-[14px] font-bold text-[var(--amazon-text)] leading-snug line-clamp-2 mb-1 group-hover:text-amazon-orange transition-colors" title={item.name}>
+                <h4 
+                  className="text-[14px] font-bold text-[var(--amazon-text)] leading-snug line-clamp-2 mb-1 hover:text-[#C45500] hover:underline cursor-pointer" 
+                  title={item.name}
+                  onClick={() => setSelectedProduct(item as any)}
+                >
                   {item.name}
                 </h4>
-                
-                {/* Amazon-like metadata row */}
-                {(item.rating || item.deliveryTime || item.isPrime) && (
-                  <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 mb-2">
-                    {item.rating && (
-                      <div className="flex items-center gap-0.5">
-                        <span className="text-[11px] font-bold text-[#FF9900]">{item.rating.toFixed(1)}</span>
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="#FF9900" xmlns="http://www.w3.org/2000/svg" className="mt-[1px]">
-                          <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
-                        </svg>
-                        {item.reviewCount && (
-                          <span className="text-[10px] text-[var(--amazon-muted)] ml-0.5">({item.reviewCount.toLocaleString()})</span>
-                        )}
-                      </div>
-                    )}
-                    {item.isPrime && (
-                      <div className="flex items-center">
-                        <span className="text-[#00A8E1] font-extrabold italic text-[11px] tracking-tight">prime</span>
-                      </div>
-                    )}
-                    {item.deliveryTime && (
-                      <span className="text-[10px] font-medium text-[var(--amazon-text-dim)] w-full">
-                        Get it <span className="font-bold text-[var(--amazon-text)]">{item.deliveryTime}</span>
-                      </span>
-                    )}
+
+                {item.rating && item.reviewCount && (
+                  <div className="flex items-center gap-1 text-[12px] mb-2">
+                    <span className="text-[#C45500]">{'★'.repeat(Math.round(item.rating))}{'☆'.repeat(5 - Math.round(item.rating))}</span>
+                    <span className="text-[#007185] hover:text-[#C45500] hover:underline cursor-pointer">({item.reviewCount.toLocaleString()})</span>
                   </div>
                 )}
                 
-                <p className="text-[11px] text-[var(--amazon-muted)] line-clamp-2 flex-1 mb-4 leading-relaxed" title={item.reason}>
-                  {item.reason}
-                </p>
-                
-                <div className="flex items-center justify-between mt-auto">
+                <div className="flex items-center justify-between mt-auto mb-2">
                   <div className="flex flex-col">
-                    <span className="text-[11px] text-[var(--amazon-muted)] font-medium">Estimated</span>
-                    <span className="text-[16px] font-extrabold text-[var(--amazon-text)]">₹{item.price}</span>
+                    <span className="text-[12px] text-[var(--amazon-text-dim)]">Every {parseInt(daysAgo) - 1} days</span>
+                    <span className="text-[11px] text-[var(--amazon-text-dim)]">Last ordered {daysAgo} days ago</span>
                   </div>
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onAppendToSearch(item.name);
-                    }}
-                    className="flex items-center justify-center w-9 h-9 rounded-full bg-black/5 dark:bg-white/10 text-[var(--amazon-text)] hover:bg-amazon-orange hover:text-white hover:scale-110 active:scale-95 transition-all shadow-md group/add border border-[var(--amazon-border-light)]"
-                    aria-label={`Add ${item.name}`}
-                  >
-                    <Plus size={18} strokeWidth={2.5} className="group-hover/add:rotate-90 transition-transform duration-300" />
-                  </button>
+                  <span className="text-[18px] font-bold text-[var(--amazon-text)]">₹{item.price}</span>
+                </div>
+                
+                <button 
+                  onClick={() => handleAddToCart(item)}
+                  className="w-full bg-[#FFD814] hover:bg-[#F7CA00] text-black py-1.5 rounded-full font-medium text-[13px] border border-[#FCD200] shadow-[0_2px_5px_0_rgba(213,217,217,.5)] active:bg-[#F0B800] transition-colors mb-3"
+                >
+                  Add to cart
+                </button>
+                
+                <div className="flex justify-between items-center px-1">
+                  <button className="text-[12px] text-[#007185] hover:text-[#C45500] hover:underline">Skip</button>
+                  <button className="text-[12px] text-[#007185] hover:text-[#C45500] hover:underline">Snooze</button>
+                  <button className="text-[12px] text-[#007185] hover:text-[#C45500] hover:underline">Remove</button>
                 </div>
               </div>
-            </div>
-          );
-        })
-      )}
+            );
+          })
+        )}
       </div>
     </div>
   );

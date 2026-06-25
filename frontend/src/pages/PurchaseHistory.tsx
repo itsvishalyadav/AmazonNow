@@ -1,44 +1,27 @@
 import { useEffect, useState } from 'react';
-import { Package, Clock, Repeat, ChevronDown, ChevronUp } from 'lucide-react';
+import { Package, Repeat, Search } from 'lucide-react';
 import { getHistory, postCheckout, type HistoryResponse } from '../lib/api';
+import { useCart } from '../context/CartContext';
 
 const DEMO_USER_ID = 'user-demo-01';
 
 export default function PurchaseHistory() {
   const [orders, setOrders] = useState<HistoryResponse['orders']>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [orderingId, setOrderingId] = useState<string | null>(null);
-  const [expandedOrders, setExpandedOrders] = useState<Set<string>>(new Set());
+  const { addToGlobalCart, setSelectedProduct } = useCart();
+  const [activeTab, setActiveTab] = useState<'orders' | 'buy-again' | 'not-shipped'>('orders');
 
-  const toggleDetails = (orderId: string) => {
-    setExpandedOrders(prev => {
-      const next = new Set(prev);
-      if (next.has(orderId)) next.delete(orderId);
-      else next.add(orderId);
-      return next;
+  const handleBuyItAgain = (item: any) => {
+    addToGlobalCart({
+      productId: item.productId,
+      name: item.name,
+      qty: 1,
+      price: item.price,
+      reason: 'Reordered',
+      confidence: 1,
+      imageUrl: item.imageUrl
     });
-  };
-
-  const handleReorder = async (order: HistoryResponse['orders'][0]) => {
-    setOrderingId(order.id);
-    try {
-      // Create proper CartItem array for checkout
-      const cartItems = order.items.map(i => ({
-        productId: i.productId,
-        name: i.name,
-        qty: i.qty,
-        price: i.price,
-        reason: 'Reordered',
-        confidence: 1
-      }));
-      
-      await postCheckout({ userId: DEMO_USER_ID, items: cartItems });
-      alert(`Order Placed Successfully! (Duplicate of ${order.id})`);
-    } catch (err) {
-      alert('Failed to place order. Please try again.');
-    } finally {
-      setOrderingId(null);
-    }
+    alert('Item added to Global Cart');
   };
 
   useEffect(() => {
@@ -57,125 +40,181 @@ export default function PurchaseHistory() {
 
   if (isLoading) {
     return (
-      <div className="history-container" style={{ textAlign: 'center', marginTop: '40px' }}>
-        <p style={{ color: 'var(--amazon-muted)' }}>Loading orders...</p>
-      </div>
-    );
-  }
-
-  if (orders.length === 0) {
-    return (
-      <div className="history-container" style={{ textAlign: 'center', marginTop: '40px' }}>
-        <Package size={40} style={{ color: 'var(--amazon-muted)', margin: '0 auto 10px' }} />
-        <h2 style={{ color: 'var(--amazon-text)', fontSize: '18px' }}>No orders yet</h2>
-        <p style={{ color: 'var(--amazon-muted)', fontSize: '14px' }}>Your past purchases will appear here.</p>
+      <div className="max-w-[1024px] mx-auto p-4 text-center mt-10 text-[var(--amazon-text-dim)]">
+        Loading orders...
       </div>
     );
   }
 
   return (
-    <div className="history-container max-w-[1024px] mx-auto p-4">
-      <div className="history-header mb-6 flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-[var(--amazon-text)]">Your Orders</h2>
-        <div className="history-filters">
-          <button className="filter-chip active text-sm font-medium px-4 py-1.5 rounded-full bg-amazon-orange/10 text-amazon-orange border border-amazon-orange/20">All time</button>
+    <div className="max-w-[1024px] mx-auto px-2 lg:px-4 py-4 bg-[var(--amazon-bg)] min-h-screen text-[var(--amazon-text)]">
+      {/* Breadcrumbs */}
+      <div className="text-[13px] text-[var(--amazon-text-dim)] mb-2">
+        <span className="hover:text-amazon-orange hover:underline cursor-pointer">Your Account</span> 
+        <span className="mx-1 text-[#C45500]">›</span> 
+        <span className="text-[#C45500]">Your Orders</span>
+      </div>
+
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
+        <h1 className="text-[28px] font-normal text-[var(--amazon-text)] mb-2 md:mb-0">Your Orders</h1>
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <Search className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+            <input 
+              type="text" 
+              placeholder="Search all orders" 
+              className="pl-8 pr-3 py-1.5 bg-[var(--amazon-card)] border border-[var(--amazon-border)] rounded-sm w-[250px] shadow-[0_1px_2px_rgba(15,17,17,0.15)_inset] focus:outline-none focus:border-amazon-orange focus:ring-1 focus:ring-amazon-orange text-[13px] text-[var(--amazon-text)]"
+            />
+          </div>
+          <button className="bg-[var(--amazon-text)] hover:opacity-80 text-[var(--amazon-bg)] px-4 py-1.5 rounded-full text-[13px] font-medium shadow-sm transition-opacity">
+            Search Orders
+          </button>
         </div>
       </div>
 
-      <div className="orders-list">
-        {orders.map(order => (
-          <div key={order.id} className="bg-[var(--amazon-card)] backdrop-blur-2xl border border-[var(--amazon-border)] rounded-2xl overflow-hidden shadow-xl mb-6">
-            {/* Premium E-commerce Header */}
-            <div className="bg-black/5 dark:bg-black/30 px-5 py-3 border-b border-[var(--amazon-border-light)] flex flex-wrap justify-between gap-4">
-              <div className="flex gap-8">
-                <div className="flex flex-col">
-                  <span className="text-[11px] text-[var(--amazon-muted)] font-bold uppercase tracking-widest mb-0.5">Order Placed</span>
-                  <span className="text-[14px] text-[var(--amazon-text)] font-medium">{order.date}</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[11px] text-[var(--amazon-muted)] font-bold uppercase tracking-widest mb-0.5">Total</span>
-                  <span className="text-[14px] text-[var(--amazon-text)] font-medium">₹{order.total}</span>
-                </div>
-              </div>
-              <div className="flex flex-col sm:text-right">
-                <span className="text-[11px] text-[var(--amazon-muted)] font-bold uppercase tracking-widest mb-0.5">Order #</span>
-                <span className="text-[13px] text-[var(--amazon-text-dim)] font-mono bg-black/5 dark:bg-white/5 px-2 py-0.5 rounded-md border border-[var(--amazon-border)]">{order.id}</span>
-              </div>
-            </div>
+      {/* Tabs */}
+      <div className="flex gap-6 border-b border-[var(--amazon-border)] mb-4">
+        <button 
+          onClick={() => setActiveTab('orders')}
+          className={`pb-1 text-[14px] font-medium transition-colors ${activeTab === 'orders' ? 'text-[var(--amazon-text)] border-b-2 border-amazon-orange' : 'text-[#007185] hover:text-[#C45500] hover:underline'}`}
+        >
+          Orders
+        </button>
+        <button 
+          onClick={() => setActiveTab('buy-again')}
+          className={`pb-1 text-[14px] font-medium transition-colors ${activeTab === 'buy-again' ? 'text-[var(--amazon-text)] border-b-2 border-amazon-orange' : 'text-[#007185] hover:text-[#C45500] hover:underline'}`}
+        >
+          Buy Again
+        </button>
+        <button 
+          onClick={() => setActiveTab('not-shipped')}
+          className={`pb-1 text-[14px] font-medium transition-colors ${activeTab === 'not-shipped' ? 'text-[var(--amazon-text)] border-b-2 border-amazon-orange' : 'text-[#007185] hover:text-[#C45500] hover:underline'}`}
+        >
+          Not Yet Shipped
+        </button>
+      </div>
 
-            {/* Body */}
-            <div className="p-5">
-              <h3 className="text-[18px] text-emerald-400 font-extrabold mb-5 flex items-center gap-2">
-                <CheckIcon className="w-5 h-5 stroke-[3]" />
-                {order.status}
-              </h3>
-              
-              <div className="flex flex-col md:flex-row gap-6">
-                <div className="flex-1 flex flex-col gap-4">
-                  {(expandedOrders.has(order.id) ? order.items : order.items.slice(0, 2)).map((item, idx) => (
-                    <div key={idx} className="flex items-start gap-4 p-3 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
-                      <div className="w-16 h-16 shrink-0 bg-black/5 dark:bg-white/10 border border-[var(--amazon-border-light)] rounded-xl flex items-center justify-center text-3xl shadow-inner backdrop-blur-md">
-                        {item.image}
+      {/* Dropdown */}
+      <div className="mb-4">
+        <span className="text-[14px] font-medium">{orders.length} orders</span> <span className="text-[14px]">placed in</span>
+        <select className="ml-2 bg-[var(--amazon-card-hover)] border border-[var(--amazon-border)] rounded-lg px-2 py-1 text-[13px] font-medium shadow-sm focus:outline-none text-[var(--amazon-text)]">
+          <option>past 3 months</option>
+          <option>past 6 months</option>
+          <option>2026</option>
+        </select>
+      </div>
+
+      {/* Orders List */}
+      <div className="flex flex-col gap-6">
+        {orders.length === 0 ? (
+          <div className="text-center py-10">
+            <Package size={40} className="text-gray-400 mx-auto mb-2" />
+            <h2 className="text-[18px] text-[var(--amazon-text)]">No orders yet</h2>
+            <p className="text-[14px] text-[var(--amazon-text-dim)]">Your past purchases will appear here.</p>
+          </div>
+        ) : (
+          orders.map(order => (
+            <div key={order.id} className="border border-[var(--amazon-border)] rounded-lg overflow-hidden bg-[var(--amazon-card)] shadow-sm">
+              {/* Order Header */}
+              <div className="bg-[var(--amazon-card-hover)] px-4 py-3 border-b border-[var(--amazon-border)] flex flex-wrap justify-between gap-4">
+                <div className="flex gap-8">
+                  <div className="flex flex-col">
+                    <span className="text-[12px] text-[var(--amazon-text-dim)] uppercase">Order Placed</span>
+                    <span className="text-[14px] text-[var(--amazon-text)]">{order.date}</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[12px] text-[var(--amazon-text-dim)] uppercase">Total</span>
+                    <span className="text-[14px] text-[var(--amazon-text)]">₹{order.total}</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[12px] text-[var(--amazon-text-dim)] uppercase">Ship To</span>
+                    <span className="text-[14px] text-[#007185] hover:text-[#C45500] hover:underline cursor-pointer flex items-center gap-1">
+                      Priya Sharma <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                    </span>
+                  </div>
+                </div>
+                <div className="flex flex-col sm:text-right">
+                  <span className="text-[12px] text-[var(--amazon-text-dim)] uppercase">Order # {order.id.replace('order-', '402-6519906-8370736')}</span>
+                  <div className="text-[13px] text-[#007185]">
+                    <span className="hover:text-[#C45500] hover:underline cursor-pointer">View order details</span>
+                    <span className="mx-2 text-[var(--amazon-border)]">|</span>
+                    <span className="hover:text-[#C45500] hover:underline cursor-pointer">Invoice <svg className="inline" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Order Body */}
+              <div className="p-4 bg-[var(--amazon-card)]">
+                <h3 className="text-[18px] font-bold text-[var(--amazon-text)] mb-1">
+                  {order.status.toLowerCase().includes('delivered') ? 'Delivered' : order.status}
+                </h3>
+                <p className="text-[14px] text-[var(--amazon-text)] mb-4">Package was handed to resident</p>
+                
+                {order.items.map((item, idx) => (
+                  <div key={idx} className="flex flex-col md:flex-row gap-6 mb-4 last:mb-0">
+                    <div className="flex-1 flex gap-4">
+                      <div 
+                        className="w-[90px] h-[90px] shrink-0 bg-white border border-[var(--amazon-border)] rounded-md flex items-center justify-center p-1 cursor-pointer"
+                        onClick={() => setSelectedProduct(item as any)}
+                      >
+                        {item.imageUrl ? (
+                          <img src={item.imageUrl} alt={item.name} className="w-full h-full object-contain mix-blend-multiply" />
+                        ) : (
+                          <span className="text-3xl">{item.image}</span>
+                        )}
                       </div>
-                      <div className="flex flex-col justify-center py-1">
-                        <h4 className="text-[15px] text-[var(--amazon-text)] font-bold mb-1">{item.name}</h4>
-                        <p className="text-[13px] text-[var(--amazon-muted)] font-medium">
-                          Qty: {item.qty} <span className="mx-2">•</span> ₹{item.price}
-                        </p>
+                      <div className="flex flex-col">
+                        <h4 
+                          className="text-[14px] text-[#007185] hover:text-[#C45500] hover:underline cursor-pointer font-medium mb-1 line-clamp-2"
+                          onClick={() => setSelectedProduct(item as any)}
+                        >
+                          {item.name}
+                        </h4>
+                        <div className="text-[12px] text-[var(--amazon-text-dim)] mb-2">Return window closed</div>
+                        
+                        <div className="flex items-center gap-2 mt-1">
+                          <button 
+                            onClick={() => handleBuyItAgain(item)}
+                            className="bg-[#FFD814] hover:bg-[#F7CA00] text-black px-3 py-1.5 rounded-full border border-[#FCD200] shadow-[0_2px_5px_0_rgba(213,217,217,.5)] text-[13px] flex items-center gap-1 transition-colors"
+                          >
+                            <Repeat size={14} /> Buy it again
+                          </button>
+                          <button 
+                            onClick={() => setSelectedProduct(item as any)}
+                            className="bg-[var(--amazon-card)] hover:bg-[var(--amazon-card-hover)] text-[var(--amazon-text)] px-3 py-1.5 rounded-full border border-[var(--amazon-border)] shadow-[0_2px_5px_0_rgba(213,217,217,.5)] text-[13px] transition-colors"
+                          >
+                            View your item
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  ))}
-                  
-                  {order.items.length > 2 && (
-                    <button 
-                      onClick={() => toggleDetails(order.id)} 
-                      className="text-[13px] text-amazon-orange hover:text-amazon-orange-hover font-bold flex items-center gap-1 mt-1 px-3 py-2 rounded-lg hover:bg-amazon-orange-dim w-max transition-colors"
-                    >
-                      {expandedOrders.has(order.id) ? (
-                        <>Show less <ChevronUp size={16} strokeWidth={2.5} /></>
-                      ) : (
-                        <>See {order.items.length - 2} more item{order.items.length - 2 > 1 ? 's' : ''} <ChevronDown size={16} strokeWidth={2.5} /></>
-                      )}
-                    </button>
-                  )}
-                </div>
-                
-                <div className="flex flex-col gap-3 min-w-[200px] shrink-0 border-t border-[var(--amazon-border-light)] md:border-t-0 md:border-l md:pl-6 pt-4 md:pt-0">
-                  <button 
-                    disabled={order.status.toLowerCase().includes('delivered')}
-                    className="w-full bg-[var(--amazon-text)] text-[var(--amazon-navy)] hover:opacity-80 px-4 py-2.5 rounded-lg font-bold text-[14px] transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Track Package
-                  </button>
-                  <button 
-                    onClick={() => handleReorder(order)}
-                    disabled={orderingId === order.id}
-                    className="w-full flex items-center justify-center gap-2 bg-[#FFD814] hover:bg-[#F7CA00] text-black px-4 py-2.5 rounded-lg font-extrabold text-[14px] transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {orderingId === order.id ? (
-                      <Clock size={16} className="spin" /> 
-                    ) : (
-                      <Repeat size={16} strokeWidth={2.5} /> 
-                    )}
-                    {orderingId === order.id ? 'Reordering...' : 'Buy it again'}
-                  </button>
-                  <button className="w-full bg-transparent border border-[var(--amazon-border)] text-[var(--amazon-text)] hover:bg-black/5 dark:hover:bg-white/10 px-4 py-2.5 rounded-lg font-bold text-[14px] transition-all active:scale-95">
-                    View Invoice
-                  </button>
-                </div>
+                    
+                    {/* Action Buttons Right Side */}
+                    <div className="flex flex-col gap-2 min-w-[220px] shrink-0">
+                      <button className="w-full bg-[#FFD814] hover:bg-[#F7CA00] text-black px-4 py-1.5 rounded-full shadow-[0_2px_5px_0_rgba(213,217,217,.5)] border border-[#FCD200] text-[13px] transition-colors">
+                        Get product support
+                      </button>
+                      <button className="w-full bg-[var(--amazon-card)] hover:bg-[var(--amazon-card-hover)] text-[var(--amazon-text)] px-4 py-1.5 rounded-full border border-[var(--amazon-border)] shadow-[0_2px_5px_0_rgba(213,217,217,.5)] text-[13px] transition-colors">
+                        Track package
+                      </button>
+                      <button className="w-full bg-[var(--amazon-card)] hover:bg-[var(--amazon-card-hover)] text-[var(--amazon-text)] px-4 py-1.5 rounded-full border border-[var(--amazon-border)] shadow-[0_2px_5px_0_rgba(213,217,217,.5)] text-[13px] transition-colors">
+                        Leave seller feedback
+                      </button>
+                      <button className="w-full bg-[var(--amazon-card)] hover:bg-[var(--amazon-card-hover)] text-[var(--amazon-text)] px-4 py-1.5 rounded-full border border-[var(--amazon-border)] shadow-[0_2px_5px_0_rgba(213,217,217,.5)] text-[13px] transition-colors">
+                        Leave delivery feedback
+                      </button>
+                      <button className="w-full bg-[var(--amazon-card)] hover:bg-[var(--amazon-card-hover)] text-[var(--amazon-text)] px-4 py-1.5 rounded-full border border-[var(--amazon-border)] shadow-[0_2px_5px_0_rgba(213,217,217,.5)] text-[13px] transition-colors">
+                        Write a product review
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
-  );
-}
-
-function CheckIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20 6 9 17l-5-5"/>
-    </svg>
   );
 }

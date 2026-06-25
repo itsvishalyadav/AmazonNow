@@ -1,11 +1,15 @@
 import { useState, useEffect } from 'react';
 import Home from './pages/Home';
 import PurchaseHistory from './pages/PurchaseHistory';
+import GlobalCart from './components/GlobalCart';
 import Navbar from './components/Navbar';
-import { Sparkles, Clock } from 'lucide-react';
+import ProductOverlay from './components/ProductOverlay';
+import { useCart } from './context/CartContext';
+import { Sparkles } from 'lucide-react';
 
 function App() {
-  const [activeTab, setActiveTab] = useState<'home' | 'history'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'history' | 'cart'>('home');
+  const { selectedProduct, setSelectedProduct } = useCart();
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     return (localStorage.getItem('theme') as 'dark' | 'light') || 'dark';
   });
@@ -21,33 +25,26 @@ function App() {
 
   return (
     <div className="app-layout">
-      <Navbar theme={theme} toggleTheme={toggleTheme} />
+      <Navbar theme={theme} toggleTheme={toggleTheme} onNavClick={setActiveTab} />
       
-      {/* Premium Segmented Tab Bar */}
-      <div className="tab-container-wrapper">
-        <div className="segmented-control">
-          <button 
-            className={`segment-btn ${activeTab === 'home' ? 'active' : ''}`}
-            onClick={() => setActiveTab('home')}
-          >
-            <Sparkles size={16} className="segment-icon" />
-            <span>AI Agent</span>
-          </button>
-          <button 
-            className={`segment-btn ${activeTab === 'history' ? 'active' : ''}`}
-            onClick={() => setActiveTab('history')}
-          >
-            <Clock size={16} className="segment-icon" />
-            <span>Orders</span>
-          </button>
-          {/* Animated background pill */}
-          <div className="segment-indicator" style={{ transform: `translateX(${activeTab === 'home' ? '0%' : '100%'})` }} />
-        </div>
+      <div className={`pt-4 pb-2 flex justify-center ${theme === 'light' ? 'bg-[#eaeded]' : 'bg-[var(--amazon-navy)]'}`}>
+        <button 
+          className="flex items-center gap-2 bg-[#FFD814] hover:bg-[#F7CA00] text-black px-6 py-2 rounded-full font-bold shadow-[0_2px_5px_0_rgba(213,217,217,.5)] transition-colors border border-[#FCD200]"
+          onClick={() => setActiveTab('home')}
+        >
+          <Sparkles size={18} />
+          <span>Now Agent</span>
+        </button>
       </div>
 
-      <main className="main-content">
-        {activeTab === 'home' ? <Home /> : <PurchaseHistory />}
+      <main className="main-content flex-1">
+        {activeTab === 'home' && <Home />}
+        {activeTab === 'history' && <PurchaseHistory />}
+        {activeTab === 'cart' && <GlobalCart />}
       </main>
+
+      {/* Global Product Overlay */}
+      {selectedProduct && <ProductOverlay item={selectedProduct} onClose={() => setSelectedProduct(null)} />}
     </div>
   );
 }

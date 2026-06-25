@@ -10,6 +10,7 @@ import ItemRow from './ItemRow';
 import RebalanceBanner from './RebalanceBanner';
 import SwipeCheckoutButton from './SwipeCheckoutButton';
 import IconRenderer from './IconRenderer';
+import { useCart } from '../context/CartContext';
 
 interface CartProposalCardProps {
   proposal: CartProposal;
@@ -36,6 +37,7 @@ export default function CartProposalCard({
   const [addItemText, setAddItemText] = useState('');
   const [suggestions, setSuggestions] = useState<CartItem[]>([]);
   const [deliveryMode, setDeliveryMode] = useState<'flash'|'saver'>('flash');
+  const { addToGlobalCart } = useCart();
 
   useEffect(() => {
     setItems(proposal.items);
@@ -146,6 +148,11 @@ export default function CartProposalCard({
         onReply(val);
       }
     }
+  };
+
+  const handleSaveToGlobalCart = () => {
+    addToGlobalCart(displayedItems);
+    alert('Items saved to your main Cart!');
   };
 
 
@@ -368,19 +375,28 @@ export default function CartProposalCard({
       )}
 
       {/* ── Buy now ─────────────────────────────────────────────── */}
-      <div className="cart-footer">
-        <div className="cart-footer-total">
-          <span>Total</span>
-          <strong>₹{Math.round(total)}</strong>
+      <div className="cart-footer" style={{ flexDirection: 'column', gap: '12px' }}>
+        <div className="w-full flex items-center justify-between">
+          <div className="cart-footer-total">
+            <span>Total</span>
+            <strong>₹{Math.round(total)}</strong>
+          </div>
+          <div className="flex-1 ml-4 min-w-[200px]">
+            <SwipeCheckoutButton 
+              onConfirm={() => onCheckout(displayedItems)}
+              disabled={displayedItems.length === 0}
+              isLoading={isCheckingOut}
+              text={`Swipe to buy (${deliveryMode === 'flash' ? '10 mins' : '45 mins'})`}
+            />
+          </div>
         </div>
-        <div className="flex-1 ml-4 min-w-[200px]">
-          <SwipeCheckoutButton 
-            onConfirm={() => onCheckout(displayedItems)}
-            disabled={displayedItems.length === 0}
-            isLoading={isCheckingOut}
-            text={`Swipe to buy (${deliveryMode === 'flash' ? '10 mins' : '45 mins'})`}
-          />
-        </div>
+        <button 
+          onClick={handleSaveToGlobalCart}
+          disabled={displayedItems.length === 0}
+          className="w-full bg-transparent hover:bg-black/5 dark:hover:bg-white/5 text-[var(--amazon-text)] border border-[var(--amazon-border)] rounded-full py-3 font-bold transition-colors"
+        >
+          Save all items to Cart
+        </button>
       </div>
     </div>
   );

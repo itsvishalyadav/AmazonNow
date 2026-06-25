@@ -143,15 +143,6 @@ export default function ProductOverlay({ item, onClose }: ProductOverlayProps) {
             )}
           </div>
 
-          {/* Got it Button */}
-          <button 
-            className="w-full py-3.5 mt-4 bg-[var(--amazon-navy)] text-[var(--amazon-text-dim)] font-bold text-[15px] rounded-full border border-[var(--amazon-orange-dim)] hover:border-[var(--amazon-orange)] hover:text-[var(--amazon-orange)] transition-all shadow-sm hover:shadow-md group relative overflow-hidden flex items-center justify-center"
-            onClick={onClose}
-          >
-            <div className="absolute inset-0 bg-[var(--amazon-orange-dim)] translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out" />
-            <span className="relative z-10 group-hover:hidden block">Got it</span>
-            <span className="relative z-10 hidden group-hover:block">Close Details</span>
-          </button>
         </div>
       </div>
     </div>

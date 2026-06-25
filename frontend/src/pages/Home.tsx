@@ -14,6 +14,7 @@ import ProactiveBanner from '../components/ProactiveBanner';
 import ReorderStrip from '../components/ReorderStrip';
 import ProductOverlay from '../components/ProductOverlay';
 import ChatInterface, { type ChatMessage } from '../components/ChatInterface';
+import { useCart } from '../context/CartContext';
 import { postIntent, postCheckout, postFeedback, postEmergency, getProactive, postProactiveUpdate, getReorder, postDisconnectCalendar, getCalendarStatus, postSearchItem } from '../lib/api';
 import type { ProactiveSuggestion } from '../lib/api';
 import type { CartProposal, CartItem } from '../lib/types';
@@ -47,8 +48,8 @@ export default function Home() {
   const [proactiveSuggestion, setProactiveSuggestion] = useState<ProactiveSuggestion | null>(null);
   const [reorderCandidates, setReorderCandidates] = useState<CartItem[]>([]);
   const [isCalendarConnected, setIsCalendarConnected] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<CartItem | null>(null);
   const [isProactiveLoading, setIsProactiveLoading] = useState(true);
+  const { setSelectedProduct } = useCart();
   const [isReorderLoading, setIsReorderLoading] = useState(true);
   const [promptsOffset, setPromptsOffset] = useState(0);
 
@@ -443,17 +444,7 @@ export default function Home() {
             onDismiss={() => setToast(null)}
           />
         )}
-
-        {/* ── Product Overlay ────────────────────────────────────── */}
-        {selectedProduct && (
-          <ProductOverlay 
-            item={selectedProduct} 
-            onClose={() => setSelectedProduct(null)} 
-          />
-        )}
       </main>
     </div>
   );
 }
-
-
