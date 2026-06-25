@@ -11,6 +11,7 @@ import RebalanceBanner from './RebalanceBanner';
 import SwipeCheckoutButton from './SwipeCheckoutButton';
 import IconRenderer from './IconRenderer';
 import { useCart } from '../context/CartContext';
+import { showToast } from './Toast';
 
 interface CartProposalCardProps {
   proposal: CartProposal;
@@ -152,7 +153,7 @@ export default function CartProposalCard({
 
   const handleSaveToGlobalCart = () => {
     addToGlobalCart(displayedItems);
-    alert('Items saved to your main Cart!');
+    showToast('Items saved to your main Cart!');
   };
 
 

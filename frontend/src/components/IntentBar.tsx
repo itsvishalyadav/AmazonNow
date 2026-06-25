@@ -5,6 +5,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 import { useState, useRef, useCallback } from 'react';
 import { Send, Camera, Mic, MicOff, X, Loader2 } from 'lucide-react';
+import { showToast } from './Toast';
 
 interface IntentBarProps {
   onSubmit: (text: string, imageBase64?: string, isChatMode?: boolean) => void;
@@ -79,7 +80,7 @@ export default function IntentBar({ onSubmit, isLoading }: IntentBarProps) {
     const SpeechRecognition =
       (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      alert('Speech recognition is not supported in your browser. Try Chrome.');
+      showToast('Speech recognition is not supported in your browser. Try Chrome.');
       return;
     }
 

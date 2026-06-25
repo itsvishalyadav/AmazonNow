@@ -6,6 +6,7 @@ import Navbar from './components/Navbar';
 import ProductOverlay from './components/ProductOverlay';
 import { useCart } from './context/CartContext';
 import { Sparkles } from 'lucide-react';
+import ToastContainer from './components/Toast';
 
 function App() {
   const [activeTab, setActiveTab] = useState<'home' | 'history' | 'cart'>('home');
@@ -25,6 +26,7 @@ function App() {
 
   return (
     <div className="app-layout">
+      <ToastContainer />
       <Navbar theme={theme} toggleTheme={toggleTheme} onNavClick={setActiveTab} />
       
       <div className={`pt-4 pb-2 flex justify-center ${theme === 'light' ? 'bg-[#eaeded]' : 'bg-[var(--amazon-navy)]'}`}>

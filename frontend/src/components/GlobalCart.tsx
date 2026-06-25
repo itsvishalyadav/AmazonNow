@@ -2,6 +2,7 @@ import { useCart } from '../context/CartContext';
 import { ShoppingCart } from 'lucide-react';
 import { postCheckout } from '../lib/api';
 import { useState } from 'react';
+import { showToast } from './Toast';
 
 export default function GlobalCart() {
   const { globalCart, globalCartTotal, globalCartCount, removeFromGlobalCart, updateGlobalCartQty, clearGlobalCart, setSelectedProduct } = useCart();
@@ -12,10 +13,10 @@ export default function GlobalCart() {
     setIsCheckingOut(true);
     try {
       await postCheckout({ userId: 'user-demo-01', items: globalCart });
-      alert('Order Placed Successfully via Global Cart!');
+      showToast('Order Placed Successfully!');
       clearGlobalCart();
     } catch (err) {
-      alert('Failed to place order. Please try again.');
+      showToast('Failed to place order. Please try again.');
     } finally {
       setIsCheckingOut(false);
     }

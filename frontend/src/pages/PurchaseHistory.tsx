@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Package, Repeat, Search } from 'lucide-react';
 import { getHistory, postCheckout, type HistoryResponse } from '../lib/api';
 import { useCart } from '../context/CartContext';
+import { showToast } from '../components/Toast';
 
 const DEMO_USER_ID = 'user-demo-01';
 
@@ -21,7 +22,7 @@ export default function PurchaseHistory() {
       confidence: 1,
       imageUrl: item.imageUrl
     });
-    alert('Item added to Global Cart');
+    showToast('Item added to Cart');
   };
 
   useEffect(() => {

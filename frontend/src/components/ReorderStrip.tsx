@@ -1,5 +1,6 @@
 import { useCart } from '../context/CartContext';
 import type { CartItem } from '../lib/types';
+import { showToast } from './Toast';
 
 interface ReorderStripProps {
   candidates: CartItem[];
@@ -13,7 +14,7 @@ export default function ReorderStrip({ candidates, isLoading }: ReorderStripProp
 
   const handleAddToCart = (item: CartItem) => {
     addToGlobalCart({ ...item, qty: 1 });
-    alert(`${item.name} added to cart!`);
+    showToast(`${item.name} added to cart!`);
   };
 
   return (

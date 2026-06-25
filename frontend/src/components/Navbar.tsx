@@ -58,13 +58,7 @@ export default function Navbar({ theme, toggleTheme, onNavClick }: { theme?: 'da
           className="flex items-center gap-1.5 cursor-pointer hover:outline hover:outline-1 hover:outline-white p-1 rounded-sm transition-all h-[40px]"
           onClick={() => onNavClick?.('home')}
         >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF9900" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="mb-0.5">
-            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="#FF9900" fillOpacity="0.2" />
-          </svg>
-          <div className="flex items-baseline tracking-tight leading-none text-white">
-            <span className="text-[22px] font-bold">amazon</span>
-            <span className="text-[22px] font-medium text-[#FF9900] ml-1">now</span>
-          </div>
+          <img src="/logo.png" alt="Amazon Now" className="h-[100px] object-contain mb-0.5" />
         </div>
 
         {/* Center: Delivery Location */}
