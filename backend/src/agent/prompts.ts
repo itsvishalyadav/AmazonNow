@@ -16,8 +16,9 @@ Rules:
 4. Extract budget (look for "Rs", "rs", "bucks", "under", "within", "budget").
 5. Extract dietary constraints from the profile or explicit mentions.
 6. Do NOT add sub-needs from the user's "PREFER" list unless they directly fulfill the current request.
-7. If the user asks for a generic item (e.g., "phone", "laptop", "power bank") without specifying a brand or model, set clarifyingQuestion to: "Do you want any specific brand and model? If so, type the model or brand of each item, or just say 'top rated' to get the best rated items." IMPORTANT: If the user has already answered this question (e.g. they replied "top rated" or specified a brand), DO NOT ask it again.
-8. For image inputs: the image description will be prepended to the user text.
+7. If the user asks for high-ticket electronics (e.g., "phone", "laptop") without specifying a brand, set clarifyingQuestion to ask for preferences. IMPORTANT: If they already answered, DO NOT ask again.
+8. For broad categories (e.g. "breakfast", "light breakfast", "snacks", "groceries"), DO NOT ask clarifying questions! Instead, make reasonable assumptions, pick 3-4 popular items (like oats, milk, fruit for breakfast), and record them in "assumptions".
+9. For image inputs: the image description will be prepended to the user text.
 
 Output ONLY this JSON structure (no prose):
 {
@@ -60,17 +61,11 @@ User's request:
 
 ${isChatMode ? `
 [CHAT MODE ENABLED]
-CRITICAL INSTRUCTION: You MUST ask stepwise follow-up questions to gather more details if the user's request is broad (e.g. "breakfast for tomorrow", "party snacks", "medicines").
-Set \`clarifyingQuestion\` to ask about things like:
-- Number of people?
-- Veg or Non-veg?
-- Budget?
-- Any specific items they have in mind?
+CRITICAL INSTRUCTION: You can ask stepwise follow-up questions to gather more details if the user's request is very broad. BUT if they say something like 'light breakfast', just pick items, do not keep asking for specifics.
 IMPORTANT: If the user has already answered your question or explicitly said 'any' or 'doesn't matter', DO NOT ask it again. Move on to building the cart using defaults or any type.
-Do NOT form the final cart until you are confident you have enough details.
 ` : `
 [QUICK BUILD MODE ENABLED]
-CRITICAL INSTRUCTION: Build the cart DIRECTLY. Do NOT ask clarifying questions unless absolutely necessary (e.g., they asked for a very specific electronic device but didn't specify the brand). Use standard defaults (e.g. 2 servings, standard items) and form the cart immediately.
+CRITICAL INSTRUCTION: Build the cart DIRECTLY based on best results and top matches. Do NOT ask clarifying questions. ONLY ask a question if absolutely nothing was specified and you cannot search for anything at all.
 `}
 
 Parse this into the required JSON.`;
@@ -110,7 +105,6 @@ Your job: Pick THE SINGLE BEST RELEVANT product per sub-need and build a CartPro
 - If confidence is < 0.8, populate "alternatives" with 1-2 other relevant in-stock products.
 - If the intent is an event/party/occasion, output an 'occasion' object with 'name', 'icon' (valid LucideReact icon), and 'colorGradient'.
 - For each item, provide a logical 'category' string to group them.
-- If the user asks for a generic item (e.g., "phone", "laptop", "power bank") without specifying a brand or model, set clarifyingQuestion to: "Do you want any specific brand and model? If so, type the model or brand of each item, or just say 'top rated' to get the best rated items." IMPORTANT: If the user has already answered this question (e.g. they replied "top rated" or specified a brand), DO NOT ask it again.
 
 Output ONLY this CartProposal JSON:
 {
@@ -167,7 +161,8 @@ export function buildAssembleCartUser(
     recentProductNames: string[];
     learnedPrefs?: { avoid: string[]; prefer: string[] };
   },
-  chatHistory?: string
+  chatHistory?: string,
+  isChatMode?: boolean
 ): string {
   return `Intent: ${intent.summary}
 ${chatHistory ? `\\nConversation History:\\n${chatHistory}\\n` : ""}
@@ -176,6 +171,10 @@ Servings: ${intent.constraints?.servings ?? userProfile.household}
 Dietary: ${[...(intent.constraints?.dietary ?? []), ...userProfile.dietary].filter(Boolean).join(", ") || "none"}
 Past items (prefer if suitable): ${userProfile.recentProductNames.slice(0, 5).join(", ") || "none"}
 Learned prefs — AVOID: ${userProfile.learnedPrefs?.avoid.join(", ") || "none"} | PREFER: ${userProfile.learnedPrefs?.prefer.join(", ") || "none"}
+
+${isChatMode ? `[CHAT MODE ENABLED]
+CRITICAL INSTRUCTION: You can ask a clarifying question IF the budget is exceeded or you need more info. Do NOT repeat questions.` : `[QUICK BUILD MODE ENABLED]
+CRITICAL INSTRUCTION: Build the cart DIRECTLY. Do NOT ask clarifying questions. DO NOT ask about budget. Just assemble the cart.`}
 
 Candidate products per sub-need (with similarity scores):
 ${candidatesBySubNeed

@@ -157,10 +157,10 @@ export default function PurchaseHistory() {
                     <div className="flex-1 flex gap-4">
                       <div 
                         className="w-[90px] h-[90px] shrink-0 bg-white border border-[var(--amazon-border)] rounded-md flex items-center justify-center p-1 cursor-pointer"
-                        onClick={() => setSelectedProduct(item as any)}
+                        onClick={() => setSelectedProduct({ ...item, imageUrl: (item as any).imageUrl || (item.image?.startsWith('http') ? item.image : '') } as any)}
                       >
-                        {item.imageUrl ? (
-                          <img src={item.imageUrl} alt={item.name} className="w-full h-full object-contain mix-blend-multiply" />
+                        {((item as any).imageUrl || item.image?.startsWith('http')) ? (
+                          <img src={(item as any).imageUrl || item.image} alt={item.name} className="w-full h-full object-contain mix-blend-multiply" />
                         ) : (
                           <span className="text-3xl">{item.image}</span>
                         )}
@@ -168,7 +168,7 @@ export default function PurchaseHistory() {
                       <div className="flex flex-col">
                         <h4 
                           className="text-[14px] text-[#007185] hover:text-[#C45500] hover:underline cursor-pointer font-medium mb-1 line-clamp-2"
-                          onClick={() => setSelectedProduct(item as any)}
+                          onClick={() => setSelectedProduct({ ...item, imageUrl: (item as any).imageUrl || (item.image?.startsWith('http') ? item.image : '') } as any)}
                         >
                           {item.name}
                         </h4>
@@ -182,7 +182,7 @@ export default function PurchaseHistory() {
                             <Repeat size={14} /> Buy it again
                           </button>
                           <button 
-                            onClick={() => setSelectedProduct(item as any)}
+                            onClick={() => setSelectedProduct({ ...item, imageUrl: (item as any).imageUrl || (item.image?.startsWith('http') ? item.image : '') } as any)}
                             className="bg-[var(--amazon-card)] hover:bg-[var(--amazon-card-hover)] text-[var(--amazon-text)] px-3 py-1.5 rounded-full border border-[var(--amazon-border)] shadow-[0_2px_5px_0_rgba(213,217,217,.5)] text-[13px] transition-colors"
                           >
                             View your item

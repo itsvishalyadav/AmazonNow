@@ -25,14 +25,15 @@ router.get("/:userId", async (req, res) => {
       total += price * item.qty;
       
       // Attempt to pick an emoji based on the image URL or name
-      const defaultEmoji = '📦';
       const isEmoji = product?.imageUrl && product.imageUrl.length <= 4;
+      const imageUrl = product?.imageUrl && product.imageUrl.length > 4 ? product.imageUrl : '';
       
       return {
         productId: item.productId,
         name: product?.name || 'Unknown Item',
         qty: item.qty,
-        image: isEmoji ? product.imageUrl : defaultEmoji,
+        image: isEmoji ? product.imageUrl : '📦',
+        imageUrl: imageUrl,
         price
       };
     });

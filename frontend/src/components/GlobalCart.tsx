@@ -24,19 +24,40 @@ export default function GlobalCart() {
 
   if (globalCart.length === 0) {
     return (
-      <div className="max-w-[1500px] mx-auto px-4 py-8 flex items-start gap-6 bg-[var(--amazon-bg)] min-h-[calc(100vh-120px)]">
-        <div className="flex-1 bg-[var(--amazon-card)] p-6 rounded-sm shadow-sm flex items-center gap-6">
-          <div className="w-48 h-48 bg-[var(--amazon-card-hover)] rounded-full flex items-center justify-center">
-            <ShoppingCart size={80} className="text-[var(--amazon-border)]" />
+      <div className="max-w-[1200px] mx-auto px-4 py-12 flex flex-col md:flex-row items-start gap-8 bg-transparent min-h-[calc(100vh-120px)]">
+        {/* Main Empty Cart Area */}
+        <div className="flex-1 w-full bg-[var(--amazon-card)]/80 backdrop-blur-md p-10 rounded-2xl shadow-[var(--shadow-float)] border border-[var(--amazon-border-light)] flex flex-col md:flex-row items-center gap-10">
+          
+          {/* Animated Cart Icon Circle */}
+          <div className="relative group">
+            <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-[#FF9900] rounded-full blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-500" />
+            <div className="w-48 h-48 bg-black/5 dark:bg-white/5 rounded-full flex items-center justify-center relative border border-white/10 shadow-inner group-hover:scale-105 transition-transform duration-500">
+              <ShoppingCart size={80} className="text-[#FF9900] opacity-80" strokeWidth={1.5} />
+            </div>
           </div>
-          <div className="flex flex-col gap-2">
-            <h2 className="text-2xl font-bold text-[var(--amazon-text)]">Your Amazon Cart is empty</h2>
-            <a href="#" className="text-[#007185] hover:text-[#C45500] hover:underline text-sm">Shop today's deals</a>
+          
+          <div className="flex flex-col items-center md:items-start text-center md:text-left gap-4">
+            <h2 className="text-3xl font-black text-[var(--amazon-text)] tracking-tight">Your Amazon Cart is empty</h2>
+            <p className="text-[var(--amazon-muted)] max-w-md text-base">
+              Looks like you haven't added anything to your cart yet. Check out today's deals or use our AI Agent to build a cart instantly!
+            </p>
+            <div className="flex gap-4 mt-2">
+              <a 
+                href="/" 
+                className="bg-[#FFD814] hover:bg-[#F7CA00] text-black px-8 py-3 rounded-full font-bold shadow-[0_2px_5px_0_rgba(213,217,217,.5)] transition-colors border border-[#FCD200]"
+              >
+                Start Shopping
+              </a>
+            </div>
           </div>
         </div>
-        <div className="w-[300px] bg-[var(--amazon-card)] p-4 rounded-sm shadow-sm hidden lg:block text-[var(--amazon-text)]">
-           <div className="text-sm">
-             <span className="font-bold">Your recently viewed items</span>
+
+        {/* Right Sidebar */}
+        <div className="w-full md:w-[320px] bg-[var(--amazon-card)]/80 backdrop-blur-md p-6 rounded-2xl shadow-[var(--shadow-float)] border border-[var(--amazon-border-light)] text-[var(--amazon-text)]">
+           <h3 className="text-lg font-bold mb-4 border-b border-[var(--amazon-border-light)] pb-2">Your recently viewed items</h3>
+           <div className="flex flex-col items-center justify-center py-8 text-[var(--amazon-muted)] opacity-60">
+             <div className="w-16 h-16 bg-black/5 dark:bg-white/5 rounded-md mb-3 border border-dashed border-[var(--amazon-border)]" />
+             <p className="text-sm font-medium">No recent items</p>
            </div>
         </div>
       </div>

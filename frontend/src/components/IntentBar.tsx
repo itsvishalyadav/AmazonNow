@@ -4,7 +4,7 @@
 // mic uses browser SpeechRecognition if available.
 // ─────────────────────────────────────────────────────────────────────────────
 import { useState, useRef, useCallback } from 'react';
-import { Send, Camera, Mic, MicOff, X, Loader2 } from 'lucide-react';
+import { Send, Camera, Mic, MicOff, X, Loader2, Zap, MessageSquare } from 'lucide-react';
 import { showToast } from './Toast';
 
 interface IntentBarProps {
@@ -162,11 +162,26 @@ export default function IntentBar({ onSubmit, isLoading }: IntentBarProps) {
         />
 
         <div className="intent-actions items-center">
-          {/* Animated Pill Toggle */}
-          <div className="flex items-center bg-black/5 dark:bg-white/10 rounded-full p-1 relative cursor-pointer mr-2 shadow-inner h-8" onClick={() => setIsChatMode(!isChatMode)} title={isChatMode ? "Chat Mode: Stepwise questions" : "Quick Build: Direct cart"}>
-            <div className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-[var(--amazon-orange)] rounded-full transition-transform duration-300 ease-out shadow-md ${isChatMode ? 'translate-x-[calc(100%+4px)]' : 'translate-x-0'}`} />
-            <div className={`flex-1 flex items-center justify-center px-3 z-10 text-[11px] font-black tracking-wider transition-colors duration-300 ${!isChatMode ? 'text-white drop-shadow-md' : 'text-[var(--amazon-muted)]'}`}>QUICK</div>
-            <div className={`flex-1 flex items-center justify-center px-3 z-10 text-[11px] font-black tracking-wider transition-colors duration-300 ${isChatMode ? 'text-white drop-shadow-md' : 'text-[var(--amazon-muted)]'}`}>CHAT</div>
+          {/* Premium Animated Pill Toggle */}
+          <div 
+            className="flex items-center bg-[#1e293b]/50 dark:bg-[#1e293b]/80 border border-[#cbd5e1]/20 dark:border-white/10 rounded-full p-1 relative cursor-pointer mr-3 shadow-inner h-[38px] w-[170px]" 
+            onClick={() => setIsChatMode(!isChatMode)} 
+            title={isChatMode ? "Chat Mode: Stepwise questions" : "Quick Build: Direct cart"}
+          >
+            {/* Sliding Pill Background */}
+            <div className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-gradient-to-r from-[#ff9900] to-[#f3a847] rounded-full transition-all duration-300 ease-out shadow-sm ${isChatMode ? 'translate-x-[calc(100%+4px)]' : 'translate-x-0'}`} />
+            
+            {/* Quick Option */}
+            <div className={`flex-1 flex items-center justify-center gap-1.5 z-10 text-[13px] font-bold tracking-wide transition-colors duration-300 ${!isChatMode ? 'text-black drop-shadow-[0_1px_1px_rgba(255,255,255,0.5)]' : 'text-[#64748b] dark:text-[#94a3b8]'}`}>
+              <Zap size={14} className={!isChatMode ? "fill-black/20" : ""} />
+              Quick
+            </div>
+            
+            {/* Chat Option */}
+            <div className={`flex-1 flex items-center justify-center gap-1.5 z-10 text-[13px] font-bold tracking-wide transition-colors duration-300 ${isChatMode ? 'text-black drop-shadow-[0_1px_1px_rgba(255,255,255,0.5)]' : 'text-[#64748b] dark:text-[#94a3b8]'}`}>
+              <MessageSquare size={14} className={isChatMode ? "fill-black/20" : ""} />
+              Chat
+            </div>
           </div>
 
           {/* Hidden file input */}

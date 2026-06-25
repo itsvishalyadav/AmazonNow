@@ -96,7 +96,8 @@ async function assembleCart(
   intent: ParsedIntent,
   candidatesBySubNeed: Array<{ subNeed: string; products: Product[] }>,
   userProfile: { dietary: string[]; household: number; budget?: number; recentProductNames: string[] },
-  chatHistory?: string
+  chatHistory?: string,
+  isChatMode?: boolean
 ): Promise<CartProposal> {
   const raw = await chatJSON(
     ASSEMBLE_CART_SYSTEM,
@@ -120,7 +121,8 @@ async function assembleCart(
         })),
       })),
       userProfile,
-      chatHistory
+      chatHistory,
+      isChatMode
     )
   );
 
@@ -356,11 +358,11 @@ export async function buildCart(input: BuildCartInput): Promise<CartProposal> {
   // 5. Assemble cart via LLM (with one retry on Zod parse failure)
   let proposal: CartProposal;
   try {
-    proposal = await assembleCart(intent, candidatesBySubNeed, userProfile, input.text);
+    proposal = await assembleCart(intent, candidatesBySubNeed, userProfile, input.text, input.isChatMode);
   } catch (err) {
     console.warn("[nowAgent] First assemble attempt failed, retrying...", err);
     try {
-      proposal = await assembleCart(intent, candidatesBySubNeed, userProfile, input.text);
+      proposal = await assembleCart(intent, candidatesBySubNeed, userProfile, input.text, input.isChatMode);
     } catch (retryErr) {
       console.error("[nowAgent] assembleCart retry failed:", retryErr);
       throw new Error("Failed to build your cart. Please try again.");

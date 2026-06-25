@@ -291,15 +291,19 @@ export default function Home() {
               {!isCalendarConnected ? (
                 <button 
                   onClick={() => window.location.href = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:4001'}/api/auth/google`}
-                  className="flex items-center gap-2 text-sm font-semibold bg-[#2a2a2a] text-white px-3 py-1.5 rounded-lg border border-white/10 hover:bg-[#333] transition-colors whitespace-nowrap"
+                  className="group flex items-center gap-2.5 text-sm font-bold bg-white dark:bg-[#1e293b] text-gray-800 dark:text-white px-4 py-2 rounded-full border border-gray-200 dark:border-white/10 shadow-sm hover:shadow-md hover:-translate-y-0.5 hover:border-blue-400/50 transition-all duration-300 whitespace-nowrap"
                 >
-                  <Calendar size={16} className="text-blue-400" /> Connect Calendar
+                  <div className="bg-blue-50 dark:bg-blue-500/10 p-1.5 rounded-full group-hover:bg-blue-100 dark:group-hover:bg-blue-500/20 transition-colors">
+                    <Calendar size={14} className="text-blue-600 dark:text-blue-400" />
+                  </div>
+                  Sync Google Calendar
                 </button>
               ) : (
-                <div className="flex items-center gap-2 text-sm font-semibold text-green-400 bg-green-400/10 px-3 py-1.5 rounded-lg border border-green-400/20 whitespace-nowrap">
-                  <CheckCircle2 size={16} /> Calendar Sync Active
-                  <button onClick={handleDisconnectCalendar} className="ml-2 hover:bg-green-400/20 p-1 rounded-full transition-colors" title="Disconnect Calendar">
-                    <X size={14} className="text-green-500" />
+                <div className="flex items-center gap-2.5 text-sm font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-400/10 px-4 py-2 rounded-full border border-emerald-200 dark:border-emerald-400/20 whitespace-nowrap shadow-sm">
+                  <CheckCircle2 size={16} className="text-emerald-600 dark:text-emerald-500" /> 
+                  Calendar Synced
+                  <button onClick={handleDisconnectCalendar} className="ml-1 hover:bg-emerald-200 dark:hover:bg-emerald-400/20 p-1.5 rounded-full transition-colors" title="Disconnect Calendar">
+                    <X size={14} className="text-emerald-700 dark:text-emerald-500" />
                   </button>
                 </div>
               )}

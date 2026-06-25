@@ -218,24 +218,36 @@ html, body, #root {
 
 /* ── IntentBar ───────────────────────────────────────────────────────────────── */
 .intent-bar-wrapper {
-  background: var(--amazon-dark);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid var(--amazon-border);
-  border-radius: var(--radius-xl);
-  padding: 18px 20px;
+  background: var(--amazon-card);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid var(--amazon-border-light);
+  border-radius: 32px;
+  padding: 16px 20px 16px 24px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  box-shadow: var(--shadow-float);
-  transition: var(--transition);
+  gap: 12px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+[data-theme='light'] .intent-bar-wrapper {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 1);
 }
 
 .intent-bar-wrapper:focus-within {
-  background: rgba(30, 41, 59, 0.8);
-  border-color: rgba(255, 153, 0, 0.5);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 4px rgba(255, 153, 0, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  background: var(--amazon-card-hover);
+  border-color: var(--amazon-orange);
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.3), 0 0 0 4px var(--amazon-orange-dim), inset 0 1px 1px rgba(255, 255, 255, 0.1);
   transform: translateY(-2px);
+}
+
+[data-theme='light'] .intent-bar-wrapper:focus-within {
+  background: #ffffff;
+  border-color: var(--amazon-orange);
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.12), 0 0 0 4px var(--amazon-orange-dim);
 }
 
 .intent-input-row {
@@ -250,15 +262,15 @@ html, body, #root {
   border: none;
   outline: none;
   color: var(--amazon-text);
-  font-size: 16px;
+  font-size: 17px;
   font-family: inherit;
   resize: none;
   line-height: 1.5;
-  min-height: 48px;
-  letter-spacing: 0.2px;
+  min-height: 52px;
+  letter-spacing: 0.1px;
 }
 
-.intent-textarea::placeholder { color: var(--amazon-muted); font-weight: 400; }
+.intent-textarea::placeholder { color: var(--amazon-muted); font-weight: 400; opacity: 0.8; }
 
 .intent-actions {
   display: flex;
@@ -411,26 +423,31 @@ html, body, #root {
 }
 
 .example-prompts-label {
-  font-size: 11px;
-  color: var(--amazon-muted);
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-size: 12px;
+  color: var(--amazon-text-dim);
+  font-weight: 600;
   flex-shrink: 0;
+  margin-right: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .example-chip {
   background: var(--amazon-dark);
-  border: 1px solid var(--amazon-border);
-  color: var(--amazon-text-dim);
-  font-size: 12px;
-  padding: 5px 12px;
-  border-radius: 20px;
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--amazon-border-light);
+  color: var(--amazon-text);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 24px;
   cursor: pointer;
-  transition: all var(--transition);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: inherit;
   flex-shrink: 0;
   white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 @keyframes slideLeftFade {
@@ -443,8 +460,10 @@ html, body, #root {
 
 .example-chip:hover {
   border-color: var(--amazon-orange);
-  color: var(--amazon-orange);
+  color: var(--amazon-orange-hover);
   background: var(--amazon-orange-dim);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.15);
 }
 
 /* ── Loading state ───────────────────────────────────────────────────────────── */

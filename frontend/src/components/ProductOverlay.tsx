@@ -115,33 +115,37 @@ export default function ProductOverlay({ item, onClose }: ProductOverlayProps) {
             )}
           </div>
 
-          <div className="h-px w-full bg-[var(--amazon-border-light)] my-1" />
+          {(item.deliveryTime || item.dietaryFlag || item.substituteFor) && (
+            <>
+              <div className="h-px w-full bg-[var(--amazon-border-light)] my-1" />
+              
+              {/* AI Notes section */}
+              <div className="flex flex-col gap-2">
+                <h3 className="text-xs font-bold text-[var(--amazon-muted)] uppercase tracking-widest mb-1">AI Agent Notes</h3>
+                
+                {item.deliveryTime && (
+                  <div className="flex items-start gap-2 text-sm text-[var(--amazon-text-dim)]">
+                    <CheckCircle2 size={16} className="text-[var(--amazon-success)] mt-0.5 shrink-0" />
+                    <span>Get it <strong className="text-[var(--amazon-text)]">{item.deliveryTime}</strong> via Amazon Now</span>
+                  </div>
+                )}
 
-          {/* AI Notes section */}
-          <div className="flex flex-col gap-2">
-            <h3 className="text-xs font-bold text-[var(--amazon-muted)] uppercase tracking-widest mb-1">AI Agent Notes</h3>
-            
-            {item.deliveryTime && (
-              <div className="flex items-start gap-2 text-sm text-[var(--amazon-text-dim)]">
-                <CheckCircle2 size={16} className="text-[var(--amazon-success)] mt-0.5 shrink-0" />
-                <span>Get it <strong className="text-[var(--amazon-text)]">{item.deliveryTime}</strong> via Amazon Now</span>
+                {item.dietaryFlag && (
+                  <div className="flex items-start gap-2 text-sm text-[var(--amazon-text-dim)]">
+                    <AlertCircle size={16} className="text-[var(--amazon-danger)] mt-0.5 shrink-0" />
+                    <span>Dietary Note: <strong className="text-[var(--amazon-text)]">{item.dietaryFlag}</strong></span>
+                  </div>
+                )}
+                
+                {item.substituteFor && (
+                  <div className="flex items-start gap-2 text-sm text-[var(--amazon-text-dim)]">
+                    <ArrowLeftRight size={16} className="text-blue-500 mt-0.5 shrink-0" />
+                    <span>Substituted for: <strong className="text-[var(--amazon-text)]">{item.substituteFor}</strong></span>
+                  </div>
+                )}
               </div>
-            )}
-
-            {item.dietaryFlag && (
-              <div className="flex items-start gap-2 text-sm text-[var(--amazon-text-dim)]">
-                <AlertCircle size={16} className="text-[var(--amazon-danger)] mt-0.5 shrink-0" />
-                <span>Dietary Note: <strong className="text-[var(--amazon-text)]">{item.dietaryFlag}</strong></span>
-              </div>
-            )}
-            
-            {item.substituteFor && (
-              <div className="flex items-start gap-2 text-sm text-[var(--amazon-text-dim)]">
-                <ArrowLeftRight size={16} className="text-blue-500 mt-0.5 shrink-0" />
-                <span>Substituted for: <strong className="text-[var(--amazon-text)]">{item.substituteFor}</strong></span>
-              </div>
-            )}
-          </div>
+            </>
+          )}
 
         </div>
       </div>

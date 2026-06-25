@@ -31,11 +31,12 @@ function App() {
       
       <div className={`pt-4 pb-2 flex justify-center ${theme === 'light' ? 'bg-[#eaeded]' : 'bg-[var(--amazon-navy)]'}`}>
         <button 
-          className="flex items-center gap-2 bg-[#FFD814] hover:bg-[#F7CA00] text-black px-6 py-2 rounded-full font-bold shadow-[0_2px_5px_0_rgba(213,217,217,.5)] transition-colors border border-[#FCD200]"
+          className="group relative flex items-center gap-2.5 overflow-hidden rounded-full bg-gradient-to-b from-[#131921] to-[#0f1111] px-8 py-3 font-bold text-white shadow-[0_4px_14px_rgba(0,0,0,0.2)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(255,153,0,0.15)] border border-white/10 hover:border-[#ff9900]/50"
           onClick={() => setActiveTab('home')}
         >
-          <Sparkles size={18} />
-          <span>Now Agent</span>
+          <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
+          <Sparkles size={20} className="text-[#ff9900]" />
+          <span className="tracking-wide text-[15px]">Ask Now Agent</span>
         </button>
       </div>
 
