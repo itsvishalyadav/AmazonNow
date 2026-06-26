@@ -63,7 +63,7 @@ Customer said: ${userText || "(no additional text)"}`;
 async function searchCandidates(
   intent: ParsedIntent,
   userProfile: { dietary: string[]; budget?: number }
-): Promise<Array<{ subNeed: string; products: Product[] }>> {
+): Promise<Array<{ subNeed: string; qty?: number; unit?: string; products: Product[] }>> {
   const combinedDietary = [
     ...(intent.constraints?.dietary ?? []),
     ...userProfile.dietary,
@@ -84,7 +84,7 @@ async function searchCandidates(
         },
         8
       );
-      return { subNeed: sn.query, products };
+      return { subNeed: sn.query, qty: sn.qty, unit: sn.unit, products };
     })
   );
 
@@ -94,7 +94,7 @@ async function searchCandidates(
 // ── Step 3: Assemble cart via LLM ─────────────────────────────────────────────
 async function assembleCart(
   intent: ParsedIntent,
-  candidatesBySubNeed: Array<{ subNeed: string; products: Product[] }>,
+  candidatesBySubNeed: Array<{ subNeed: string; qty?: number; unit?: string; products: Product[] }>,
   userProfile: { dietary: string[]; household: number; budget?: number; recentProductNames: string[] },
   chatHistory?: string,
   isChatMode?: boolean
@@ -306,7 +306,20 @@ export async function buildCart(input: BuildCartInput): Promise<CartProposal> {
     throw new Error("Could not understand your request. Please try again.");
   }
 
-  // 2.5 Decompose Recipe if necessary (Phase 8)
+  // 2.5 Handle clarifying question early return
+  if (intent.clarifyingQuestion) {
+    return {
+      intentSummary: intent.summary,
+      assumptions: intent.assumptions,
+      items: [],
+      total: 0,
+      budget: intent.constraints?.budget ?? null,
+      withinBudget: true,
+      clarifyingQuestion: intent.clarifyingQuestion,
+    };
+  }
+
+  // 3. Decompose Recipe if necessary (Phase 8)
   const isRecipeOrOccasion = intent.isRecipeOrOccasion || 
     intent.constraints?.occasion || 
     input.text?.toLowerCase().includes("recipe") || 
@@ -334,19 +347,6 @@ export async function buildCart(input: BuildCartInput): Promise<CartProposal> {
     } catch (err) {
       console.error("[nowAgent] decomposeRecipe failed, falling back to standard intent:", err);
     }
-  }
-
-  // 3. Handle clarifying question early return
-  if (intent.clarifyingQuestion) {
-    return {
-      intentSummary: intent.summary,
-      assumptions: intent.assumptions,
-      items: [],
-      total: 0,
-      budget: intent.constraints?.budget ?? null,
-      withinBudget: true,
-      clarifyingQuestion: intent.clarifyingQuestion,
-    };
   }
 
   // 4. Search candidates per sub-need

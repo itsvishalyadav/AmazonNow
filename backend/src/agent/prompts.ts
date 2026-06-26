@@ -12,13 +12,12 @@ Your job: Convert a customer's raw need (text, Hinglish, recipe, occasion) into 
 Rules:
 1. Decompose the need into concrete sub-needs (individual items to search for). Each sub-need query should be a specific product name (e.g. "paneer 200g", "basmati rice 1kg", "dettol antiseptic", "travel neck pillow").
 2. For recipes/occasions: list the key ingredient/product sub-needs (not staples like salt/water unless explicitly asked).
-3. Scale quantities to the requested servings.
+3. Estimate realistic quantities for the requested servings. Do NOT just multiply everything by the number of servings (e.g., 9 people don't need 9kg of chicken or 9 packs of butter). Use common sense for portion sizes.
 4. Extract budget (look for "Rs", "rs", "bucks", "under", "within", "budget").
 5. Extract dietary constraints from the profile or explicit mentions.
 6. Do NOT add sub-needs from the user's "PREFER" list unless they directly fulfill the current request.
 7. If the user asks for high-ticket electronics (e.g., "phone", "laptop") without specifying a brand, set clarifyingQuestion to ask for preferences. IMPORTANT: If they already answered, DO NOT ask again.
-8. For broad categories (e.g. "breakfast", "light breakfast", "snacks", "groceries"), DO NOT ask clarifying questions! Instead, make reasonable assumptions, pick 3-4 popular items (like oats, milk, fruit for breakfast), and record them in "assumptions".
-9. For image inputs: the image description will be prepended to the user text.
+8. For image inputs: the image description will be prepended to the user text.
 
 Output ONLY this JSON structure (no prose):
 {
@@ -61,8 +60,10 @@ User's request:
 
 ${isChatMode ? `
 [CHAT MODE ENABLED]
-CRITICAL INSTRUCTION: You can ask stepwise follow-up questions to gather more details if the user's request is very broad. BUT if they say something like 'light breakfast', just pick items, do not keep asking for specifics.
-IMPORTANT: If the user has already answered your question or explicitly said 'any' or 'doesn't matter', DO NOT ask it again. Move on to building the cart using defaults or any type.
+CRITICAL INSTRUCTION: Your goal in Chat Mode is to gather necessary info before building the cart.
+- IF budget, specific preferences, or exact items are not specified in the intent, ASK a clarifying question (e.g., "Do you have a budget in mind?" or "Any specific cuisine?").
+- HOWEVER, if the user explicitly says "any", "no specifics", "doesn't matter", or gives a very broad standard request (like "light breakfast"), STOP asking questions and proceed to build the cart using reasonable assumptions.
+- IMPORTANT: If the user has already answered your question, DO NOT ask it again.
 ` : `
 [QUICK BUILD MODE ENABLED]
 CRITICAL INSTRUCTION: Build the cart DIRECTLY based on best results and top matches. Do NOT ask clarifying questions. ONLY ask a question if absolutely nothing was specified and you cannot search for anything at all.
@@ -94,6 +95,7 @@ Your job: Pick THE SINGLE BEST RELEVANT product per sub-need and build a CartPro
 
 ## Standard Rules:
 - Be decisive: pick AT MOST ONE per sub-need.
+- Use the requested quantity (qty) provided for each sub-need. Do NOT blindly use the 'Servings' count as the quantity for an item (e.g., just because servings is 9 doesn't mean you need 9 packs of chicken). If the parsed sub-need asks for a specific qty, use it!
 - Respect dietary profile: never include non-veg for vegetarian users without flagging.
 - If the best candidate is out of stock (inStock: false), DO NOT pick a substitute automatically. Instead, set clarifyingQuestion to: "[Product Name] is out of stock. Would you like me to find a substitute?" and do NOT include the item in the cart yet.
 - IMPORTANT: If the Conversation History shows the user has already agreed to a substitute (e.g. "Yes"), then pick the next best in-stock option and include it.
@@ -148,6 +150,8 @@ export function buildAssembleCartUser(
   },
   candidatesBySubNeed: Array<{
     subNeed: string;
+    qty?: number;
+    unit?: string;
     products: Array<{
       id: string; name: string; price: number; unit: string; packSize?: string;
       dietary: string[]; inStock: boolean; popularity: number; imageUrl: string;
@@ -179,7 +183,7 @@ CRITICAL INSTRUCTION: Build the cart DIRECTLY. Do NOT ask clarifying questions. 
 Candidate products per sub-need (with similarity scores):
 ${candidatesBySubNeed
   .map(
-    (c) => `## Sub-need: "${c.subNeed}"${c.products.length === 0 ? "\n⚠️ NO CANDIDATES FOUND — skip this sub-need entirely." : ""}
+    (c) => `## Sub-need: "${c.subNeed}" (Requested Qty: ${c.qty ?? 1} ${c.unit ?? ''})${c.products.length === 0 ? "\n⚠️ NO CANDIDATES FOUND — skip this sub-need entirely." : ""}
 ${c.products
   .map(
     (p, i) =>
@@ -201,7 +205,7 @@ Rules:
 1. Detect if the input is a recipe, an occasion, or a general request.
 2. For recipes: 
    - Return a precise ingredient list with quantities.
-   - Scale quantities proportionally to the requested servings (assume base recipe serves 2 if not specified, then scale up).
+   - Estimate realistic quantities for the requested servings. Do NOT just multiply everything by the number of servings (e.g., 9 people don't need 9kg of chicken). Use common sense for portion sizes.
    - EXCLUDE common Indian kitchen staples unless explicitly requested: salt, water, cooking oil, basic spices (turmeric, red chili powder, cumin seeds, coriander powder).
 3. For occasions (e.g. travel, party, picnic):
    - Return category-grouped items that the customer would need to buy.
